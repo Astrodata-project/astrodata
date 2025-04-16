@@ -1,9 +1,9 @@
-from astrodata.data.loaders.parquet_loader import ParquetLoader
-from astrodata.data.preprocessors.base import (
+from astrodata.data import (
+    ParquetLoader,
     MissingValueImputer,
     DropDuplicates,
+    DataPipeline,
 )
-from astrodata.data.pipeline import DataPipeline
 
 loader = ParquetLoader()
 
