@@ -1,5 +1,5 @@
 from astrodata.data.loaders.parquet_loader import ParquetLoader
-from astrodata.data.transformers.base import (
+from astrodata.data.preprocessors.base import (
     MissingValueImputer,
     DropDuplicates,
 )
@@ -7,9 +7,9 @@ from astrodata.data.pipeline import DataPipeline
 
 loader = ParquetLoader()
 
-transformers = [MissingValueImputer(), DropDuplicates()]
+preprocessors = [MissingValueImputer(), DropDuplicates()]
 
-pipeline = DataPipeline(loader, transformers)
+pipeline = DataPipeline(loader, preprocessors)
 
 data_path = "./testdata/green_tripdata_2024-01.parquet"
 

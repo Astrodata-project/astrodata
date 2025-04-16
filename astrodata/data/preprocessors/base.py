@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 from astrodata.data.schemas import RawData
 
 
-class AbstractTransformer(ABC):
+class AbstractPreprocessor(ABC):
     """
-    An abstract base class for data transformers.
+    An abstract base class for data preprocessors.
 
     Subclasses must implement the `transform` method to define how
     the input `RawData` is transformed.
@@ -21,9 +21,9 @@ class AbstractTransformer(ABC):
         pass
 
 
-class NormalizeAndSplit(AbstractTransformer):
+class NormalizeAndSplit(AbstractPreprocessor):
     """
-    A transformer that normalizes the data by subtracting the mean and dividing
+    A preprocessor that normalizes the data by subtracting the mean and dividing
     by the standard deviation.
 
     Methods:
@@ -36,9 +36,9 @@ class NormalizeAndSplit(AbstractTransformer):
         return raw
 
 
-class MissingValueImputer(AbstractTransformer):
+class MissingValueImputer(AbstractPreprocessor):
     """
-    A transformer that imputes missing values in the data by replacing them with 0.
+    A preprocessor that imputes missing values in the data by replacing them with 0.
 
     Methods:
         transform(raw: RawData) -> RawData:
@@ -50,9 +50,9 @@ class MissingValueImputer(AbstractTransformer):
         return raw
 
 
-class DropDuplicates(AbstractTransformer):
+class DropDuplicates(AbstractPreprocessor):
     """
-    A transformer that removes duplicate rows from the data.
+    A preprocessor that removes duplicate rows from the data.
 
     Methods:
         transform(raw: RawData) -> RawData:
