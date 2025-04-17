@@ -10,4 +10,6 @@ dependencies = [
     "pyarrow>=19.0.1",
     "pydantic>=2.11.3",
     "pynbody>=2.0.0",
+    "tensorflow[and-cuda]>=2.14.1",
+    "torch>=2.6.0",
 ]
