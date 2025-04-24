@@ -5,11 +5,12 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "jupyter>=1.1.1",
     "numpy>=2.2.4",
     "pandas>=2.2.3",
     "pyarrow>=19.0.1",
     "pydantic>=2.11.3",
     "pynbody>=2.0.0",
-    "tensorflow[and-cuda]>=2.14.1",
+    "scikit-learn>=1.6.1",
     "torch>=2.6.0",
 ]
