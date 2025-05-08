@@ -13,4 +13,19 @@ dependencies = [
     "pynbody>=2.0.0",
     "scikit-learn>=1.6.1",
     "torch>=2.6.0",
+    "xgboost>=3.0.0",
 ]
+
+[dependency-groups]
+dev = [
+    "astrodata",
+]
+
+[tool.uv]
+package = true
+
+[tool.uv.sources]
+astrodata = { workspace = true }
+
+[tool.setuptools]  # configuration specific to the `setuptools` build backend.
+packages = { find = { where = ["."], include = ["astrodata", "astrodata.*"] } }

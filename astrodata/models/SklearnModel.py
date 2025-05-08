@@ -1,7 +1,3 @@
-from abc import abstractmethod
-import numpy as np
-from sklearn.base import BaseEstimator
-from sklearn.pipeline import make_pipeline
 from astrodata.models.BaseModel import BaseModel
 import joblib
 
@@ -18,7 +14,7 @@ class SklearnModel(BaseModel):
             model: An instance of an sklearn estimator (e.g., LinearRegression()).
             **kwargs: Optional parameters to set on the model.
         """
-        self.model = model
+        self.model = model(**kwargs)
         
 
     def fit(self, X, y, **kwargs):
