@@ -4,7 +4,7 @@ from astrodata.data.schemas import RawData
 
 class AbstractPreprocessor(ABC):
     """
-    An abstract base class for data preprocessors.
+    An abstract base class for data processors.
 
     Subclasses must implement the `preprocess` method to define how
     the input `RawData` is preprocessed.

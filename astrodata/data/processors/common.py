@@ -1,5 +1,5 @@
 from astrodata.data.schemas import RawData
-from astrodata.data.preprocessors.base import AbstractPreprocessor
+from astrodata.data.processors.base import AbstractPreprocessor
 
 
 class NormalizeAndSplit(AbstractPreprocessor):
