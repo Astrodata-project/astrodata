@@ -6,16 +6,16 @@ class AbstractPreprocessor(ABC):
     """
     An abstract base class for data preprocessors.
 
-    Subclasses must implement the `transform` method to define how
-    the input `RawData` is transformed.
+    Subclasses must implement the `preprocess` method to define how
+    the input `RawData` is preprocessed.
 
     Methods:
-        transform(raw: RawData) -> RawData:
-            Abstract method to transform the input `RawData` and return
+        preprocess(raw: RawData) -> RawData:
+            Abstract method to preprocess the input `RawData` and return
             a new `RawData` object.
     """
 
     @abstractmethod
-    def transform(self, raw: RawData) -> RawData:
-        """Transforms the input RawData and returns a new RawData object."""
+    def preprocess(self, raw: RawData) -> RawData:
+        """preprocess the input RawData and returns a new RawData object."""
         pass

@@ -19,7 +19,11 @@ class DataPipeline:
             result into a ProcessedData object.
     """
 
-    def __init__(self, loader: BaseLoader, preprocessors: list[AbstractPreprocessor]):
+    def __init__(
+        self,
+        loader: BaseLoader,
+        preprocessors: list[AbstractPreprocessor],
+    ):
         self.loader = loader
         self.preprocessor = preprocessors
 
@@ -35,5 +39,5 @@ class DataPipeline:
         """
         data = self.loader.load(path)
         for preprocessor in self.preprocessor:
-            data = preprocessor.transform(data)
+            data = preprocessor.preprocess(data)
         return convert_to_processed_data(data)

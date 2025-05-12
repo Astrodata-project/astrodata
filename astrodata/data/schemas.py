@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 import pandas as pd
-from typing import Any, Optional, Literal
+from typing import Optional, Literal
 
 
 class RawData(BaseModel):
@@ -26,11 +26,12 @@ class ProcessedData(BaseModel):
     Represents processed data after transformations.
 
     Attributes:
-        features (Any): The features extracted or transformed from the raw data.
-        labels (Optional[Any]): The labels corresponding to the features, if applicable.
+        data (pd.DataFrame): The actual data as a Pandas DataFrame.
         metadata (Optional[dict]): Additional metadata about the processed data.
     """
 
-    features: Any
-    labels: Optional[Any]
+    data: pd.DataFrame
     metadata: Optional[dict] = {}
+
+    class Config:
+        arbitrary_types_allowed = True
