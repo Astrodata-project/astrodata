@@ -2,20 +2,20 @@ from abc import ABC, abstractmethod
 from astrodata.data.schemas import RawData
 
 
-class AbstractPreprocessor(ABC):
+class AbstractProcessor(ABC):
     """
     An abstract base class for data processors.
 
-    Subclasses must implement the `preprocess` method to define how
-    the input `RawData` is preprocessed.
+    Subclasses must implement the `process` method to define how
+    the input `RawData` is processed.
 
     Methods:
-        preprocess(raw: RawData) -> RawData:
-            Abstract method to preprocess the input `RawData` and return
+        process(raw: RawData) -> RawData:
+            Abstract method to process the input `RawData` and return
             a new `RawData` object.
     """
 
     @abstractmethod
-    def preprocess(self, raw: RawData) -> RawData:
-        """preprocess the input RawData and returns a new RawData object."""
+    def process(self, raw: RawData) -> RawData:
+        """process the input RawData and returns a new RawData object."""
         pass

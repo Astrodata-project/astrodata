@@ -1,5 +1,5 @@
 from astrodata.data.loaders.base import BaseLoader
-from astrodata.data.processors.base import AbstractPreprocessor
+from astrodata.data.processors.base import AbstractProcessor
 from astrodata.data.schemas import ProcessedData
 from astrodata.data.utils import convert_to_processed_data
 
@@ -10,7 +10,7 @@ class DataPipeline:
 
     Attributes:
         loader (BaseLoader): The data loader responsible for loading raw data.
-        processors (list[AbstractPreprocessor]): A list of processors to process the data.
+        processors (list[AbstractProcessor]): A list of processors to process the data.
 
     Methods:
         run(path: str) -> ProcessedData:
@@ -19,13 +19,9 @@ class DataPipeline:
             result into a ProcessedData object.
     """
 
-    def __init__(
-        self,
-        loader: BaseLoader,
-        processors: list[AbstractPreprocessor],
-    ):
+    def __init__(self, loader: BaseLoader, processors: list[AbstractProcessor]):
         self.loader = loader
-        self.preprocessor = processors
+        self.processor = processors
 
     def run(self, path: str) -> ProcessedData:
         """
@@ -38,6 +34,6 @@ class DataPipeline:
             ProcessedData: The processed data after applying all processors.
         """
         data = self.loader.load(path)
-        for preprocessor in self.preprocessor:
-            data = preprocessor.preprocess(data)
+        for processor in self.processor:
+            data = processor.process(data)
         return convert_to_processed_data(data)

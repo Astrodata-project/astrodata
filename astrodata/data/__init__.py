@@ -1,6 +1,6 @@
 from .loaders import BaseLoader, ParquetLoader
 from .processors import (
-    AbstractPreprocessor,
+    AbstractProcessor,
     NormalizeAndSplit,
     MissingValueImputer,
     DropDuplicates,
