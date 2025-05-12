@@ -1,4 +1,5 @@
 from astrodata.ml.models.SklearnModel import SklearnModel
+from astrodata.ml.model_selection.GridSearchSelector import GridSearchSelector
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 from sklearn.tree import DecisionTreeClassifier
@@ -13,26 +14,25 @@ y = pd.Series(data.target)
 
 model = SklearnModel(model_class=LinearSVC, penalty="l2", loss="squared_hinge")
 
-print(model.model)
+gss = GridSearchSelector(
+    model=model,
+    param_grid={
+        'C': [0.1, 1, 10],
+        'max_iter': [100, 200]
+    },
+    scoring='accuracy',
+    cv=5,
+    n_jobs=-1,
+    verbose=1,
+    refit=True
+)
+
+print(gss)
 
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25, random_state=42
 )
 
-model.fit(X_train, y_train)
-
-preds = model.predict(X_test)
-print(accuracy_score(y_test, preds))
-
-model.config(model_class=DecisionTreeClassifier, penalty="l2", loss="squared_hinge")
-
-print(model.model)
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.25, random_state=42
-)
-
-model.fit(X_train, y_train)
-
-preds = model.predict(X_test)
-print(accuracy_score(y_test, preds))
+gss.fit(X_train, y_train)
+print(gss.get_best_params())
+print(gss.get_best_model())
