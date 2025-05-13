@@ -4,7 +4,7 @@ from astrodata.data import (
     ParquetLoader,
     DataPipeline,
 )
-from astrodata.preml import PremlPipeline
+from astrodata.preml import PremlPipeline, OHE
 
 # define loader
 loader = ParquetLoader()
@@ -38,10 +38,24 @@ print(f"Processed data shape:{processed.data.shape}")
 
 config_path = "./examples/example_config.yaml"
 
-preml_pipeline = PremlPipeline([], config_path)
+ohe_processor = OHE(
+    # categorical_columns=["PULocationID", "DOLocationID"],
+    # numerical_columns=["passenger_count", "trip_distance", "duration"],
+    categorical_columns=["PULocationID"],
+    numerical_columns=["trip_distance"],
+    save_path="./testdata/ohe.pkl",
+)
+preml_pipeline = PremlPipeline([ohe_processor], config_path)
 
 preml_data = preml_pipeline.run(processed)
 
 print("Preml Pipeline ran successfully!")
 print(f"Preml data shape:{preml_data.train_features.shape}")
 print(f"Preml data shape:{preml_data.train_targets.shape}")
+
+X_train, X_test, y_train, y_test = preml_data.dump_sklearn_format()
+
+print(f"X_train shape: {X_train.shape}")
+print(f"X_test shape: {X_test.shape}")
+print(f"y_train shape: {y_train.shape}")
+print(f"y_test shape: {y_test.shape}")

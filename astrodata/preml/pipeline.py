@@ -41,6 +41,7 @@ class PremlPipeline:
         for processor in self.processors:
             data = processor.process(data)
             self.operations_tracker.append(
-                {f"{processor.__class__.__name__}": processor.artifacts}
+                {f"{processor.__class__.__name__}": processor.artifact}
             )
+        print(f"Operations tracker: {self.operations_tracker}")
         return data

@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 import pandas as pd
 from typing import Optional
-from sklearn.model_selection import train_test_split
 
 
 class Premldata(BaseModel):
@@ -23,3 +22,26 @@ class Premldata(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+    def dump_sklearn_format(self):
+        """
+        Returns the data into training and testing sets.
+
+        Returns:
+            tuple: A tuple containing the training and testing features and targets.
+        """
+        if self.val_features is not None and self.val_targets is not None:
+            return (
+                self.train_features,
+                self.val_features,
+                self.test_features,
+                self.train_targets,
+                self.val_targets,
+                self.test_targets,
+            )
+        return (
+            self.train_features,
+            self.test_features,
+            self.train_targets,
+            self.test_targets,
+        )

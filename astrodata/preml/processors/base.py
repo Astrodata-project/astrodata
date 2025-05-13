@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import pickle
 from typing import Any, Optional
 from astrodata.preml.schemas import Premldata
 
@@ -16,16 +17,14 @@ class AbstractProcessor(ABC):
             a new `Premldata` object.
     """
 
-    # TODO: Change this to include custom parameters in init
-
     def __init__(self, **kwargs: Any):
         """
         Initializes the processor with an empty dictionary to store artifacts.
         """
         self.artifact = None
-        self.arguments = kwargs
+        self.kwargs = kwargs
 
-    def save_artifact(self, path: str):
+    def save_artifact(self, artifact: Any, path: str):
         """
         Saves an artifact to a specified path.
 
@@ -33,8 +32,9 @@ class AbstractProcessor(ABC):
             name (str): The name of the artifact to save.
             path (str): The path where the artifact should be saved.
         """
+        self.artifact = artifact
         with open(path, "wb") as f:
-            f.write(self.artifact)
+            pickle.dump(self.artifact, f)
 
     def load_artifact(self, path: str):
         """
@@ -46,7 +46,7 @@ class AbstractProcessor(ABC):
         """
         try:
             with open(path, "rb") as f:
-                self.artifact = f.read()
+                self.artifact = pickle.load(f)
         except FileNotFoundError:
             raise FileNotFoundError(f"Artifact not found at '{path}'.")
 
