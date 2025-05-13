@@ -1,6 +1,6 @@
 import pandas as pd
 from astrodata.ml.models.SklearnModel import SklearnModel
-from astrodata.ml.models.XgBoostModel import XGBoostModel
+from astrodata.ml.models.XGBoostModel import XGBoostModel
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split

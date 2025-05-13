@@ -2,8 +2,6 @@ from astrodata.ml.models.SklearnModel import SklearnModel
 from astrodata.ml.model_selection.GridSearchSelector import GridSearchSelector
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score
 from sklearn.datasets import load_breast_cancer
 import pandas as pd
 
@@ -13,18 +11,16 @@ X = pd.DataFrame(data.data, columns=data.feature_names)
 y = pd.Series(data.target)
 
 model = SklearnModel(model_class=LinearSVC, penalty="l2", loss="squared_hinge")
+#model = XGBoostModel(model_class=XGBClassifier, tree_method="hist", enable_categorical=True)
 
 gss = GridSearchSelector(
-    model=model,
+    model,
     param_grid={
-        'C': [0.1, 1, 10],
-        'max_iter': [100, 200]
-    },
-    scoring='accuracy',
-    cv=5,
-    n_jobs=-1,
-    verbose=1,
-    refit=True
+        "C": [0.1, 1, 10],    
+        },
+    scoring="accuracy",
+    n_jobs=1,
+    cv=3,
 )
 
 print(gss)

@@ -1,4 +1,5 @@
 from astrodata.ml.models.BaseModel import BaseModel
+from sklearn.metrics import accuracy_score, f1_score
 import joblib
 
 class SklearnModel(BaseModel):
@@ -51,4 +52,11 @@ class SklearnModel(BaseModel):
     def __repr__(self):
         params = ', '.join(f"{k}={v!r}" for k, v in self.model_params.items())
         return f"{self.__class__.__name__}(model_class={self.model_class.__name__}, {params})"
+    
+    def get_metrics(self, X_test, y_test):
+        y_pred = self.predict(X_test)
+        return {
+            "accuracy": accuracy_score(y_test, y_pred),
+            "f1": f1_score(y_test, y_pred, average="weighted")
+        }
 

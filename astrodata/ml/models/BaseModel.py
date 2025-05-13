@@ -16,6 +16,10 @@ class BaseModel(ABC):
     @abstractmethod
     def load(self, filepath, **kwargs):
         pass
+    
+    @abstractmethod
+    def get_metrics(self, X_test, y_test, **kwargs):
+        pass
 
     def get_params(self, **kwargs):
         # Optional: Only meaningful for models that have hyperparameters
