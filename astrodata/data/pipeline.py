@@ -1,27 +1,27 @@
 from astrodata.data.loaders.base import BaseLoader
-from astrodata.data.transformers.base import AbstractTransformer
+from astrodata.data.processors.base import AbstractProcessor
 from astrodata.data.schemas import ProcessedData
 from astrodata.data.utils import convert_to_processed_data
 
 
 class DataPipeline:
     """
-    A pipeline for processing data using a loader and a series of transformers.
+    A pipeline for processing data using a loader and a series of processors.
 
     Attributes:
         loader (BaseLoader): The data loader responsible for loading raw data.
-        transformers (list[AbstractTransformer]): A list of transformers to process the data.
+        processors (list[AbstractProcessor]): A list of processors to process the data.
 
     Methods:
         run(path: str) -> ProcessedData:
             Executes the pipeline by loading data from the given path,
-            applying the transformers sequentially, and converting the
+            applying the processors sequentially, and converting the
             result into a ProcessedData object.
     """
 
-    def __init__(self, loader: BaseLoader, transformers: list[AbstractTransformer]):
+    def __init__(self, loader: BaseLoader, processors: list[AbstractProcessor]):
         self.loader = loader
-        self.transformer = transformers
+        self.processor = processors
 
     def run(self, path: str) -> ProcessedData:
         """
@@ -31,9 +31,9 @@ class DataPipeline:
             path (str): The file path to load the raw data from.
 
         Returns:
-            ProcessedData: The processed data after applying all transformers.
+            ProcessedData: The processed data after applying all processors.
         """
         data = self.loader.load(path)
-        for transformer in self.transformer:
-            data = transformer.transform(data)
+        for processor in self.processor:
+            data = processor.process(data)
         return convert_to_processed_data(data)
