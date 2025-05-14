@@ -20,6 +20,7 @@ class OHE(AbstractProcessor):
         self,
         categorical_columns: Optional[list] = None,
         numerical_columns: Optional[list] = None,
+        artifact: Optional[str] = None,
         save_path: Optional[str] = None,
     ):
         """
@@ -30,6 +31,7 @@ class OHE(AbstractProcessor):
             save_path (Optional[str]): Path to save the encoding artifact.
         """
         super().__init__(
+            artifact=artifact,
             categorical_columns=categorical_columns,
             numerical_columns=numerical_columns,
             save_path=save_path,
@@ -38,7 +40,6 @@ class OHE(AbstractProcessor):
     def process(
         self,
         preml: Premldata,
-        artifact: Optional[str] = None,
     ) -> Premldata:
         """
         One-hot encodes categorical features in the data.
@@ -55,8 +56,7 @@ class OHE(AbstractProcessor):
         Returns:
             Premldata: The processed data with one-hot encoded features.
         """
-        if artifact:
-            self.load_artifact(artifact)
+        if self.artifact:
             cat_ohe = self.artifact.transform(
                 preml.test_features[self.kwargs["categorical_columns"]]
             )

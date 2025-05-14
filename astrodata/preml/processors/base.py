@@ -17,11 +17,11 @@ class AbstractProcessor(ABC):
             a new `Premldata` object.
     """
 
-    def __init__(self, **kwargs: Any):
+    def __init__(self, artifact: Optional[str] = None, **kwargs: Any):
         """
         Initializes the processor with an empty dictionary to store artifacts.
         """
-        self.artifact = None
+        self.artifact = self.load_artifact(artifact)
         self.kwargs = kwargs
 
     def save_artifact(self, artifact: Any, path: str):
@@ -44,6 +44,8 @@ class AbstractProcessor(ABC):
             name (str): The name of the artifact to load.
             path (str): The path from where the artifact should be loaded.
         """
+        if path is None:
+            return None
         try:
             with open(path, "rb") as f:
                 self.artifact = pickle.load(f)

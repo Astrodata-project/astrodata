@@ -4,7 +4,7 @@ from astrodata.data import (
     ParquetLoader,
     DataPipeline,
 )
-from astrodata.preml import PremlPipeline, OHE
+from astrodata.preml import PremlPipeline, OHE, MissingImputator
 
 # define loader
 loader = ParquetLoader()
@@ -45,7 +45,14 @@ ohe_processor = OHE(
     numerical_columns=["trip_distance"],
     save_path="./testdata/ohe.pkl",
 )
-preml_pipeline = PremlPipeline([ohe_processor], config_path)
+
+missing_imputator = MissingImputator(
+    categorical_columns=["PULocationID"],
+    numerical_columns=["trip_distance"],
+    save_path="./testdata/imputer.pkl",
+)
+
+preml_pipeline = PremlPipeline([missing_imputator, ohe_processor], config_path)
 
 preml_data = preml_pipeline.run(processed)
 
@@ -53,7 +60,7 @@ print("Preml Pipeline ran successfully!")
 print(f"Preml data shape:{preml_data.train_features.shape}")
 print(f"Preml data shape:{preml_data.train_targets.shape}")
 
-X_train, X_test, y_train, y_test = preml_data.dump_sklearn_format()
+X_train, X_test, y_train, y_test = preml_data.dump_supervised_ML_format()
 
 print(f"X_train shape: {X_train.shape}")
 print(f"X_test shape: {X_test.shape}")

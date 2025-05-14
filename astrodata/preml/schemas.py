@@ -23,7 +23,7 @@ class Premldata(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    def dump_sklearn_format(self):
+    def dump_supervised_ML_format(self):
         """
         Returns the data into training and testing sets.
 
