@@ -25,6 +25,6 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25, random_state=42
 )
 
-tracker.wrap_fit(model=model, X_test=X_test, y_test=y_test, input_example=X_train.iloc[:5], metric_classes=[AccuracyMetric,F1Metric])
+model = tracker.wrap_fit(model=model, X_test=X_test, y_test=y_test, input_example=X_train.iloc[:5], metric_classes=[AccuracyMetric,F1Metric])
 
 model.fit(X_train, y_train)

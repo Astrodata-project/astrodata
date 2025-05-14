@@ -32,8 +32,12 @@ class BaseModel(ABC):
         raise NotImplementedError
     
     def clone(self):
-        """Return a new instance with the same configuration (but not fitted)."""
-        return self.__class__(model_class=self.model_class, **self.model_params)
+        new_instance = self.__class__(model_class=self.model_class, **self.model_params)
+        # Copy over any decorated methods from self's __dict__ to the new instance
+        for attr, value in self.__dict__.items():
+            if callable(value):
+                setattr(new_instance, attr, value)
+        return new_instance
     
     def get_metrics(self, X_test, y_test, metric_classes:List[BaseMetric]=None):
         y_pred = self.predict(X_test)

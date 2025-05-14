@@ -39,39 +39,62 @@ class SklearnMLflowTracker(BaseTracker):
         if self.tracking_password:
             os.environ["MLFLOW_TRACKING_PASSWORD"] = self.tracking_password
             
-    def wrap_fit(self, model:BaseModel, input_example=None, X_test=None, y_test=None, metric_classes:List[BaseMetric]=None):
-        orig_fit = model.fit
+    def wrap_fit(
+        self,
+        model: BaseModel,
+        input_example=None,
+        X_test=None,
+        y_test=None,
+        metric_classes: List = None
+    ):
+        """
+        Returns a new instance of a dynamic subclass of the model, 
+        with class-level overridden fit method that tracks with MLflow.
+        This is compatible with sklearn.clone/GridSearchCV.
+        """
+        orig_class = model.__class__
+        tracker = self  # for closure
 
-        @functools.wraps(orig_fit)
-        def fit_with_tracking(X, y, *args, **kwargs):
-
-            mlflow.set_experiment(self.experiment_name)
-            with mlflow.start_run(run_name=self.run_name):
-                mlflow.set_tags(self.extra_tags)
+        @functools.wraps(orig_class.fit)
+        def fit_with_tracking(self, X, y, *args, **kwargs):
+            import mlflow
+            mlflow.set_experiment(tracker.experiment_name)
+            with mlflow.start_run(run_name=tracker.run_name):
+                mlflow.set_tags(tracker.extra_tags)
                 try:
-                    params = model.get_params()
+                    params = self.get_params()
                     mlflow.log_params(params)
                 except Exception:
                     pass
 
-                result = orig_fit(X, y, *args, **kwargs)
-                if self.log_model:
+                result = orig_class.fit(self, X, y, *args, **kwargs)
+
+                if tracker.log_model:
                     try:
                         mlflow.sklearn.log_model(
-                            model, 
-                            "model", 
-                            input_example= input_example if input_example is not None else None
+                            self,
+                            "model",
+                            input_example=input_example
                         )
                     except Exception:
                         pass
                 try:
-                    if hasattr(model, "get_metrics") and X_test is not None and y_test is not None:
-                        metrics = model.get_metrics(X_test=X_test, y_test=y_test, metric_classes=metric_classes)
+                    if hasattr(self, "get_metrics") and X_test is not None and y_test is not None:
+                        metrics = self.get_metrics(
+                            X_test=X_test,
+                            y_test=y_test,
+                            metric_classes=metric_classes
+                        )
                         mlflow.log_metrics(metrics)
                 except Exception:
                     pass
                 return result
 
-        model.fit = fit_with_tracking
-        return model
+        # Dynamically subclass
+        class SklearnMLflowWrappedModel(orig_class):
+            pass
+        SklearnMLflowWrappedModel.fit = fit_with_tracking
+
+        # Return instance with same params
+        return SklearnMLflowWrappedModel(**model.get_params())
 
