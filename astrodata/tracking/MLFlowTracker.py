@@ -2,11 +2,12 @@ import mlflow
 import functools
 from astrodata.tracking.BaseTracker import BaseTracker
 from astrodata.ml.models.BaseModel import BaseModel
+from astrodata.ml.metrics.BaseMetric import BaseMetric
+from typing import List
 from abc import ABC, abstractmethod
 import os
 
-
-class BaseTracker(ABC):
+class SklearnMLflowTracker(BaseTracker):
     def __init__(
         self,
         log_model=False,
@@ -17,6 +18,7 @@ class BaseTracker(ABC):
         tracking_username=None,
         tracking_password=None,
     ):
+        super().__init__()
         self.log_model = log_model
         self.run_name = run_name
         self.experiment_name = experiment_name
@@ -36,14 +38,8 @@ class BaseTracker(ABC):
             os.environ["MLFLOW_TRACKING_USERNAME"] = self.tracking_username
         if self.tracking_password:
             os.environ["MLFLOW_TRACKING_PASSWORD"] = self.tracking_password
-
-    @abstractmethod
-    def wrap_fit(self, obj):
-        pass
-
-
-class SklearnMLflowTracker(BaseTracker):
-    def wrap_fit(self, obj:BaseModel, X_test=None, y_test=None, input_example=None):
+            
+    def wrap_fit(self, obj:BaseModel, input_example=None, X_test=None, y_test=None, metric_classes:List[BaseMetric]=None):
         orig_fit = obj.fit
 
         @functools.wraps(orig_fit)
@@ -64,13 +60,13 @@ class SklearnMLflowTracker(BaseTracker):
                         mlflow.sklearn.log_model(
                             obj, 
                             "model", 
-                            input_example=(input_example if input_example is not None else X[:5])
+                            input_example= input_example if input_example is not None else None
                         )
                     except Exception:
                         pass
                 try:
                     if hasattr(obj, "get_metrics") and X_test is not None and y_test is not None:
-                        metrics = obj.get_metrics(X_test, y_test)
+                        metrics = obj.get_metrics(X_test=X_test, y_test=y_test, metric_classes=metric_classes)
                         mlflow.log_metrics(metrics)
                 except Exception:
                     pass
