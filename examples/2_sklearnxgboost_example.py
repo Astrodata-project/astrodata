@@ -6,10 +6,11 @@ from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.datasets import fetch_covtype
+from sklearn.datasets import load_breast_cancer
 from xgboost import XGBClassifier
 
-# Load the Iris dataset
-data = fetch_covtype()
+
+data = load_breast_cancer()
 X = pd.DataFrame(data.data, columns=data.feature_names)
 y = pd.Series(data.target)
 le = LabelEncoder()

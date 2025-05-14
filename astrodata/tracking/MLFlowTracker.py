@@ -39,17 +39,17 @@ class SklearnMLflowTracker(BaseTracker):
         if self.tracking_password:
             os.environ["MLFLOW_TRACKING_PASSWORD"] = self.tracking_password
             
-    def wrap_fit(self, obj:BaseModel, input_example=None, X_test=None, y_test=None, metric_classes:List[BaseMetric]=None):
-        orig_fit = obj.fit
+    def wrap_fit(self, model:BaseModel, input_example=None, X_test=None, y_test=None, metric_classes:List[BaseMetric]=None):
+        orig_fit = model.fit
 
         @functools.wraps(orig_fit)
         def fit_with_tracking(X, y, *args, **kwargs):
-            if self.experiment_name:
-                mlflow.set_experiment(self.experiment_name)
+
+            mlflow.set_experiment(self.experiment_name)
             with mlflow.start_run(run_name=self.run_name):
                 mlflow.set_tags(self.extra_tags)
                 try:
-                    params = obj.get_params()
+                    params = model.get_params()
                     mlflow.log_params(params)
                 except Exception:
                     pass
@@ -58,20 +58,20 @@ class SklearnMLflowTracker(BaseTracker):
                 if self.log_model:
                     try:
                         mlflow.sklearn.log_model(
-                            obj, 
+                            model, 
                             "model", 
                             input_example= input_example if input_example is not None else None
                         )
                     except Exception:
                         pass
                 try:
-                    if hasattr(obj, "get_metrics") and X_test is not None and y_test is not None:
-                        metrics = obj.get_metrics(X_test=X_test, y_test=y_test, metric_classes=metric_classes)
+                    if hasattr(model, "get_metrics") and X_test is not None and y_test is not None:
+                        metrics = model.get_metrics(X_test=X_test, y_test=y_test, metric_classes=metric_classes)
                         mlflow.log_metrics(metrics)
                 except Exception:
                     pass
                 return result
 
-        obj.fit = fit_with_tracking
-        return obj
+        model.fit = fit_with_tracking
+        return model
 

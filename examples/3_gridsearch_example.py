@@ -5,7 +5,7 @@ from sklearn.svm import LinearSVC
 from sklearn.datasets import load_breast_cancer
 import pandas as pd
 
-# Load the Iris dataset
+
 data = load_breast_cancer()
 X = pd.DataFrame(data.data, columns=data.feature_names)
 y = pd.Series(data.target)
@@ -32,3 +32,4 @@ X_train, X_test, y_train, y_test = train_test_split(
 gss.fit(X_train, y_train)
 print(gss.get_best_params())
 print(gss.get_best_model())
+print(type(gss.get_best_model()))
