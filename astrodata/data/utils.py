@@ -11,13 +11,11 @@ def extract_format(path: str) -> str:
 
 def convert_to_processed_data(data: RawData) -> ProcessedData:
     """
-    Convert RawData to ProcessedData.
+    Convert RawData to ProcessedData using specified feature and target columns.
     """
-    features = data.data.iloc[:, :-1].values  # Extract all columns except the last
-    labels = data.data.iloc[:, -1].values  # Extract the last column
+
     return ProcessedData(
-        features=features,
-        labels=labels,
+        data=data.data,
         metadata={
             "source": data.source,
             "format": data.format,
