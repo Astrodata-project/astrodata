@@ -17,20 +17,6 @@ class NormalizeAndSplit(AbstractProcessor):
         return raw
 
 
-class MissingValueImputer(AbstractProcessor):
-    """
-    A processor that imputes missing values in the data by replacing them with 0.
-
-    Methods:
-        process(raw: RawData) -> RawData:
-            Fills missing values in the `RawData` object with 0 and returns the updated object.
-    """
-
-    def process(self, raw: RawData) -> RawData:
-        raw.data = raw.data.fillna(0)
-        return raw
-
-
 class DropDuplicates(AbstractProcessor):
     """
     A processor that removes duplicate rows from the data.
