@@ -1,7 +1,8 @@
 from astrodata.preml.processors.base import AbstractProcessor
 from astrodata.data.schemas import ProcessedData
 from astrodata.preml.schemas import Premldata
-from astrodata.preml.utils import convert_to_preml_data, read_config
+from astrodata.preml.processors import ConvertToPremlData
+from astrodata.preml.utils import read_config
 
 
 class PremlPipeline:
@@ -29,14 +30,12 @@ class PremlPipeline:
     def run(self, processeddata: ProcessedData) -> Premldata:
         """
         Executes the data pipeline.
-
-        Args:
-            path (str): The file path to load the raw data from.
-
-        Returns:
-            ProcessedData: The processed data after applying all processors.
         """
-        data = convert_to_preml_data(processeddata, self.config)
+        converter = ConvertToPremlData(self.config)
+        data = converter.process(processeddata)
+        self.operations_tracker.append(
+            {f"{converter.__class__.__name__}": converter.artifact}
+        )
 
         for processor in self.processors:
             data = processor.process(data)
