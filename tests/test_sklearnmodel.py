@@ -36,10 +36,10 @@ def test_sklearn_model_metrics(train_test_data):
     model.fit(X_train, y_train)
     metrics = model.get_metrics(X_test, y_test, metrics=[MAE(), MSE(), R2(), RMSE()])
     assert isinstance(metrics, dict)
-    assert "MAE" in metrics
-    assert "MSE" in metrics
-    assert "R2" in metrics
-    assert "RMSE" in metrics
+    assert "mae" in metrics
+    assert "mse" in metrics
+    assert "r2" in metrics
+    assert "rmse" in metrics
     # Check that metrics are floats
     for value in metrics.values():
         assert isinstance(value, float)

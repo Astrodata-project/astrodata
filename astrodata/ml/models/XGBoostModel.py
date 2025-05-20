@@ -1,10 +1,10 @@
 from astrodata.ml.models.BaseModel import BaseModel
 import joblib
-from xgboost import XGBClassifier, XGBRegressor
+import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score
 
 class XGBoostModel(BaseModel):
-    def __init__(self, model_class=XGBClassifier, **model_params):
+    def __init__(self, model_class, **model_params):
         """
         Args:
             model_class: XGBoost model class (XGBClassifier or XGBRegressor).
@@ -22,8 +22,8 @@ class XGBoostModel(BaseModel):
     def predict(self, X, **predict_params):
         if self.model_ is None:
             raise RuntimeError("Model is not fitted yet.")
-        return self.model_.predict(X, **predict_params)
-
+        return pd.Series(self.model_.predict(X, **predict_params))
+    
     def save(self, filepath, **kwargs):
         if self.model_ is None:
             raise RuntimeError("Model is not fitted. Nothing to save.")
