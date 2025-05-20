@@ -45,7 +45,7 @@ class SklearnMLflowTracker(BaseTracker):
         input_example=None,
         X_test=None,
         y_test=None,
-        metric_classes: List = None
+        metrics: List = None
     ):
         """
         Returns a new instance of a dynamic subclass of the model, 
@@ -80,12 +80,12 @@ class SklearnMLflowTracker(BaseTracker):
                         pass
                 try:
                     if hasattr(self, "get_metrics") and X_test is not None and y_test is not None:
-                        metrics = self.get_metrics(
+                        metrics_scores = self.get_metrics(
                             X_test=X_test,
                             y_test=y_test,
-                            metric_classes=metric_classes
+                            metric_classes=metrics
                         )
-                        mlflow.log_metrics(metrics)
+                        mlflow.log_metrics(metrics_scores)
                 except Exception:
                     pass
                 return result

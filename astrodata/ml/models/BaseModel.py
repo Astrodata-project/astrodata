@@ -10,6 +10,10 @@ class BaseModel(ABC):
     @abstractmethod
     def predict(self, X, **kwargs):
         pass
+    
+    @abstractmethod
+    def score(self, X, y, **kwargs):
+        pass
 
     @abstractmethod
     def save(self, filepath, **kwargs):
@@ -39,11 +43,10 @@ class BaseModel(ABC):
                 setattr(new_instance, attr, value)
         return new_instance
     
-    def get_metrics(self, X_test, y_test, metric_classes:List[BaseMetric]=None):
+    def get_metrics(self, X_test, y_test, metrics:List[BaseMetric]=None):
         y_pred = self.predict(X_test)
         results = {}
-        for metric_cls in metric_classes:
-            metric = metric_cls()
+        for metric in metrics:
             score = metric(y_test, y_pred)
             results[metric.get_name()] = score
         return results

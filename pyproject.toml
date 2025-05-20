@@ -12,6 +12,7 @@ dependencies = [
     "pyarrow>=19.0.1",
     "pydantic>=2.11.3",
     "pynbody>=2.0.0",
+    "pytest>=8.3.5",
     "scikit-learn>=1.6.1",
     "torch>=2.6.0",
     "xgboost>=3.0.0",
