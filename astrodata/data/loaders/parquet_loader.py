@@ -1,6 +1,7 @@
+import pandas as pd
+
 from astrodata.data.loaders.base import BaseLoader
 from astrodata.data.schemas import RawData
-import pandas as pd
 
 
 class ParquetLoader(BaseLoader):

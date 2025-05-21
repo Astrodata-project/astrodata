@@ -1,19 +1,18 @@
-from abc import ABC, abstractmethod
+from ml.model_selection.BaseModelSelector import BaseModelSelector
+
+# TODO
 
 
-class BaseModelSelector(ABC):
+class HyperOptSelector(BaseModelSelector):
     def __init__(self):
         super().__init__()
 
-    @abstractmethod
     def fit(self, X, y, *args, **kwargs):
         pass
 
-    @abstractmethod
     def get_best_model(self):
         pass
 
-    @abstractmethod
     def get_best_params(self):
         pass
 

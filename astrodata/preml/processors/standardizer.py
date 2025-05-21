@@ -1,9 +1,10 @@
+from typing import Optional
+
 from sklearn.preprocessing import StandardScaler
 
-from .base import AbstractProcessor
 from astrodata.preml import Premldata
 
-from typing import Optional
+from .base import AbstractProcessor
 
 
 class Standardizer(AbstractProcessor):
