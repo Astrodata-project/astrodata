@@ -1,11 +1,13 @@
+import pandas as pd
 import pytest
-from astrodata.ml.models.SklearnModel import SklearnModel
-from astrodata.ml.metrics.regression import MAE, MSE, R2, RMSE
-from astrodata.ml.model_selection.GridSearchSelector import GridSearchSelector
+from sklearn.datasets import load_diabetes
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVR
-from sklearn.datasets import load_diabetes
-import pandas as pd
+
+from astrodata.ml.metrics.regression import MAE, MSE, R2, RMSE
+from astrodata.ml.model_selection.GridSearchSelector import GridSearchSelector
+from astrodata.ml.models.SklearnModel import SklearnModel
+
 
 @pytest.fixture
 def diabetes_data():
@@ -13,6 +15,7 @@ def diabetes_data():
     X = pd.DataFrame(data.data, columns=data.feature_names)
     y = pd.Series(data.target)
     return X, y
+
 
 @pytest.fixture
 def train_test_data(diabetes_data):
@@ -22,6 +25,7 @@ def train_test_data(diabetes_data):
     )
     return X_train, X_test, y_train, y_test
 
+
 def test_sklearn_model_fit_predict(train_test_data):
     X_train, X_test, y_train, y_test = train_test_data
     model = SklearnModel(model_class=LinearSVR, random_state=42)
@@ -29,6 +33,7 @@ def test_sklearn_model_fit_predict(train_test_data):
     preds = model.predict(X_test)
     assert len(preds) == len(y_test)
     assert isinstance(preds, (pd.Series, pd.DataFrame, list))
+
 
 def test_sklearn_model_metrics(train_test_data):
     X_train, X_test, y_train, y_test = train_test_data
@@ -43,15 +48,13 @@ def test_sklearn_model_metrics(train_test_data):
     # Check that metrics are floats
     for value in metrics.values():
         assert isinstance(value, float)
-        
-def test_sklearn_grid_search(train_test_data): 
+
+
+def test_sklearn_grid_search(train_test_data):
     X_train, X_test, y_train, y_test = train_test_data
     model = SklearnModel(model_class=LinearSVR, random_state=42)
 
-    param_grid = {
-        "C": [0.1, 1, 10],
-        "epsilon": [0.1, 0.2]
-    }
+    param_grid = {"C": [0.1, 1, 10], "epsilon": [0.1, 0.2]}
 
     selector = GridSearchSelector(
         model, param_grid, val_size=0.2, random_state=42, metrics=[MAE()]

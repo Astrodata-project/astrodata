@@ -1,10 +1,10 @@
-from astrodata.ml.models.SklearnModel import SklearnModel
-from astrodata.ml.metrics.regression import MAE, MSE, R2, RMSE
+import pandas as pd
+from sklearn.datasets import load_diabetes
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVR
-from sklearn.datasets import load_diabetes
-import pandas as pd
 
+from astrodata.ml.metrics.regression import MAE, MSE, R2, RMSE
+from astrodata.ml.models.SklearnModel import SklearnModel
 
 data = load_diabetes()
 X = pd.DataFrame(data.data, columns=data.feature_names)

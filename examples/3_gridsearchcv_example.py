@@ -1,23 +1,23 @@
-from astrodata.ml.models.SklearnModel import SklearnModel
-from astrodata.ml.model_selection.GridSearchSelector import GridSearchCVSelector
+import pandas as pd
+from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
-from sklearn.datasets import load_breast_cancer
-import pandas as pd
 
+from astrodata.ml.model_selection.GridSearchSelector import GridSearchCVSelector
+from astrodata.ml.models.SklearnModel import SklearnModel
 
 data = load_breast_cancer()
 X = pd.DataFrame(data.data, columns=data.feature_names)
 y = pd.Series(data.target)
 
 model = SklearnModel(model_class=LinearSVC, penalty="l2", loss="squared_hinge")
-#model = XGBoostModel(model_class=XGBClassifier, tree_method="hist", enable_categorical=True)
+# model = XGBoostModel(model_class=XGBClassifier, tree_method="hist", enable_categorical=True)
 
 gss = GridSearchCVSelector(
     model,
     param_grid={
-        "C": [0.1, 1, 10],    
-        },
+        "C": [0.1, 1, 10],
+    },
     scoring="accuracy",
     n_jobs=1,
     cv=3,

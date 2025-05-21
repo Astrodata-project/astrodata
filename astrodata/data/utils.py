@@ -1,5 +1,6 @@
 import os
-from astrodata.data.schemas import RawData, ProcessedData
+
+from astrodata.data.schemas import ProcessedData, RawData
 
 
 def extract_format(path: str) -> str:

@@ -9,12 +9,11 @@ dependencies = [
     "mlflow>=2.22.0",
     "numpy>=2.2.4",
     "pandas>=2.2.3",
+    "pre-commit>=4.2.0",
     "pyarrow>=19.0.1",
     "pydantic>=2.11.3",
-    "pynbody>=2.0.0",
     "pytest>=8.3.5",
     "scikit-learn>=1.6.1",
-    "torch>=2.6.0",
     "xgboost>=3.0.0",
 ]
 
@@ -31,3 +30,16 @@ astrodata = { workspace = true }
 
 [tool.setuptools]  # configuration specific to the `setuptools` build backend.
 packages = { find = { where = ["."], include = ["astrodata", "astrodata.*"] } }
+
+[project.optional-dependencies]
+
+tensorflow = [
+    "tensorflow>=2.0.0"
+]
+pytorch = [
+    "torch>=2.0.0"
+]
+full = [
+    "tensorflow>=2.0.0",
+    "torch>=2.0.0"
+]

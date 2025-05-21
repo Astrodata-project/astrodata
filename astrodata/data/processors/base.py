@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from astrodata.data.schemas import RawData
 
 

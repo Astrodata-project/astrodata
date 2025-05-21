@@ -1,5 +1,7 @@
-from astrodata.ml.metrics.BaseMetric import BaseMetric
 import numpy as np
+
+from astrodata.ml.metrics.BaseMetric import BaseMetric
+
 
 class MAE(BaseMetric):
     def __call__(self, y_true, y_pred, **kwargs):
@@ -9,7 +11,8 @@ class MAE(BaseMetric):
 
     def get_name(self):
         return "mae"
-    
+
+
 class MSE(BaseMetric):
     def __call__(self, y_true, y_pred, **kwargs):
         y_true = np.asarray(y_true)
@@ -18,7 +21,8 @@ class MSE(BaseMetric):
 
     def get_name(self):
         return "mse"
-    
+
+
 class R2(BaseMetric):
     def __call__(self, y_true, y_pred, **kwargs):
         y_true = np.asarray(y_true)
@@ -32,7 +36,8 @@ class R2(BaseMetric):
 
     def get_name(self):
         return "r2"
-    
+
+
 class RMSE(BaseMetric):
     def __call__(self, y_true, y_pred, **kwargs):
         y_true = np.asarray(y_true)

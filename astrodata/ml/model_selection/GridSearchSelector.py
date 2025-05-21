@@ -1,12 +1,23 @@
-from sklearn.model_selection import GridSearchCV
+import itertools
+
+import numpy as np
+from sklearn.model_selection import GridSearchCV, train_test_split
+
 from astrodata.ml.model_selection.BaseModelSelector import BaseModelSelector
 from astrodata.ml.models.BaseModel import BaseModel
-from sklearn.model_selection import train_test_split
-import itertools
-import numpy as np
+
 
 class GridSearchCVSelector(BaseModelSelector):
-    def __init__(self, model:BaseModel, param_grid, scoring=None, cv=5, n_jobs=None, verbose=0, refit=True):
+    def __init__(
+        self,
+        model: BaseModel,
+        param_grid,
+        scoring=None,
+        cv=5,
+        n_jobs=None,
+        verbose=0,
+        refit=True,
+    ):
         super().__init__()
         self.model = model
         self.param_grid = param_grid
@@ -26,7 +37,7 @@ class GridSearchCVSelector(BaseModelSelector):
             n_jobs=self.n_jobs,
             verbose=self.verbose,
             refit=self.refit,
-            **kwargs
+            **kwargs,
         )
         self.gs.fit(X, y)
 
@@ -43,18 +54,26 @@ class GridSearchCVSelector(BaseModelSelector):
     def get_params(self, **kwargs):
         # Returns selector's config, not model's
         params = {
-            'param_grid': self.param_grid,
-            'scoring': self.scoring,
-            'cv': self.cv,
-            'n_jobs': self.n_jobs,
-            'verbose': self.verbose,
-            'refit': self.refit
+            "param_grid": self.param_grid,
+            "scoring": self.scoring,
+            "cv": self.cv,
+            "n_jobs": self.n_jobs,
+            "verbose": self.verbose,
+            "refit": self.refit,
         }
         return params
 
 
 class GridSearchSelector(BaseModelSelector):
-    def __init__(self, model, param_grid, scoring=None, val_size=0.2, random_state=None, metrics=None):
+    def __init__(
+        self,
+        model,
+        param_grid,
+        scoring=None,
+        val_size=0.2,
+        random_state=None,
+        metrics=None,
+    ):
         super().__init__()
         self.model = model
         self.param_grid = param_grid
@@ -84,7 +103,7 @@ class GridSearchSelector(BaseModelSelector):
             model.set_params(**params)
             model.fit(X_train, y_train)
             score = model.score(X_val, y_val)
-            
+
             if score > best_score:
                 best_score = score
                 best_params = params
