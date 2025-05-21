@@ -1,7 +1,8 @@
 import yaml
+from sklearn.model_selection import train_test_split
+
 from astrodata.data import ProcessedData
 from astrodata.preml import Premldata
-from sklearn.model_selection import train_test_split
 
 
 def read_config(config_path: str) -> dict:

@@ -1,10 +1,5 @@
-from astrodata.data import (
-    RawData,
-    AbstractProcessor,
-    ParquetLoader,
-    DataPipeline,
-)
-from astrodata.preml import PremlPipeline, OHE, MissingImputator
+from astrodata.data import AbstractProcessor, DataPipeline, ParquetLoader, RawData
+from astrodata.preml import OHE, MissingImputator, PremlPipeline
 
 # define loader
 loader = ParquetLoader()

@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-import pandas as pd
 from typing import Optional
+
+import pandas as pd
+from pydantic import BaseModel
 
 
 class Premldata(BaseModel):
