@@ -78,18 +78,16 @@ class SklearnMLflowTracker(BaseTracker):
                         )
                     except Exception:
                         pass
-                try:
-                    if (
-                        hasattr(self, "get_metrics")
-                        and X_test is not None
-                        and y_test is not None
-                    ):
-                        metrics_scores = self.get_metrics(
-                            X_test=X_test, y_test=y_test, metric_classes=metrics
-                        )
-                        mlflow.log_metrics(metrics_scores)
-                except Exception:
-                    pass
+                if (
+                    hasattr(self, "get_metrics")
+                    and X_test is not None
+                    and y_test is not None
+                ):
+                    metrics_scores = self.get_metrics(
+                        X_test=X_test, y_test=y_test, metrics=metrics
+                    )
+                    mlflow.log_metrics(metrics_scores)
+
                 return result
 
         # Dynamically subclass
