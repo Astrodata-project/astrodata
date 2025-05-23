@@ -1,6 +1,9 @@
+from typing import List
+
 import joblib
 import pandas as pd
 
+from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.models.BaseModel import BaseModel
 
 
@@ -53,3 +56,11 @@ class XGBoostModel(BaseModel):
     def __repr__(self):
         params = ", ".join(f"{k}={v!r}" for k, v in self.model_params.items())
         return f"{self.__class__.__name__}(model_class={self.model_class.__name__}, {params})"
+
+    def get_metrics(self, X_test, y_test, metrics: List[BaseMetric] = None):
+        y_pred = self.predict(X_test)
+        results = {}
+        for metric in metrics:
+            score = metric(y_test, y_pred)
+            results[metric.get_name()] = score
+        return results

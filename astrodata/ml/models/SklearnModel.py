@@ -1,6 +1,9 @@
+from typing import List
+
 import joblib
 import pandas as pd
 
+from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.models.BaseModel import BaseModel
 
 
@@ -54,3 +57,32 @@ class SklearnModel(BaseModel):
     def __repr__(self):
         params = ", ".join(f"{k}={v!r}" for k, v in self.model_params.items())
         return f"{self.__class__.__name__}(model_class={self.model_class.__name__}, {params})"
+
+    def get_metrics(self, X_test, y_test, metrics: List[BaseMetric] = None):
+        y_pred = self.predict(X_test)
+        results = {}
+        for metric in metrics:
+            score = metric(y_test, y_pred)
+            results[metric.get_name()] = score
+        return results
+
+    def get_train_score(self):
+        """
+        Returns the train_score_ if available, else raises an error.
+        This is typically available for sklearn's boosting models.
+        """
+        if self.model_ is None:
+            raise RuntimeError("Model is not fitted yet.")
+        if hasattr(self.model_, "train_score_"):
+            # train_score_ is an array of the loss at each iteration
+            return self.model_.train_score_
+        else:
+            raise AttributeError(
+                f"The fitted model of type {type(self.model_)} does not have a 'train_score_' attribute. "
+                "Loss curves are typically available for boosting models like GradientBoostingClassifier/Regressor."
+            )
+
+    @property
+    def has_train_score(self):
+        """Returns True if the fitted model exposes a train_score_ attribute."""
+        return self.model_ is not None and hasattr(self.model_, "train_score_")

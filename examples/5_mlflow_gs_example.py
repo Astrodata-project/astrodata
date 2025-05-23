@@ -1,9 +1,10 @@
 import pandas as pd
 from sklearn.datasets import load_breast_cancer
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 
-from astrodata.ml.metrics.classification import Accuracy, F1Score
+from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.model_selection.GridSearchSelector import GridSearchCVSelector
 from astrodata.ml.models.SklearnModel import SklearnModel
 from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
@@ -30,7 +31,11 @@ model = tracker.wrap_fit(
     X_test=X_test,
     y_test=y_test,
     input_example=X_train.iloc[:5],
-    metrics=[Accuracy(), F1Score()],
+    metrics=[
+        SklearnMetric(accuracy_score),
+        SklearnMetric(f1_score, average="macro"),
+        SklearnMetric(confusion_matrix),
+    ],
 )
 
 gss = GridSearchCVSelector(

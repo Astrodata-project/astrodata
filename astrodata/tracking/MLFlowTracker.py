@@ -4,7 +4,7 @@ from typing import List
 
 import mlflow
 
-from astrodata.ml.models.BaseModel import BaseModel
+from astrodata.ml.models import BaseModel
 from astrodata.tracking.BaseTracker import BaseTracker
 
 
@@ -78,6 +78,8 @@ class SklearnMLflowTracker(BaseTracker):
                         )
                     except Exception:
                         pass
+
+                # Log metrics if available
                 if (
                     hasattr(self, "get_metrics")
                     and X_test is not None
@@ -87,6 +89,13 @@ class SklearnMLflowTracker(BaseTracker):
                         X_test=X_test, y_test=y_test, metrics=metrics
                     )
                     mlflow.log_metrics(metrics_scores)
+
+                # Log loss curve as a step metric if available
+                loss_curve = None
+                if self.has_train_score:
+                    loss_curve = self.get_train_score()
+                    for i, loss in enumerate(loss_curve):
+                        mlflow.log_metric("loss_curve", loss, step=i)
 
                 return result
 
