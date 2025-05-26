@@ -6,6 +6,8 @@ import pandas as pd
 from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.models.BaseModel import BaseModel
 
+5
+
 
 class XGBoostModel(BaseModel):
     def __init__(self, model_class, **model_params):
@@ -14,13 +16,20 @@ class XGBoostModel(BaseModel):
             model_class: XGBoost model class (XGBClassifier or XGBRegressor).
             **model_params: Parameters for the XGBoost model.
         """
+        if "eval_metric" not in model_params:
+            model_params["eval_metric"] = (
+                "logloss" if hasattr(model_class, "predict_proba") else "rmse"
+            )
         self.model_class = model_class
         self.model_params = model_params
         self.model_ = None
 
     def fit(self, X, y, **fit_params):
+        if "eval_set" not in fit_params:
+            fit_params["eval_set"] = [(X, y)]
         self.model_ = self.model_class(**self.model_params)
         self.model_.fit(X, y, **fit_params)
+        self._evals_result = self.model_.evals_result()
         return self
 
     def predict(self, X, **predict_params):
@@ -64,3 +73,19 @@ class XGBoostModel(BaseModel):
             score = metric(y_test, y_pred)
             results[metric.get_name()] = score
         return results
+
+    def get_loss_history(self):
+        """
+        Returns the training loss curve if available, else raises an error.
+        """
+        if self._evals_result is not None:
+            # Training set is always first in eval_set
+            train_key = list(self._evals_result.keys())[0]
+            metric_key = list(self._evals_result[train_key].keys())[0]
+            return self._evals_result[train_key][metric_key]
+        else:
+            raise AttributeError("No loss curve available. Make sure fit() was called.")
+
+    @property
+    def has_loss_history(self):
+        return self._evals_result is not None

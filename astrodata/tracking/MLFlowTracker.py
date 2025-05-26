@@ -92,8 +92,8 @@ class SklearnMLflowTracker(BaseTracker):
 
                 # Log loss curve as a step metric if available
                 loss_curve = None
-                if self.has_train_score:
-                    loss_curve = self.get_train_score()
+                if self.has_loss_history:
+                    loss_curve = self.get_loss_history()
                     for i, loss in enumerate(loss_curve):
                         mlflow.log_metric("loss_curve", loss, step=i)
 

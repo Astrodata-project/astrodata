@@ -66,7 +66,7 @@ class SklearnModel(BaseModel):
             results[metric.get_name()] = score
         return results
 
-    def get_train_score(self):
+    def get_loss_history(self):
         """
         Returns the train_score_ if available, else raises an error.
         This is typically available for sklearn's boosting models.
@@ -83,6 +83,6 @@ class SklearnModel(BaseModel):
             )
 
     @property
-    def has_train_score(self):
+    def has_loss_history(self):
         """Returns True if the fitted model exposes a train_score_ attribute."""
         return self.model_ is not None and hasattr(self.model_, "train_score_")
