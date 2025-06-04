@@ -1,0 +1,45 @@
+name: astrodata methods test
+run-name: ${{ github.actor }} is testing code automatically
+on: [push]
+env:
+  OPENAI_API_KEY: ""
+  HUB_URL: ""
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "This job is now running on a ${{ runner.os }}"
+      - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: echo "The ${{ github.repository }} repository has been cloned to the runner."
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+          enable-cache: true
+      - run: echo "The workflow is now ready to test your code on the runner."
+      - name: running unit-tests
+        run: |
+          shopt -s nullglob # Handle case where no files match pattern
+          # Find all test files
+          TEST_FILES=(tests/test_*.py)
+          # Check if any test files were found
+          if [ ${#TEST_FILES[@]} -eq 0 ]; then
+            echo "No test files found matching the pattern 'tests/test_*.py'"
+            exit 1 # Fail if no tests found (change to exit 0 if you want to succeed)
+          fi
+          # Run each test file in isolation
+          FAILED=0
+          for test_file in "${TEST_FILES[@]}"; do
+            echo "Running tests in $test_file"
+            if uv run --frozen pytest "$test_file" -o log_cli=true; then
+              echo "✅ Tests in $test_file passed"
+            else
+              echo "❌ Tests in $test_file failed"
+              FAILED=1
+            fi
+          done
+          # Return overall status
+          exit $FAILED

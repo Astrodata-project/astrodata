@@ -1,5 +1,5 @@
-from astrodata.preml.processors.base import AbstractProcessor
 from astrodata.data.schemas import ProcessedData
+from astrodata.preml.processors.base import AbstractProcessor
 from astrodata.preml.schemas import Premldata
 from astrodata.preml.processors import ConvertToPremlData
 from astrodata.preml.utils import read_config

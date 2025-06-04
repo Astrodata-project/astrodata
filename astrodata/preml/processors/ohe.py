@@ -1,10 +1,11 @@
-from sklearn.preprocessing import OneHotEncoder
-import pandas as pd
+from typing import Optional
 
-from .base import AbstractProcessor
+import pandas as pd
+from sklearn.preprocessing import OneHotEncoder
+
 from astrodata.preml import Premldata
 
-from typing import Optional
+from .base import AbstractProcessor
 
 
 class OHE(AbstractProcessor):

@@ -11,7 +11,11 @@ class ConvertToPremlData(AbstractProcessor):
 
     def __init__(self, config: dict):
         super().__init__()
-        self.config = config.get("train_test_split", {})
+        try:
+            self.config = config["preml"]
+        except KeyError:
+            raise ValueError("Config does not contain 'test_train_split' section.")
+
         self.artifact = self.config
 
     def process(self, data: ProcessedData, artifact: str = None, **kwargs):

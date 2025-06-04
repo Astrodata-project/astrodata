@@ -1,10 +1,11 @@
 
 preml:
-  targets:
-    - "duration"
-  test_size: 0.2
-  random_state: 42
-  validation:
-    enabled: false
-    size: 0.1
+  train_test_split:
+    targets:
+      - "duration"
+    test_size: 0.2
+    random_state: 42
+    validation:
+      enabled: false
+      size: 0.1
   artifacts_store: "./testdata"
