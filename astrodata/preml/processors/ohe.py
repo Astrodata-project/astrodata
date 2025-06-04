@@ -3,7 +3,7 @@ from typing import Optional
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
 
-from astrodata.preml import Premldata
+from astrodata.preml.schemas import Premldata
 
 from .base import AbstractProcessor
 

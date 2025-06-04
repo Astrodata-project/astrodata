@@ -12,7 +12,7 @@ class ConvertToPremlData(AbstractProcessor):
     def __init__(self, config: dict):
         super().__init__()
         try:
-            self.config = config["preml"]
+            self.config = config["train_test_split"]
         except KeyError:
             raise ValueError("Config does not contain 'test_train_split' section.")
 
