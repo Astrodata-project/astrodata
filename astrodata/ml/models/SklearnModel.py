@@ -82,6 +82,37 @@ class SklearnModel(BaseModel):
                 "Loss curves are typically available for boosting models like GradientBoostingClassifier/Regressor."
             )
 
+    def get_loss_history_metric(self, X=None, y=None, metric: BaseMetric = None):
+        """
+        Returns the train_score_ if available, or, if a metric and data are passed,
+        computes the metric at each stage using staged_predict.
+        """
+        if self.model_ is None:
+            raise RuntimeError("Model is not fitted yet.")
+
+        if metric is not None:
+            if X is None or y is None:
+                raise ValueError(
+                    "X and y must be provided to compute metric at each stage."
+                )
+            if hasattr(self.model_, "staged_predict"):
+                return [metric(y, y_pred) for y_pred in self.model_.staged_predict(X)]
+            elif hasattr(self.model_, "staged_predict_proba"):
+                # For metrics that require probabilities (e.g., log_loss)
+                return [
+                    metric(y, y_pred) for y_pred in self.model_.staged_predict_proba(X)
+                ]
+            else:
+                raise AttributeError(
+                    "The fitted model does not support staged prediction."
+                )
+        elif hasattr(self.model_, "train_score_"):
+            return self.model_.train_score_
+        else:
+            raise AttributeError(
+                f"The fitted model of type {type(self.model_)} does not have a 'train_score_' or staged prediction attribute."
+            )
+
     @property
     def has_loss_history(self):
         """Returns True if the fitted model exposes a train_score_ attribute."""

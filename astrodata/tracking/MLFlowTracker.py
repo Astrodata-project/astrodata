@@ -46,12 +46,13 @@ class SklearnMLflowTracker(BaseTracker):
         input_example=None,
         X_test=None,
         y_test=None,
+        X_val=None,
+        y_val=None,
         metrics: List = None,
     ):
         """
         Returns a new instance of a dynamic subclass of the model,
         with class-level overridden fit method that tracks with MLflow.
-        This is compatible with sklearn.clone/GridSearchCV.
         """
         orig_class = model.__class__
         tracker = self  # for closure
@@ -79,23 +80,46 @@ class SklearnMLflowTracker(BaseTracker):
                     except Exception:
                         pass
 
-                # Log metrics if available
-                if (
-                    hasattr(self, "get_metrics")
-                    and X_test is not None
-                    and y_test is not None
-                ):
-                    metrics_scores = self.get_metrics(
-                        X_test=X_test, y_test=y_test, metrics=metrics
-                    )
-                    mlflow.log_metrics(metrics_scores)
+                # Helper to log metrics and loss curves for a data split
+                def log_metrics_and_loss(X_split, y_split, split_name):
+                    if (
+                        X_split is not None
+                        and y_split is not None
+                        and hasattr(self, "get_metrics")
+                    ):
+                        metrics_scores = self.get_metrics(
+                            X_test=X_split, y_test=y_split, metrics=metrics
+                        )
+                        # Prefix all metric names with the split name
+                        metrics_scores = {
+                            f"{name}_{split_name}": val
+                            for name, val in metrics_scores.items()
+                        }
+                        mlflow.log_metrics(metrics_scores)
 
-                # Log loss curve as a step metric if available
-                loss_curve = None
-                if self.has_loss_history:
+                        # Log loss curve for each metric if possible
+                        for metric in metrics or []:
+                            if hasattr(self, "get_loss_history"):
+                                loss_curve = self.get_loss_history_metric(
+                                    X_split, y_split, metric=metric
+                                )
+                                for i, loss in enumerate(loss_curve):
+                                    mlflow.log_metric(
+                                        f"{metric.get_name()}_{split_name}_curve",
+                                        loss,
+                                        step=i,
+                                    )
+
+                # Log for training loss if available
+                if hasattr(self, "get_loss_history"):
                     loss_curve = self.get_loss_history()
                     for i, loss in enumerate(loss_curve):
-                        mlflow.log_metric("loss_curve", loss, step=i)
+                        mlflow.log_metric(f"loss_curve", loss, step=i)
+
+                # Log for test set if provided
+                log_metrics_and_loss(X_test, y_test, "test")
+                # Log for validation set if provided
+                log_metrics_and_loss(X_val, y_val, "val")
 
                 return result
 

@@ -86,6 +86,32 @@ class XGBoostModel(BaseModel):
         else:
             raise AttributeError("No loss curve available. Make sure fit() was called.")
 
+    def get_loss_history_metric(self, X=None, y=None, metric: BaseMetric = None):
+        """
+        If metric is provided, computes the metric at each iteration using model.predict.
+        Otherwise, returns the training loss curve from evals_result.
+        """
+        if self.model_ is None:
+            raise RuntimeError("Model is not fitted yet.")
+
+        if metric is not None:
+            if X is None or y is None:
+                raise ValueError(
+                    "X and y must be provided to compute metric at each step."
+                )
+            n_estimators = self.model_.get_booster().num_boosted_rounds()
+            results = []
+            for i in range(1, n_estimators + 1):
+                y_pred = self.model_.predict(X, iteration_range=(0, i))
+                results.append(metric(y, y_pred))
+            return results
+        elif hasattr(self, "_evals_result") and self._evals_result is not None:
+            train_key = list(self._evals_result.keys())[0]
+            metric_key = list(self._evals_result[train_key].keys())[0]
+            return self._evals_result[train_key][metric_key]
+        else:
+            raise AttributeError("No loss curve available. Make sure fit() was called.")
+
     @property
     def has_loss_history(self):
         return self._evals_result is not None

@@ -20,6 +20,10 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25, random_state=42
 )
 
+X_train, X_val, y_train, y_val = train_test_split(
+    X_train, y_train, test_size=0.2, random_state=42
+)
+
 # Instantiate and configure the XGBoost model
 gradientboost = SklearnModel(model_class=GradientBoostingClassifier)
 
@@ -34,8 +38,10 @@ metrics = [SklearnMetric(accuracy_score), SklearnMetric(f1_score, average="micro
 
 tracked_gradientboost = tracker.wrap_fit(
     model=gradientboost,
-    X_test=X,
-    y_test=y,
+    X_test=X_test,
+    y_test=y_test,
+    X_val=X_val,
+    y_val=y_val,
     input_example=X_train.iloc[:5],
     metrics=metrics,
 )
@@ -49,6 +55,6 @@ gss = GridSearchSelector(
     },
 )
 
-gss.fit(X_train, y_train)
+gss.fit(X_train, y_train, X_val=X_val, y_val=y_val)
 print(gss.get_best_params())
 print(gss.get_best_model())
