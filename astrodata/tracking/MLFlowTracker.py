@@ -3,9 +3,12 @@ import os
 from typing import List
 
 import mlflow
+from sklearn import metrics as sklearn_metrics
 
+from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.models import BaseModel
 from astrodata.tracking.BaseTracker import BaseTracker
+from astrodata.utils.MetricsUtils import get_loss_func
 
 
 class SklearnMLflowTracker(BaseTracker):
@@ -32,7 +35,6 @@ class SklearnMLflowTracker(BaseTracker):
         self._configure_mlflow_tracking()
 
     def _configure_mlflow_tracking(self):
-        """Set up MLflow tracking server and authentication if provided."""
         if self.tracking_uri:
             mlflow.set_tracking_uri(self.tracking_uri)
         if self.tracking_username:
@@ -48,14 +50,10 @@ class SklearnMLflowTracker(BaseTracker):
         y_test=None,
         X_val=None,
         y_val=None,
-        metrics: List = None,
+        metrics: List = [],
     ):
-        """
-        Returns a new instance of a dynamic subclass of the model,
-        with class-level overridden fit method that tracks with MLflow.
-        """
         orig_class = model.__class__
-        tracker = self  # for closure
+        tracker = self
 
         @functools.wraps(orig_class.fit)
         def fit_with_tracking(self, X, y, *args, **kwargs):
@@ -88,7 +86,7 @@ class SklearnMLflowTracker(BaseTracker):
                         and hasattr(self, "get_metrics")
                     ):
                         metrics_scores = self.get_metrics(
-                            X_test=X_split, y_test=y_split, metrics=metrics
+                            X=X_split, y=y_split, metrics=metrics
                         )
                         # Prefix all metric names with the split name
                         metrics_scores = {
@@ -105,20 +103,16 @@ class SklearnMLflowTracker(BaseTracker):
                                 )
                                 for i, loss in enumerate(loss_curve):
                                     mlflow.log_metric(
-                                        f"{metric.get_name()}_{split_name}_curve",
+                                        f"{metric.get_name()}_{split_name}_step",
                                         loss,
                                         step=i,
                                     )
 
-                # Log for training loss if available
-                if hasattr(self, "get_loss_history"):
-                    loss_curve = self.get_loss_history()
-                    for i, loss in enumerate(loss_curve):
-                        mlflow.log_metric(f"loss_curve", loss, step=i)
+                loss_func = get_loss_func(self.model_)
+                metrics.append(SklearnMetric(loss_func))
 
-                # Log for test set if provided
+                log_metrics_and_loss(X, y, "train")
                 log_metrics_and_loss(X_test, y_test, "test")
-                # Log for validation set if provided
                 log_metrics_and_loss(X_val, y_val, "val")
 
                 return result
