@@ -2,7 +2,7 @@ from typing import Optional
 
 from sklearn.impute import SimpleImputer
 
-from astrodata.preml import Premldata
+from astrodata.preml.schemas import Premldata
 
 from .base import AbstractProcessor
 

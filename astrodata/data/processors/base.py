@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from typing import Any
 from astrodata.data.schemas import RawData
 
 
@@ -15,6 +15,12 @@ class AbstractProcessor(ABC):
             Abstract method to process the input `RawData` and return
             a new `RawData` object.
     """
+
+    def __init__(self, **kwargs: Any):
+        """
+        Initializes the processor with an empty dictionary to store artifacts.
+        """
+        self.kwargs = kwargs
 
     @abstractmethod
     def process(self, raw: RawData) -> RawData:
