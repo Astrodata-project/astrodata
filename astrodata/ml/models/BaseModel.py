@@ -1,7 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List
-
-from astrodata.ml.metrics.BaseMetric import BaseMetric
 
 
 class BaseModel(ABC):
@@ -44,11 +41,3 @@ class BaseModel(ABC):
             if callable(value):
                 setattr(new_instance, attr, value)
         return new_instance
-
-    def get_metrics(self, X_test, y_test, metrics: List[BaseMetric] = None):
-        y_pred = self.predict(X_test)
-        results = {}
-        for metric in metrics:
-            score = metric(y_test, y_pred)
-            results[metric.get_name()] = score
-        return results

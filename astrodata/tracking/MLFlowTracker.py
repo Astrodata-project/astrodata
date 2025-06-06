@@ -3,9 +3,12 @@ import os
 from typing import List
 
 import mlflow
+from sklearn import metrics as sklearn_metrics
 
-from astrodata.ml.models.BaseModel import BaseModel
+from astrodata.ml.metrics.SklearnMetric import SklearnMetric
+from astrodata.ml.models import BaseModel
 from astrodata.tracking.BaseTracker import BaseTracker
+from astrodata.utils.MetricsUtils import get_loss_func
 
 
 class SklearnMLflowTracker(BaseTracker):
@@ -32,7 +35,6 @@ class SklearnMLflowTracker(BaseTracker):
         self._configure_mlflow_tracking()
 
     def _configure_mlflow_tracking(self):
-        """Set up MLflow tracking server and authentication if provided."""
         if self.tracking_uri:
             mlflow.set_tracking_uri(self.tracking_uri)
         if self.tracking_username:
@@ -46,15 +48,12 @@ class SklearnMLflowTracker(BaseTracker):
         input_example=None,
         X_test=None,
         y_test=None,
-        metrics: List = None,
+        X_val=None,
+        y_val=None,
+        metrics: List = [],
     ):
-        """
-        Returns a new instance of a dynamic subclass of the model,
-        with class-level overridden fit method that tracks with MLflow.
-        This is compatible with sklearn.clone/GridSearchCV.
-        """
         orig_class = model.__class__
-        tracker = self  # for closure
+        tracker = self
 
         @functools.wraps(orig_class.fit)
         def fit_with_tracking(self, X, y, *args, **kwargs):
@@ -78,15 +77,43 @@ class SklearnMLflowTracker(BaseTracker):
                         )
                     except Exception:
                         pass
-                if (
-                    hasattr(self, "get_metrics")
-                    and X_test is not None
-                    and y_test is not None
-                ):
-                    metrics_scores = self.get_metrics(
-                        X_test=X_test, y_test=y_test, metrics=metrics
-                    )
-                    mlflow.log_metrics(metrics_scores)
+
+                # Helper to log metrics and loss curves for a data split
+                def log_metrics_and_loss(X_split, y_split, split_name):
+                    if (
+                        X_split is not None
+                        and y_split is not None
+                        and hasattr(self, "get_metrics")
+                    ):
+                        metrics_scores = self.get_metrics(
+                            X=X_split, y=y_split, metrics=metrics
+                        )
+                        # Prefix all metric names with the split name
+                        metrics_scores = {
+                            f"{name}_{split_name}": val
+                            for name, val in metrics_scores.items()
+                        }
+                        mlflow.log_metrics(metrics_scores)
+
+                        # Log loss curve for each metric if possible
+                        for metric in metrics or []:
+                            if hasattr(self, "get_loss_history"):
+                                loss_curve = self.get_loss_history_metric(
+                                    X_split, y_split, metric=metric
+                                )
+                                for i, loss in enumerate(loss_curve):
+                                    mlflow.log_metric(
+                                        f"{metric.get_name()}_{split_name}_step",
+                                        loss,
+                                        step=i,
+                                    )
+
+                loss_func = get_loss_func(self.model_)
+                metrics.append(SklearnMetric(loss_func))
+
+                log_metrics_and_loss(X, y, "train")
+                log_metrics_and_loss(X_test, y_test, "test")
+                log_metrics_and_loss(X_val, y_val, "val")
 
                 return result
 
