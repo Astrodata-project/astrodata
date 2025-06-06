@@ -71,7 +71,7 @@ class GridSearchSelector(BaseModelSelector):
         param_grid,
         scoring=None,
         val_size=0.2,
-        random_state=None,
+        random_state=42,
         metrics=None,
     ):
         super().__init__()
@@ -86,10 +86,18 @@ class GridSearchSelector(BaseModelSelector):
         self._best_score = None
         self._best_metrics = None
 
-    def fit(self, X, y, *args, **kwargs):
-        X_train, X_val, y_train, y_val = train_test_split(
-            X, y, test_size=self.val_size, random_state=self.random_state
-        )
+    def fit(self, X_train, y_train, X_val=None, y_val=None, *args, **kwargs):
+        if X_val is None or y_val is None:
+            if self.val_size is None:
+                raise ValueError(
+                    "Either val_size or y_train and y_val must be provided."
+                )
+            X_train, X_val, y_train, y_val = train_test_split(
+                X_train,
+                y_train,
+                test_size=self.val_size,
+                random_state=self.random_state,
+            )
         param_keys = list(self.param_grid.keys())
         param_values = list(self.param_grid.values())
         best_score = -np.inf

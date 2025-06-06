@@ -1,11 +1,12 @@
 import pandas as pd
 from sklearn.datasets import load_breast_cancer
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import LinearSVC
 from xgboost import XGBClassifier
 
-from astrodata.ml.metrics.classification import Accuracy, ConfusionMatrix, F1Score
+from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.models.SklearnModel import SklearnModel
 from astrodata.ml.models.XGBoostModel import XGBoostModel
 
@@ -36,6 +37,10 @@ for model in models:
         model.get_metrics(
             X_test,
             y_test,
-            metrics=[Accuracy(), F1Score(average="micro"), ConfusionMatrix()],
+            metrics=[
+                SklearnMetric(accuracy_score),
+                SklearnMetric(f1_score, average="micro"),
+                SklearnMetric(confusion_matrix),
+            ],
         )
     )
