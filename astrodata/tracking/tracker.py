@@ -1,7 +1,8 @@
-from pathlib import Path
 import logging
+from pathlib import Path
 
 from astrodata.utils.utils import read_config
+
 from .code_tracking import CodeTracker
 from .data_tracking import DataTracker
 

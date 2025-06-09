@@ -1,6 +1,7 @@
-from dvc.repo import Repo as DvcRepo
-from pathlib import Path
 import logging
+from pathlib import Path
+
+from dvc.repo import Repo as DvcRepo
 
 logger = logging.getLogger(__name__)
 

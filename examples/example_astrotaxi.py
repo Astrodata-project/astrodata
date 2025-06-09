@@ -1,5 +1,17 @@
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score,
+    root_mean_squared_error,
+)
+from xgboost import XGBRegressor
+
 from astrodata.data import AbstractProcessor, DataPipeline, ParquetLoader, RawData
+from astrodata.ml.metrics.SklearnMetric import SklearnMetric
+from astrodata.ml.model_selection.GridSearchSelector import GridSearchCVSelector
+from astrodata.ml.models.XGBoostModel import XGBoostModel
 from astrodata.preml import OHE, MissingImputator, PremlPipeline
+from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
 
 # define loader
 loader = ParquetLoader()
@@ -61,3 +73,40 @@ print(f"X_train shape: {X_train.shape}")
 print(f"X_test shape: {X_test.shape}")
 print(f"y_train shape: {y_train.shape}")
 print(f"y_test shape: {y_test.shape}")
+
+# Instantiate and configure the XGBoost model
+gradientboost = XGBoostModel(model_class=XGBRegressor)
+
+tracker = SklearnMLflowTracker(
+    log_model=True,
+    run_name="DemoRun",
+    experiment_name="examples/example_astrotaxi.py",
+    extra_tags={"stage": "testing"},
+)
+
+metrics = [
+    SklearnMetric(root_mean_squared_error),
+    SklearnMetric(mean_absolute_error),
+    SklearnMetric(mean_squared_error),
+    SklearnMetric(r2_score),
+]
+
+tracked_gradientboost = tracker.wrap_fit(
+    model=gradientboost,
+    X_test=X_test,
+    y_test=y_test,
+    input_example=X_train.iloc[:5],
+    metrics=metrics,
+)
+
+gss = GridSearchCVSelector(
+    tracked_gradientboost,
+    param_grid={
+        "n_estimators": [50, 100],
+        "learning_rate": [0.01, 0.1],
+        "max_depth": [3, 5],
+    },
+    n_jobs=6,
+)
+
+gss.fit(X_train, y_train)

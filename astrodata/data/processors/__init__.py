@@ -1,2 +1,2 @@
 from .base import AbstractProcessor
-from .common import NormalizeAndSplit, DropDuplicates
+from .common import DropDuplicates, NormalizeAndSplit

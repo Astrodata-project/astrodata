@@ -108,8 +108,9 @@ class SklearnMLflowTracker(BaseTracker):
                                         step=i,
                                     )
 
-                loss_func = get_loss_func(self.model_)
-                metrics.append(SklearnMetric(loss_func))
+                loss_metric = SklearnMetric(get_loss_func(self.model_))
+                if not loss_metric.get_name() in [m.get_name() for m in metrics]:
+                    metrics.append(loss_metric)
 
                 log_metrics_and_loss(X, y, "train")
                 log_metrics_and_loss(X_test, y_test, "test")

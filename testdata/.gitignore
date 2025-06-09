@@ -1,2 +1,3 @@
 *
 !.gitignore
+!./testdata/green_tripdata_2024-01.parquet

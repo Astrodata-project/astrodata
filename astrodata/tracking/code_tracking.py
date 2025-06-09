@@ -1,8 +1,9 @@
-import os
-from git import Repo, GitCommandError, InvalidGitRepositoryError
-from pathlib import Path
 import logging
+import os
 from functools import wraps
+from pathlib import Path
+
+from git import GitCommandError, InvalidGitRepositoryError, Repo
 
 logger = logging.getLogger(__name__)
 
