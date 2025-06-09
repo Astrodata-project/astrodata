@@ -1,11 +1,12 @@
 from pathlib import Path
-import logging
 
+from astrodata.utils.logger import setup_logger
 from astrodata.utils.utils import read_config
+
 from .code_tracking import CodeTracker
 from .data_tracking import DataTracker
 
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 
 class Tracker:
@@ -19,8 +20,9 @@ class Tracker:
         if self.config.get("code", {}).get("enable", False):
             ssh_key = self.config.get("code", {}).get("ssh_key_path")
             token = self.config.get("code", {}).get("token")
+            branch = self.config.get("code", {}).get("branch", "main")
             self.code_tracker = CodeTracker(
-                self.project_path, ssh_key_path=ssh_key, token=token
+                self.project_path, ssh_key_path=ssh_key, token=token, branch=branch
             )
         if self.config.get("data", {}).get("enable", False):
             self.data_tracker = DataTracker(self.project_path)
@@ -47,9 +49,8 @@ class Tracker:
             tracked_files = code_config.get("tracked_files", ["src", "pyproject.toml"])
             msg = code_config.get("commit_message", "Auto commit by astrodata")
             remote_name = code_config.get("remote", {}).get("name", "origin")
-            branch = code_config.get("branch", "main")
 
-            self.code_tracker.track(tracked_files, msg, remote_name, branch)
+            self.code_tracker.track(tracked_files, msg, remote_name)
 
     def _track_data(self):
         if not self.data_tracker:

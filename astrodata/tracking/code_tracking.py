@@ -1,10 +1,12 @@
 import os
-from git import Repo, GitCommandError, InvalidGitRepositoryError
-from pathlib import Path
-import logging
 from functools import wraps
+from pathlib import Path
 
-logger = logging.getLogger(__name__)
+from git import GitCommandError, InvalidGitRepositoryError, Repo
+
+from astrodata.utils.logger import setup_logger
+
+logger = setup_logger(__name__)
 
 
 def git_operation(operation_name: str):
@@ -28,11 +30,18 @@ def git_operation(operation_name: str):
 
 
 class CodeTracker:
-    def __init__(self, repo_path: str, ssh_key_path: str = None, token: str = None):
+    def __init__(
+        self,
+        repo_path: str,
+        ssh_key_path: str = None,
+        token: str = None,
+        branch: str = "main",
+    ):
         self.repo_path = Path(repo_path).resolve()
         self.ssh_key_path = ssh_key_path
         self.token = token
         self.repo = self._initialize_repo()
+        self.branch = branch
 
     def _initialize_repo(self):
         """Initialize or open existing Git repository."""
@@ -74,6 +83,34 @@ class CodeTracker:
                 logger.warning(f"Path does not exist: {path_obj}")
         return existing_paths
 
+    @git_operation("checkout branch")
+    def checkout_branch(self, branch_name: str):
+        """
+        Checkout to the specified branch.
+        If branch does not exist, create it from HEAD.
+        """
+        if branch_name in [b.name for b in self.repo.heads]:
+            self.repo.heads[branch_name].checkout()
+            self.branch = branch_name
+            logger.info(f"Checked out to existing branch '{branch_name}'")
+            return True
+
+        return False
+
+    @git_operation("create branch")
+    def create_branch(self, branch_name: str, base: str = "HEAD") -> bool:
+        """
+        Create a new branch from the given base (default: HEAD).
+        Returns True if created, False if already exists or error.
+        """
+        if branch_name in [b.name for b in self.repo.heads]:
+            logger.info(f"Branch '{branch_name}' already exists")
+            return False
+        self.repo.create_head(branch_name, base)
+        self.checkout_branch(branch_name)
+        logger.info(f"Created branch '{branch_name}' from '{base}'")
+        return True
+
     @git_operation("add remote")
     def add_remote(self, name: str, url: str):
         """Add a remote if it doesn't already exist, and fetch/pull if repo is empty."""
@@ -103,13 +140,28 @@ class CodeTracker:
                 if self._try_pull(remote_name, branch):
                     break
 
+    @git_operation("reset merge")
+    def _reset_merge(self):
+        """
+        Abort a merge in progress (used to recover from conflicts).
+        """
+        self.repo.git.merge("--abort")
+        logger.info("Merge aborted due to conflict")
+
     def _try_pull(self, remote_name: str, branch: str) -> bool:
-        """Try to pull from a specific branch."""
+        """Try to pull from a specific branch. Abort if merge conflict occurs."""
         try:
             self.repo.git.pull(remote_name, branch)
             logger.info(f"Pulled from {remote_name}/{branch}")
             return True
-        except GitCommandError:
+        except GitCommandError as e:
+            if "Merge conflict" in str(e) or "CONFLICT" in str(e):
+                logger.error(
+                    f"Merge conflict detected during pull from {remote_name}/{branch}"
+                )
+                self._reset_merge()
+            else:
+                logger.error(f"Pull failed: {e}")
             return False
 
     def track(
@@ -117,7 +169,6 @@ class CodeTracker:
         paths: list,
         commit_message: str,
         remote_name: str = "origin",
-        branch: str = "main",
     ):
         """Track specified paths by adding, committing, and pushing them."""
         existing_paths = self._validate_paths(paths)
@@ -136,7 +187,7 @@ class CodeTracker:
         if not commit:
             return False
 
-        return self._push_to_remote(remote_name, branch)
+        return self._push_to_remote(remote_name, self.branch)
 
     @git_operation("add to index")
     def _add_to_index(self, paths: list) -> bool:
