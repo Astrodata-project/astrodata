@@ -14,7 +14,6 @@ from astrodata.utils.MetricsUtils import get_loss_func
 class MlflowBaseTracker(BaseTracker):
     def __init__(
         self,
-        log_model: bool = False,
         run_name: Optional[str] = None,
         experiment_name: Optional[str] = None,
         extra_tags: Optional[dict] = None,
@@ -23,7 +22,6 @@ class MlflowBaseTracker(BaseTracker):
         tracking_password: Optional[str] = None,
     ):
         super().__init__()
-        self.log_model = log_model
         self.run_name = run_name
         self.experiment_name = experiment_name
         self.extra_tags = extra_tags if extra_tags is not None else {}
@@ -72,8 +70,8 @@ class MlflowBaseTracker(BaseTracker):
 
         if stage:
             client = mlflow.tracking.MlflowClient()
-            client.transition_model_version_stage(
-                name=model_name, version=result.version, stage=stage
+            client.set_registered_model_alias(
+                name=model_name, alias=stage, version=result.version
             )
         print(f"Registered model '{model_name}' version {result.version} as {stage}.")
         return result
@@ -86,12 +84,12 @@ class SklearnMLflowTracker(MlflowBaseTracker):
     def wrap_fit(
         self,
         model: BaseModel,
-        input_example=None,
         X_test=None,
         y_test=None,
         X_val=None,
         y_val=None,
         metrics: Optional[List[BaseMetric]] = None,
+        log_model: bool = False,
     ):
         orig_class = model.__class__
         tracker = self
@@ -111,11 +109,9 @@ class SklearnMLflowTracker(MlflowBaseTracker):
                 result = orig_class.fit(self, X, y, *args, **kwargs)
 
                 # Optionally log model
-                if tracker.log_model:
+                if log_model:
                     try:
-                        mlflow.sklearn.log_model(
-                            self, "model", input_example=input_example
-                        )
+                        mlflow.sklearn.log_model(self, "model", input_example=X[:5])
                     except Exception as e:
                         print(f"Could not log model: {e}")
 

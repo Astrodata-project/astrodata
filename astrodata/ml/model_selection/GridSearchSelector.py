@@ -6,6 +6,7 @@ from sklearn.model_selection import KFold, train_test_split
 from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.model_selection.BaseModelSelector import BaseModelSelector
 from astrodata.ml.models.BaseModel import BaseModel
+from astrodata.tracking.BaseTracker import BaseTracker
 
 
 class GridSearchCVSelector(BaseModelSelector):
@@ -21,6 +22,8 @@ class GridSearchCVSelector(BaseModelSelector):
         cv=5,
         random_state=42,
         metrics=None,
+        tracker: BaseTracker = None,
+        log_all_models: bool = False,
     ):
         super().__init__()
         self.model = model
@@ -33,8 +36,10 @@ class GridSearchCVSelector(BaseModelSelector):
         self._best_params = None
         self._best_score = None
         self._best_metrics = None
+        self.tracker = tracker
+        self.log_all_models = log_all_models
 
-    def fit(self, X, y, *args, **kwargs):
+    def fit(self, X, y, X_test=None, y_test=None, *args, **kwargs):
         greater_is_better = self.scorer.greater_is_better if self.scorer else True
         best_score = -np.inf if greater_is_better else np.inf
 
@@ -60,6 +65,16 @@ class GridSearchCVSelector(BaseModelSelector):
 
                 model = self.model.clone()
                 model.set_params(**params)
+
+                if self.tracker:
+                    model = self.tracker.wrap_fit(
+                        model,
+                        X_val=X_val,
+                        y_val=y_val,
+                        metrics=self.metrics,
+                        log_model=self.log_all_models,
+                    )
+
                 model.fit(X_train, y_train)
 
                 # Score calculation
@@ -83,13 +98,29 @@ class GridSearchCVSelector(BaseModelSelector):
             ):
                 self._best_score = best_score = mean_score
                 self._best_params = params
-                # Retrain best model on all data
-                self._best_model = self.model.clone()
-                self._best_model.set_params(**params)
-                self._best_model.fit(X, y)
                 self._best_metrics = (
-                    np.mean(fold_metrics, axis=0) if self.metrics else None
+                    {
+                        k: sum(d[k] for d in fold_metrics) / len(fold_metrics)
+                        for k in fold_metrics[0]
+                    }
+                    if self.metrics
+                    else None
                 )
+
+        # Retrain best model on all data
+        self._best_model = self.model.clone()
+        self._best_model.set_params(**self._best_params)
+
+        if self.tracker:
+            self._best_model = self.tracker.wrap_fit(
+                self._best_model,
+                X_test=X_test,
+                y_test=y_test,
+                metrics=self.metrics,
+                log_model=True,
+            )
+
+        self._best_model.fit(X, y)
 
         return self
 
@@ -110,6 +141,8 @@ class GridSearchCVSelector(BaseModelSelector):
             "cv": self.cv,
             "random_state": self.random_state,
             "metrics": self.metrics,
+            "tracker": self.tracker,
+            "log_all_models": self.log_all_models,
         }
 
 
@@ -126,6 +159,8 @@ class GridSearchSelector(BaseModelSelector):
         val_size=0.2,
         random_state=42,
         metrics=None,
+        tracker: BaseTracker = None,
+        log_all_models: bool = False,
     ):
         super().__init__()
         self.model = model
@@ -134,6 +169,8 @@ class GridSearchSelector(BaseModelSelector):
         self.val_size = val_size
         self.random_state = random_state
         self.metrics = metrics
+        self.tracker = tracker
+        self.log_all_models = log_all_models
         self._best_model = None
         self._best_params = None
         self._best_score = None
@@ -154,10 +191,25 @@ class GridSearchSelector(BaseModelSelector):
         greater_is_better = self.scorer.greater_is_better if self.scorer else True
         best_score = -np.inf if greater_is_better else np.inf
 
+        # Store data for refit
+        self._X_train, self._y_train = X_train, y_train
+        self._X_val, self._y_val = X_val, y_val
+
         for param_tuple in itertools.product(*self.param_grid.values()):
             params = dict(zip(self.param_grid.keys(), param_tuple))
             model = self.model.clone()
             model.set_params(**params)
+
+            # Optionally wrap with tracker/logging
+            if self.tracker:
+                model = self.tracker.wrap_fit(
+                    model,
+                    X_val=X_val,
+                    y_val=y_val,
+                    metrics=self.metrics,
+                    log_model=self.log_all_models,
+                )
+
             model.fit(X_train, y_train)
 
             # Score calculation
@@ -173,12 +225,27 @@ class GridSearchSelector(BaseModelSelector):
             ):
                 self._best_score = best_score = score
                 self._best_params = params
-                self._best_model = model
                 self._best_metrics = (
                     model.get_metrics(X_val, y_val, metrics=self.metrics)
                     if self.metrics
                     else None
                 )
+
+        # Refit best model on full data (train + val)
+        X_full = np.concatenate([self._X_train, self._X_val])
+        y_full = np.concatenate([self._y_train, self._y_val])
+
+        self._best_model = self.model.clone()
+        self._best_model.set_params(**self._best_params)
+
+        if self.tracker:
+            self._best_model = self.tracker.wrap_fit(
+                self._best_model,
+                metrics=self.metrics,
+                log_model=True,
+            )
+
+        self._best_model.fit(X_full, y_full)
 
         return self
 
@@ -199,4 +266,6 @@ class GridSearchSelector(BaseModelSelector):
             "val_size": self.val_size,
             "random_state": self.random_state,
             "metrics": self.metrics,
+            "tracker": self.tracker,
+            "log_all_models": self.log_all_models,
         }
