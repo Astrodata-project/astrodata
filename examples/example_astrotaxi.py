@@ -8,7 +8,7 @@ from xgboost import XGBRegressor
 
 from astrodata.data import AbstractProcessor, DataPipeline, ParquetLoader, RawData
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.model_selection.GridSearchSelector import GridSearchCVSelector
+from astrodata.ml.model_selection.GridSearchSelector import GridSearchSelector
 from astrodata.ml.models.XGBoostModel import XGBoostModel
 from astrodata.preml import OHE, MissingImputator, PremlPipeline
 from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
@@ -78,35 +78,38 @@ print(f"y_test shape: {y_test.shape}")
 gradientboost = XGBoostModel(model_class=XGBRegressor)
 
 tracker = SklearnMLflowTracker(
-    log_model=True,
     run_name="DemoRun",
-    experiment_name="examples/example_astrotaxi.py",
+    experiment_name="examples_example_astrotaxi.py",
     extra_tags={"stage": "testing"},
 )
 
 metrics = [
-    SklearnMetric(root_mean_squared_error),
-    SklearnMetric(mean_absolute_error),
-    SklearnMetric(mean_squared_error),
+    SklearnMetric(root_mean_squared_error, greater_is_better=False),
+    SklearnMetric(mean_absolute_error, greater_is_better=False),
+    SklearnMetric(mean_squared_error, greater_is_better=False),
     SklearnMetric(r2_score),
 ]
 
-tracked_gradientboost = tracker.wrap_fit(
-    model=gradientboost,
-    X_test=X_test,
-    y_test=y_test,
-    input_example=X_train.iloc[:5],
-    metrics=metrics,
-)
-
-gss = GridSearchCVSelector(
-    tracked_gradientboost,
+gss = GridSearchSelector(
+    gradientboost,
     param_grid={
         "n_estimators": [50, 100],
         "learning_rate": [0.01, 0.1],
         "max_depth": [3, 5],
     },
-    n_jobs=6,
+    scorer=SklearnMetric(mean_absolute_error, greater_is_better=False),
+    tracker=tracker,
+    log_all_models=False,
+    metrics=metrics,
 )
 
-gss.fit(X_train, y_train)
+gss.fit(X_train, y_train, X_test=X_test, y_test=y_test)
+
+print(gss.get_best_params())
+print(gss.get_best_metrics())
+
+tracker.register_best_model(
+    metric=SklearnMetric(mean_absolute_error, greater_is_better=False),
+    split_name="test",
+    stage="Production",
+)

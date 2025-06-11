@@ -176,7 +176,17 @@ class GridSearchSelector(BaseModelSelector):
         self._best_score = None
         self._best_metrics = None
 
-    def fit(self, X_train, y_train, X_val=None, y_val=None, *args, **kwargs):
+    def fit(
+        self,
+        X_train,
+        y_train,
+        X_val=None,
+        y_val=None,
+        X_test=None,
+        y_test=None,
+        *args,
+        **kwargs,
+    ):
         # If validation data not provided, split from training data
         if X_val is None or y_val is None:
             if self.val_size is None:
@@ -242,6 +252,8 @@ class GridSearchSelector(BaseModelSelector):
             self._best_model = self.tracker.wrap_fit(
                 self._best_model,
                 metrics=self.metrics,
+                X_test=X_test,
+                y_test=y_test,
                 log_model=True,
             )
 
