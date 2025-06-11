@@ -3,6 +3,7 @@ import itertools
 import numpy as np
 from sklearn.model_selection import GridSearchCV, train_test_split
 
+from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.model_selection.BaseModelSelector import BaseModelSelector
 from astrodata.ml.models.BaseModel import BaseModel
 
@@ -69,7 +70,7 @@ class GridSearchSelector(BaseModelSelector):
         self,
         model,
         param_grid,
-        scoring=None,
+        scorer: BaseMetric = None,
         val_size=0.2,
         random_state=42,
         metrics=None,
@@ -77,52 +78,53 @@ class GridSearchSelector(BaseModelSelector):
         super().__init__()
         self.model = model
         self.param_grid = param_grid
-        self.scoring = scoring
+        self.scorer = scorer
         self.val_size = val_size
         self.random_state = random_state
         self.metrics = metrics
-        self._best_model = None
-        self._best_params = None
-        self._best_score = None
-        self._best_metrics = None
+        self._best_model = self._best_params = self._best_score = self._best_metrics = (
+            None
+        )
 
     def fit(self, X_train, y_train, X_val=None, y_val=None, *args, **kwargs):
         if X_val is None or y_val is None:
             if self.val_size is None:
-                raise ValueError(
-                    "Either val_size or y_train and y_val must be provided."
-                )
+                raise ValueError("Either val_size or validation data must be provided.")
             X_train, X_val, y_train, y_val = train_test_split(
                 X_train,
                 y_train,
                 test_size=self.val_size,
                 random_state=self.random_state,
             )
-        param_keys = list(self.param_grid.keys())
-        param_values = list(self.param_grid.values())
-        best_score = -np.inf
-        best_params = None
-        best_model = None
-        best_metrics = None
 
-        for values in itertools.product(*param_values):
-            params = dict(zip(param_keys, values))
+        best_score = -np.inf if self.scorer.greater_is_better else np.inf
+
+        for param_tuple in itertools.product(*self.param_grid.values()):
+            params = dict(zip(self.param_grid.keys(), param_tuple))
             model = self.model.clone()
             model.set_params(**params)
             model.fit(X_train, y_train)
-            score = model.score(X_val, y_val)
+            score = (
+                model.get_metrics(X_val, y_val, metrics=[self.scorer])[
+                    self.scorer.get_name()
+                ]
+                if self.scorer
+                else model.score(X_val, y_val)
+            )
 
-            if score > best_score:
-                best_score = score
-                best_params = params
-                best_model = model
-                if self.metrics:
-                    best_metrics = model.get_metrics(X_val, y_val, metrics=self.metrics)
-
-        self._best_score = best_score
-        self._best_params = best_params
-        self._best_model = best_model
-        self._best_metrics = best_metrics
+            if (
+                score > best_score
+                if self.scorer.greater_is_better
+                else score < best_score
+            ):
+                self._best_score = best_score = score
+                self._best_params = params
+                self._best_model = model
+                self._best_metrics = (
+                    model.get_metrics(X_val, y_val, metrics=self.metrics)
+                    if self.metrics
+                    else None
+                )
         return self
 
     def get_best_model(self):
@@ -141,5 +143,5 @@ class GridSearchSelector(BaseModelSelector):
             "scoring": self.scoring,
             "val_size": self.val_size,
             "random_state": self.random_state,
-            "metric_classes": self.metrics,
+            "metrics": self.metrics,
         }

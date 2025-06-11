@@ -3,15 +3,17 @@ import os
 from typing import List
 
 import mlflow
+import mlflow.client
 from sklearn import metrics as sklearn_metrics
 
+from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.models import BaseModel
 from astrodata.tracking.BaseTracker import BaseTracker
 from astrodata.utils.MetricsUtils import get_loss_func
 
 
-class SklearnMLflowTracker(BaseTracker):
+class MlflowBaseTracker(BaseTracker):
     def __init__(
         self,
         log_model=False,
@@ -41,6 +43,60 @@ class SklearnMLflowTracker(BaseTracker):
             os.environ["MLFLOW_TRACKING_USERNAME"] = self.tracking_username
         if self.tracking_password:
             os.environ["MLFLOW_TRACKING_PASSWORD"] = self.tracking_password
+
+    def wrap_fit(self, obj):
+        pass
+
+    def register_best_model(
+        self,
+        metric: BaseMetric,
+        model_artifact_path="model",
+        registered_model_name=None,
+        split_name="train",
+        stage="Production",
+    ):
+        experiment = mlflow.get_experiment_by_name(self.experiment_name)
+        if experiment is None:
+            raise ValueError(f"Experiment '{self.experiment_name}' not found.")
+        experiment_id = experiment.experiment_id
+
+        # Find best run by metric (highest score)
+        runs_df = mlflow.search_runs(
+            experiment_ids=[experiment_id],
+            order_by=[
+                f"metrics.{metric.get_name()}_{split_name} {'DESC' if metric.greater_is_better else 'ASC'}"
+            ],
+            max_results=1,
+        )
+        if runs_df.empty:
+            raise ValueError(f"No runs found in experiment '{self.experiment_name}'.")
+
+        best_run_id = runs_df.iloc[0].run_id
+
+        if not registered_model_name:
+            registered_model_name = self.experiment_name  # Default to experiment name
+
+        model_uri = f"runs:/{best_run_id}/{model_artifact_path}"
+
+        result = mlflow.register_model(model_uri, registered_model_name)
+
+        # Optionally transition to a stage
+        if stage:
+            client = mlflow.client.MlflowClient()
+            client.transition_model_version_stage(
+                name=registered_model_name, version=result.version, stage=stage
+            )
+        print(
+            f"Registered model '{registered_model_name}' version {result.version} as {stage}."
+        )
+
+        return result
+
+
+class SklearnMLflowTracker(MlflowBaseTracker):
+
+    def __init__(self, *arfgs, **kwargs):
+        super().__init__(*arfgs, **kwargs)
 
     def wrap_fit(
         self,

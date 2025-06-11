@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, log_loss
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
@@ -30,11 +30,16 @@ gradientboost = SklearnModel(model_class=GradientBoostingClassifier)
 tracker = SklearnMLflowTracker(
     log_model=True,
     run_name="DemoRun",
-    experiment_name="examples/7_sklearnboosting_tracking.py",
+    experiment_name="examples_7_sklearnboosting_tracking.py",
     extra_tags={"stage": "testing"},
 )
 
-metrics = [SklearnMetric(accuracy_score), SklearnMetric(f1_score, average="micro")]
+accuracy = SklearnMetric(accuracy_score)
+f1 = SklearnMetric(f1_score, average="micro")
+logloss = SklearnMetric(log_loss, greater_is_better=False)
+
+
+metrics = [accuracy, f1, logloss]
 
 tracked_gradientboost = tracker.wrap_fit(
     model=gradientboost,
@@ -53,8 +58,11 @@ gss = GridSearchSelector(
         "learning_rate": [0.01, 0.1],
         "max_depth": [3, 5],
     },
+    scorer=logloss,
 )
 
 gss.fit(X_train, y_train, X_val=X_val, y_val=y_val)
+
+tracker.register_best_model(metric=logloss, split_name="test")
+
 print(gss.get_best_params())
-print(gss.get_best_model())
