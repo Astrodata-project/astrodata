@@ -58,7 +58,9 @@ class SklearnModel(BaseModel):
 
     def get_metrics(self, X, y, metrics: List[BaseMetric] = None):
         y_pred = self.predict(X)
-        y_pred_proba = self.predict_proba(X) if is_classifier(self.model_) else None
+        y_pred_proba = (
+            self.predict_proba(X) if hasattr(self.model_, "predict_proba") else None
+        )
         results = {}
         for metric in metrics:
             try:
