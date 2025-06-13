@@ -83,8 +83,8 @@ class CodeTracker:
                 logger.warning(f"Path does not exist: {path_obj}")
         return existing_paths
 
-    @git_operation("checkout branch")
-    def checkout_branch(self, branch_name: str):
+    @git_operation("checkout")
+    def checkout(self, branch_name: str):
         """
         Checkout to the specified branch.
         If branch does not exist, create it from HEAD.
@@ -94,20 +94,20 @@ class CodeTracker:
             self.branch = branch_name
             logger.info(f"Checked out to existing branch '{branch_name}'")
             return True
+        else:
+            self._create_branch(branch_name)
 
         return False
 
     @git_operation("create branch")
-    def create_branch(self, branch_name: str, base: str = "HEAD") -> bool:
+    def _create_branch(self, branch_name: str, base: str = "HEAD") -> bool:
         """
         Create a new branch from the given base (default: HEAD).
-        Returns True if created, False if already exists or error.
+        Returns True if created.
         """
-        if branch_name in [b.name for b in self.repo.heads]:
-            logger.info(f"Branch '{branch_name}' already exists")
-            return False
         self.repo.create_head(branch_name, base)
-        self.checkout_branch(branch_name)
+        self.repo.heads[branch_name].checkout()
+        self.branch = branch_name
         logger.info(f"Created branch '{branch_name}' from '{base}'")
         return True
 
@@ -121,24 +121,30 @@ class CodeTracker:
         self.repo.create_remote(name, url)
         logger.info(f"Added remote {name}: {url}")
 
-        # If repo has no commits, try to fetch and pull from remote
+        # Always fetch after adding remote
+        self.repo.remotes[name].fetch()
+        logger.info(f"Fetched from remote {name}")
+
+        # If repo has no commits, try to pull from remote
         if not self._has_commits():
-            self._fetch_and_pull(name)
+            # Try to pull default branch if possible
+            try:
+                self.pull(name, self.branch)
+            except Exception as e:
+                logger.warning(f"Could not pull after adding remote: {e}")
 
         return True
 
-    @git_operation("fetch and pull")
-    def _fetch_and_pull(self, remote_name: str):
+    @git_operation("pull")
+    def pull(self, remote_name: str, branch: str):
         """Fetch and pull from remote for empty repository."""
         remote = self.repo.remotes[remote_name]
         with self.repo.git.custom_environment(**self._git_env()):
             remote.fetch()
             logger.info(f"Fetched from remote {remote_name}")
 
-            # Try to pull from default branch (main or master)
-            for branch in ["main", "master"]:
-                if self._try_pull(remote_name, branch):
-                    break
+            if self._try_pull(remote_name, branch):
+                return
 
     @git_operation("reset merge")
     def _reset_merge(self):
@@ -155,7 +161,13 @@ class CodeTracker:
             logger.info(f"Pulled from {remote_name}/{branch}")
             return True
         except GitCommandError as e:
-            if "Merge conflict" in str(e) or "CONFLICT" in str(e):
+            error_msg = str(e)
+            if "would be overwritten by merge" in error_msg:
+                logger.error(
+                    f"Pull failed: Untracked files would be overwritten. "
+                    f"Please move or commit these files, then retry. Details: {error_msg}"
+                )
+            elif "Merge conflict" in error_msg or "CONFLICT" in error_msg:
                 logger.error(
                     f"Merge conflict detected during pull from {remote_name}/{branch}"
                 )
@@ -176,43 +188,52 @@ class CodeTracker:
             logger.warning("No valid paths to track")
             return False
 
-        if not self._add_to_index(existing_paths):
+        if not self.add_to_index(existing_paths):
             return False
 
-        if not self._has_changes():
-            logger.info("No changes to commit")
-            return True
-
-        commit = self._create_commit(commit_message)
+        commit = self.create_commit(commit_message)
         if not commit:
             return False
 
-        return self._push_to_remote(remote_name, self.branch)
+        return self.push(remote_name, self.branch)
 
     @git_operation("add to index")
-    def _add_to_index(self, paths: list) -> bool:
+    def add_to_index(self, paths: list) -> bool:
         """Add paths to Git index."""
+        # Convert to relative paths for ignored() check
         self.repo.index.add(paths)
         logger.info(f"Added {len(paths)} path(s) to index")
         return True
 
     def _has_changes(self) -> bool:
         """Check if there are changes to commit."""
+        if not self._has_commits():
+            # If no commits yet, any staged files are changes
+            return bool(self.repo.index.entries)
         return bool(self.repo.index.diff("HEAD"))
 
-    @git_operation("create commit")
-    def _create_commit(self, message: str):
+    @git_operation("commit")
+    def create_commit(self, message: str):
         """Create a commit with the given message."""
+        if not self._has_changes():
+            logger.info("No changes to commit")
+            return False
         commit = self.repo.index.commit(message)
         logger.info(f"Created commit: {commit.hexsha[:8]} - {message}")
         return commit
 
-    @git_operation("push to remote")
-    def _push_to_remote(self, remote_name: str, branch: str) -> bool:
+    @git_operation("push")
+    def push(self, remote_name: str, branch: str, remote_url: str = None) -> bool:
         """Push current branch to remote."""
         if remote_name not in self.repo.remotes:
-            logger.error(f"Remote '{remote_name}' does not exist")
-            return False
+            if remote_url:
+                self.repo.create_remote(remote_name, remote_url)
+                logger.info(f"Added remote '{remote_name}': {remote_url}")
+            else:
+                logger.error(
+                    f"Remote '{remote_name}' does not exist and no URL provided"
+                )
+                return False
 
         if not self._has_commits():
             logger.warning("Repository has no commits yet")
@@ -246,3 +267,21 @@ class CodeTracker:
             new_branch = self.repo.create_head(branch)
             new_branch.checkout()
             logger.info(f"Created and switched to new branch: {branch}")
+
+    @git_operation("prune and align branches")
+    def align_with_remote(self, remote_name: str = "origin"):
+        """
+        Prune deleted remote branches and optionally delete local branches whose remote is gone.
+        """
+        # Prune remote-tracking branches
+        self.repo.git.fetch("--prune", remote_name)
+        logger.info(f"Pruned deleted branches from remote '{remote_name}'")
+
+        gone_branches = [
+            head.name
+            for head in self.repo.heads
+            if head.tracking_branch() and not head.tracking_branch().is_valid()
+        ]
+        for branch in gone_branches:
+            self.repo.delete_head(branch, force=True)
+            logger.info(f"Deleted local branch '{branch}' as its remote was deleted")
