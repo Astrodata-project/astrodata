@@ -18,6 +18,10 @@ def git_operation(operation_name: str):
             try:
                 return func(*args, **kwargs)
             except GitCommandError as e:
+                if operation_name == "prune and align branches":
+                    logger.warning(
+                        f"{operation_name} failed: {e}. This may be due to no remote branches."
+                    )
                 logger.error(f"{operation_name} failed: {e}")
                 return None
             except Exception as e:
