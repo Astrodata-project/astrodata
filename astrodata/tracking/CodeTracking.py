@@ -22,8 +22,10 @@ def git_operation(operation_name: str):
                     logger.warning(
                         f"{operation_name} failed: {e}. This may be due to no remote branches."
                     )
-                logger.error(f"{operation_name} failed: {e}")
-                return None
+                    return None
+                raise RuntimeError(
+                    f"Git operation '{operation_name}' failed: {e}"
+                ) from e
             except Exception as e:
                 logger.error(f"Unexpected error in {operation_name}: {e}")
                 return None
@@ -148,7 +150,7 @@ class CodeTracker:
             logger.info(f"Fetched from remote {remote_name}")
 
             if self._try_pull(remote_name, branch):
-                return
+                return True
 
     @git_operation("reset merge")
     def _reset_merge(self):
@@ -178,7 +180,6 @@ class CodeTracker:
                 self._reset_merge()
             else:
                 logger.error(f"Pull failed: {e}")
-            return False
 
     def track(
         self,
@@ -279,7 +280,7 @@ class CodeTracker:
         """
         # Prune remote-tracking branches
         self.repo.git.fetch("--prune", remote_name)
-        logger.info(f"Pruned deleted branches from remote '{remote_name}'")
+        logger.info(f"Pruned deleted branches (if any) from remote '{remote_name}'")
 
         gone_branches = [
             head.name

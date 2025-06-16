@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from git import GitCommandError
+
 from astrodata.tracking.utils import get_tracked_files
 from astrodata.utils.logger import setup_logger
 from astrodata.utils.utils import read_config
@@ -34,12 +36,30 @@ class Tracker:
         """
         Orchestrates the tracking of data and code, pushing data and committing code.
         """
+        code_config = self.config.get("code", {})
+        remote_name = code_config.get("remote", {}).get("name", "origin")
+        branch = code_config.get("branch", "main")
+
         if self.code_tracker:
             self.code_tracker.align_with_remote()
+            self.code_tracker.checkout(branch)
+            if not self.code_tracker.pull(remote_name, branch):
+                logger.error("Please resolve manually any conflicts before tracking.")
+                return
+        self._pull_data()
         self._track_data()
         self._track_code()
         self._push_data()
         self._commit_and_push_code(commit_message)
+
+    def _pull_data(self):
+        """
+        Pulls data files using the data tracker.
+        """
+        if not self.data_tracker:
+            return
+        logger.info("Pulling data from DVC remote...")
+        self.data_tracker.pull()
 
     def _track_data(self):
         """
@@ -57,20 +77,16 @@ class Tracker:
         Tracks code files using the code tracker, including handling remotes and branches.
         """
         if not self.code_tracker:
-            return
+            return False
+        logger.info("Tracking code with Git...")
 
         code_config = self.config.get("code", {})
         data_config = self.config.get("data", {})
         remote_name = code_config.get("remote", {}).get("name", "origin")
-        branch = code_config.get("branch", "main")
         if remote_name not in self.code_tracker.repo.remotes:
             remote_url = code_config.get("remote", {}).get("url")
             if remote_url:
                 self.code_tracker.add_remote(remote_name, remote_url)
-        self.code_tracker.checkout(branch)
-        self.code_tracker.pull(remote_name, branch)
-
-        logger.info("Tracking code with Git...")
         final_files = get_tracked_files(
             self.project_path, code_config, self.data_tracker, data_config
         )

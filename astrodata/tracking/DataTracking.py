@@ -40,3 +40,7 @@ class DataTracker:
     def push(self):
         self.dvc_repo.push()
         logger.info("Pushed data to DVC remote")
+
+    def pull(self):
+        self.dvc_repo.pull()
+        logger.info("Pulled data from DVC remote")
