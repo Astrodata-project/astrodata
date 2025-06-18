@@ -6,9 +6,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.model_selection.GridSearchSelector import GridSearchCVSelector
+from astrodata.ml.model_selection.GridSearchSelector import (
+    GridSearchCVSelector,
+    GridSearchSelector,
+)
 from astrodata.ml.models.SklearnModel import SklearnModel
 from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
+
+# TODO aggiungere esempio tracking modello singolo.
 
 data = load_breast_cancer()
 X = pd.DataFrame(data.data, columns=data.feature_names)
@@ -49,6 +54,20 @@ gss = GridSearchCVSelector(
     log_all_models=False,
     metrics=metrics,
 )
+
+# gss = GridSearchSelector(
+#    gradientboost,
+#    val_size=0.2,
+#    param_grid={
+#        "n_estimators": [50, 100],
+#        "learning_rate": [0.01, 0.1],
+#        "max_depth": [3, 5],
+#    },
+#    scorer=logloss,
+#    tracker=tracker,
+#    log_all_models=False,
+#    metrics=metrics,
+# )
 
 gss.fit(X_train, y_train, X_test=X_test, y_test=y_test)
 

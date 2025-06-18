@@ -13,6 +13,8 @@ from astrodata.ml.models.XGBoostModel import XGBoostModel
 from astrodata.preml import OHE, MissingImputator, PremlPipeline
 from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
 
+# TODO rendere questo l'esempio definitivo, idealmente con hyperopt.
+
 # define loader
 loader = ParquetLoader()
 

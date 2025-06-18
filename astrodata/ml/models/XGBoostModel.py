@@ -41,7 +41,7 @@ class XGBoostModel(BaseModel):
         if "eval_set" not in fit_params:
             fit_params["eval_set"] = [(X, y)]
         self.model_ = self.model_class(**self.model_params)
-        self.model_.fit(X, y, **fit_params)
+        self.model_.fit(X, y, verbose=False, **fit_params)
         self._evals_result = self.model_.evals_result()
         return self
 
