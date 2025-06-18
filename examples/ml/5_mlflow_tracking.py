@@ -13,6 +13,8 @@ from astrodata.ml.model_selection.GridSearchSelector import (
 from astrodata.ml.models.SklearnModel import SklearnModel
 from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
 
+# TODO aggiungere esempio tracking modello singolo.
+
 data = load_breast_cancer()
 X = pd.DataFrame(data.data, columns=data.feature_names)
 y = pd.Series(data.target)

@@ -27,6 +27,8 @@ from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
 
 logging.basicConfig(level=logging.INFO)
 
+# TODO forse togliere CV?
+
 ############################
 ## Classification Example ##
 ############################

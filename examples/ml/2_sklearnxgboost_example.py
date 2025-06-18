@@ -16,6 +16,10 @@ y = pd.Series(data.target)
 le = LabelEncoder()
 y = le.fit_transform(y)
 
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42
+)
+
 # Instantiate and configure the XGBoost model
 xgb_model = XGBoostModel(
     model_class=XGBClassifier, tree_method="hist", enable_categorical=True
@@ -24,9 +28,6 @@ xgb_model = XGBoostModel(
 skl_model = SklearnModel(model_class=LinearSVC, penalty="l2", loss="squared_hinge")
 
 models = [xgb_model, skl_model]
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.25, random_state=42
-)
 
 for model in models:
     print(model)
