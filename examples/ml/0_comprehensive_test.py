@@ -23,7 +23,6 @@ from astrodata.ml.model_selection.GridSearchSelector import (
 )
 from astrodata.ml.models.SklearnModel import SklearnModel
 from astrodata.ml.models.XGBoostModel import XGBoostModel
-from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
 
 logging.basicConfig(level=logging.INFO)
 

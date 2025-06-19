@@ -18,3 +18,7 @@ class BaseMetric(ABC):
     @abstractmethod
     def greater_is_better(self):
         pass
+
+    def __eq__(self, other):
+        if name := getattr(other, "get_name", None):
+            return self.get_name() == name()

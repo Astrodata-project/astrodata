@@ -1,4 +1,5 @@
 import itertools
+from typing import List
 
 import numpy as np
 from sklearn.model_selection import KFold, train_test_split
@@ -21,7 +22,7 @@ class GridSearchCVSelector(BaseModelSelector):
         scorer: BaseMetric = None,
         cv=5,
         random_state=42,
-        metrics=None,
+        metrics: List[BaseMetric] = None,
         tracker: ModelTracker = None,
         log_all_models: bool = False,
     ):
@@ -31,7 +32,9 @@ class GridSearchCVSelector(BaseModelSelector):
         self.scorer = scorer
         self.cv = cv
         self.random_state = random_state
-        self.metrics = metrics
+        self.metrics = metrics or []
+        if scorer is not None and scorer not in self.metrics:
+            self.metrics.append(scorer)
         self._best_model = None
         self._best_params = None
         self._best_score = None
@@ -168,7 +171,9 @@ class GridSearchSelector(BaseModelSelector):
         self.scorer = scorer
         self.val_size = val_size
         self.random_state = random_state
-        self.metrics = metrics
+        self.metrics = metrics or []
+        if scorer is not None and scorer not in self.metrics:
+            self.metrics.append(scorer)
         self.tracker = tracker
         self.log_all_models = log_all_models
         self._best_model = None

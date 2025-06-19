@@ -97,5 +97,4 @@ class SklearnModel(BaseModel):
         return self.model_ is not None and hasattr(self.model_, "train_score_")
 
     def __repr__(self):
-        params = ", ".join(f"{k}={v!r}" for k, v in self.model_params.items())
-        return f"{self.__class__.__name__}(model_class={self.model_class.__name__}, {params})"
+        return f"{self.__class__.__name__}({self.model_class.__name__})"
