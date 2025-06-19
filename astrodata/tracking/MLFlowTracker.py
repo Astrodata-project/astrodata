@@ -4,14 +4,14 @@ from typing import List, Optional
 
 import mlflow
 
+from astrodata.ml.metrics._utils import get_loss_func
 from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.models import BaseModel
-from astrodata.tracking.BaseTracker import BaseTracker
-from astrodata.utils.MetricsUtils import get_loss_func
+from astrodata.tracking.ModelTracker import ModelTracker
 
 
-class MlflowBaseTracker(BaseTracker):
+class MlflowBaseTracker(ModelTracker):
     def __init__(
         self,
         run_name: Optional[str] = None,

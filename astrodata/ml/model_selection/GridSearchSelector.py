@@ -6,7 +6,7 @@ from sklearn.model_selection import KFold, train_test_split
 from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.model_selection.BaseModelSelector import BaseModelSelector
 from astrodata.ml.models.BaseModel import BaseModel
-from astrodata.tracking.BaseTracker import BaseTracker
+from astrodata.tracking.ModelTracker import ModelTracker
 
 
 class GridSearchCVSelector(BaseModelSelector):
@@ -22,7 +22,7 @@ class GridSearchCVSelector(BaseModelSelector):
         cv=5,
         random_state=42,
         metrics=None,
-        tracker: BaseTracker = None,
+        tracker: ModelTracker = None,
         log_all_models: bool = False,
     ):
         super().__init__()
@@ -159,7 +159,7 @@ class GridSearchSelector(BaseModelSelector):
         val_size=0.2,
         random_state=42,
         metrics=None,
-        tracker: BaseTracker = None,
+        tracker: ModelTracker = None,
         log_all_models: bool = False,
     ):
         super().__init__()

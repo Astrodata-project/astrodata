@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class BaseTracker(ABC):
+class ModelTracker(ABC):
     @abstractmethod
     def wrap_fit(self, obj):
         pass

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from git import GitCommandError
 
-from astrodata.tracking.utils import get_tracked_files
+from astrodata.tracking._utils import get_tracked_files
 from astrodata.utils.logger import setup_logger
 from astrodata.utils.utils import read_config
 
