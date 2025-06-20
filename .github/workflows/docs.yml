@@ -24,10 +24,11 @@ jobs:
       - name: Build Sphinx docs
         run: |
           cd docs
-          make html
+          make singlehtml
 
-      - name: Upload documentation HTML
+      - name: Upload single HTML documentation
         uses: actions/upload-artifact@v4
         with:
-          name: sphinx-html
-          path: docs/_build/html/
+          name: sphinx-singlehtml
+          path: docs/_build/singlehtml/
+
