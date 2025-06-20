@@ -10,9 +10,6 @@ from astrodata.ml.model_selection.GridSearchSelector import (
     GridSearchSelector,
 )
 from astrodata.ml.models.SklearnModel import SklearnModel
-from astrodata.utils.logger import setup_logger
-
-logger = setup_logger(__name__)
 
 if __name__ == "__main__":
     # This example shows how to use the GridSearchCVSelector with a SklearnModel.
@@ -48,10 +45,10 @@ if __name__ == "__main__":
         metrics=None,
     )
 
-    logger.info(gss)
+    print(gss)
 
     gss.fit(X_train, y_train, X_test=X_test, y_test=y_test)
 
-    logger.info("Best parameters found: %s", gss.get_best_params())
-    logger.info("Best metrics: %s", gss.get_best_metrics())
-    logger.info("Best model: %s", gss.get_best_model().get_params())
+    print("Best parameters found: %s", gss.get_best_params())
+    print("Best metrics: %s", gss.get_best_metrics())
+    print("Best model: %s", gss.get_best_model().get_params())

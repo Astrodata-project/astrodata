@@ -9,9 +9,6 @@ from xgboost import XGBClassifier
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.models.SklearnModel import SklearnModel
 from astrodata.ml.models.XGBoostModel import XGBoostModel
-from astrodata.utils.logger import setup_logger
-
-logger = setup_logger(__name__)
 
 # This example shows how to use different models from the astrodata.ml.models package in the same for loop.
 
@@ -47,10 +44,10 @@ if __name__ == "__main__":
     # Once everything is set up, we can loop through the models, fit them to the training data, and evaluate their performance on the test set.
 
     for model in models:
-        logger.info("Model instantiated: %s", model)
+        print("Model instantiated: %s", model)
         model.fit(X_train, y_train)
 
         preds = model.predict(X_test)
         res = model.get_metrics(X_test, y_test, metrics=metrics)
 
-        logger.info("Metrics for model %s: %s", model, res)
+        print("Metrics for model %s: %s", model, res)

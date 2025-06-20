@@ -1,18 +1,27 @@
 from abc import ABC, abstractmethod
+from typing import Any
+
+from astrodata.ml.models import BaseModel
 
 
 class ModelTracker(ABC):
-    @abstractmethod
-    def wrap_fit(self, obj):
-        pass
+    """
+    Abstract base class for tracking model fitting processes.
+    """
 
     @abstractmethod
-    def register_best_model(
-        self,
-        metric,
-        model_artifact_path="model",
-        registered_model_name=None,
-        split_name="train",
-        stage="Production",
-    ):
+    def wrap_fit(self, obj: BaseModel) -> BaseModel:
+        """
+        Wrap the fit method of an object to add tracking or logging.
+
+        Parameters
+        ----------
+        obj : Any
+            The object whose fit method will be wrapped.
+
+        Returns
+        -------
+        BaseModel
+            The wrapped object.
+        """
         pass

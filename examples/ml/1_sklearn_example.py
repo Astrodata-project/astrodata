@@ -11,9 +11,6 @@ from sklearn.svm import LinearSVR
 
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.models.SklearnModel import SklearnModel
-from astrodata.utils.logger import setup_logger
-
-logger = setup_logger(__name__)
 
 if __name__ == "__main__":
 
@@ -39,7 +36,7 @@ if __name__ == "__main__":
 
     model = SklearnModel(model_class=LinearSVR, random_state=42)
 
-    logger.info("Model instantiated: %s", model)
+    print("Model instantiated: %s", model)
 
     # We can define the metrics we want to use for evaluation.
     # SklearnMetric is a wrapper around sklearn metrics that provides compatibility with the astrodata.ml framework.
@@ -67,4 +64,4 @@ if __name__ == "__main__":
         metrics=metrics,
     )
 
-    logger.info("Metrics on test set: %s", metrics)
+    print("Metrics on test set: %s", metrics)

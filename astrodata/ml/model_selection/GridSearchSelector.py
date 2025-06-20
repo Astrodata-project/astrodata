@@ -1,5 +1,5 @@
 import itertools
-from typing import List
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 from sklearn.model_selection import KFold, train_test_split
@@ -12,7 +12,7 @@ from astrodata.tracking.ModelTracker import ModelTracker
 
 class GridSearchCVSelector(BaseModelSelector):
     """
-    Performs grid search with cross-validation.
+    GridSearchCVSelector performs exhaustive grid search over a parameter grid using cross-validation.
     """
 
     def __init__(
@@ -26,7 +26,28 @@ class GridSearchCVSelector(BaseModelSelector):
         tracker: ModelTracker = None,
         log_all_models: bool = False,
     ):
-        super().__init__()
+        """
+        Initialize the GridSearchCVSelector.
+
+        Parameters
+        ----------
+        model : BaseModel
+            The model to optimize.
+        param_grid : dict
+            Dictionary with parameters names (str) as keys and lists of parameter settings to try as values.
+        scorer : BaseMetric, optional
+            The metric used to select the best model. If None, model's default score method is used.
+        cv : int or cross-validation splitter (default=5)
+            Number of folds (int) or an object that yields train/test splits.
+        random_state : int, optional
+            Random seed for reproducibility.
+        metrics : list of BaseMetric, optional
+            Additional metrics to evaluate on validation folds.
+        tracker : ModelTracker, optional
+            Optional experiment/model tracker for logging.
+        log_all_models : bool, optional
+            If True, logs all models, not just the best one.
+        """
         self.model = model
         self.param_grid = param_grid
         self.scorer = scorer
@@ -42,7 +63,26 @@ class GridSearchCVSelector(BaseModelSelector):
         self.tracker = tracker
         self.log_all_models = log_all_models
 
-    def fit(self, X, y, X_test=None, y_test=None, *args, **kwargs):
+    def fit(self, X, y, X_test=None, y_test=None, *args, **kwargs) -> BaseModelSelector:
+        """
+        Run grid search with cross-validation.
+
+        Parameters
+        ----------
+        X : array-like
+            Training data features.
+        y : array-like
+            Training data targets.
+        X_test : array-like, optional
+            Test data features for tracking/logging (not used in selection).
+        y_test : array-like, optional
+            Test data targets for tracking/logging (not used in selection).
+
+        Returns
+        -------
+        self : object
+            Fitted selector.
+        """
         greater_is_better = self.scorer.greater_is_better if self.scorer else True
         best_score = -np.inf if greater_is_better else np.inf
 
@@ -127,16 +167,48 @@ class GridSearchCVSelector(BaseModelSelector):
 
         return self
 
-    def get_best_model(self):
+    def get_best_model(self) -> Optional[BaseModel]:
+        """
+        Get the best model fitted on all data using the best found parameters.
+
+        Returns
+        -------
+        BaseModel
+            The best fitted model.
+        """
         return self._best_model
 
-    def get_best_params(self):
+    def get_best_params(self) -> Optional[dict]:
+        """
+        Get the best parameter combination found during grid search.
+
+        Returns
+        -------
+        dict
+            Best parameters.
+        """
         return self._best_params
 
-    def get_best_metrics(self):
+    def get_best_metrics(self) -> Optional[Dict[str, Any]]:
+        """
+        Get the metrics for the best model averaged over cross-validation folds.
+
+        Returns
+        -------
+        dict or None
+            Averaged metrics, or None if no metrics were specified.
+        """
         return self._best_metrics
 
-    def get_params(self, **kwargs):
+    def get_params(self, **kwargs) -> Dict[str, Any]:
+        """
+        Get parameters of this selector instance.
+
+        Returns
+        -------
+        dict
+            Parameters used to initialize this object.
+        """
         return {
             "model": self.model,
             "param_grid": self.param_grid,
@@ -151,7 +223,7 @@ class GridSearchCVSelector(BaseModelSelector):
 
 class GridSearchSelector(BaseModelSelector):
     """
-    Performs grid search using a single validation split.
+    GridSearchSelector performs exhaustive grid search over a parameter grid using a single validation split.
     """
 
     def __init__(
@@ -165,7 +237,28 @@ class GridSearchSelector(BaseModelSelector):
         tracker: ModelTracker = None,
         log_all_models: bool = False,
     ):
-        super().__init__()
+        """
+        Initialize the GridSearchSelector.
+
+        Parameters
+        ----------
+        model : BaseModel
+            The model to optimize.
+        param_grid : dict
+            Dictionary with parameters names (str) as keys and lists of parameter settings to try as values.
+        scorer : BaseMetric, optional
+            The metric used to select the best model. If None, model's default score method is used.
+        val_size : float, optional
+            Fraction of training data to use as validation split (default 0.2).
+        random_state : int, optional
+            Random seed for reproducibility.
+        metrics : list of BaseMetric, optional
+            Additional metrics to evaluate on validation set.
+        tracker : ModelTracker, optional
+            Optional experiment/model tracker for logging.
+        log_all_models : bool, optional
+            If True, logs all models, not just the best one.
+        """
         self.model = model
         self.param_grid = param_grid
         self.scorer = scorer
@@ -191,7 +284,35 @@ class GridSearchSelector(BaseModelSelector):
         y_test=None,
         *args,
         **kwargs,
-    ):
+    ) -> BaseModelSelector:
+        """
+        Run grid search using a single train/validation split.
+
+        Parameters
+        ----------
+        X_train : array-like
+            Training data features.
+        y_train : array-like
+            Training data targets.
+        X_val : array-like, optional
+            Validation data features. If None, a random split is performed.
+        y_val : array-like, optional
+            Validation data targets. If None, a random split is performed.
+        X_test : array-like, optional
+            Test data features for tracking/logging (not used in selection).
+        y_test : array-like, optional
+            Test data targets for tracking/logging (not used in selection).
+
+        Returns
+        -------
+        self : object
+            Fitted selector.
+
+        Raises
+        ------
+        ValueError
+            If neither validation data nor val_size is provided.
+        """
         # If validation data not provided, split from training data
         if X_val is None or y_val is None:
             if self.val_size is None:
@@ -266,16 +387,48 @@ class GridSearchSelector(BaseModelSelector):
 
         return self
 
-    def get_best_model(self):
+    def get_best_model(self) -> Optional[BaseModel]:
+        """
+        Get the best model fitted on all data using the best found parameters.
+
+        Returns
+        -------
+        BaseModel
+            The best fitted model.
+        """
         return self._best_model
 
-    def get_best_params(self):
+    def get_best_params(self) -> Optional[dict]:
+        """
+        Get the best parameter combination found during grid search.
+
+        Returns
+        -------
+        dict
+            Best parameters.
+        """
         return self._best_params
 
-    def get_best_metrics(self):
+    def get_best_metrics(self) -> Optional[Dict[str, Any]]:
+        """
+        Get the metrics for the best model on validation data.
+
+        Returns
+        -------
+        dict or None
+            Metrics for the best model, or None if no metrics were specified.
+        """
         return self._best_metrics
 
-    def get_params(self, **kwargs):
+    def get_params(self, **kwargs) -> Dict[str, Any]:
+        """
+        Get parameters of this selector instance.
+
+        Returns
+        -------
+        dict
+            Parameters used to initialize this object.
+        """
         return {
             "model": self.model,
             "param_grid": self.param_grid,

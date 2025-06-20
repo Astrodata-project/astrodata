@@ -8,9 +8,6 @@ from sklearn.preprocessing import LabelEncoder
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.models.SklearnModel import SklearnModel
 from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
-from astrodata.utils.logger import setup_logger
-
-logger = setup_logger(__name__)
 
 # This example demonstrates how to use the tracking capabilities of astrodata.ml with a simple model.
 # It performs hyperparameter tuning on a GradientBoostingClassifier model using cross-validation and tracks the
@@ -64,7 +61,7 @@ if __name__ == "__main__":
 
     tracked_gradientboost.fit(X_train, y_train)
 
-    logger.info(
+    print(
         "Metrics on test set: %s",
         tracked_gradientboost.get_metrics(
             X_test,

@@ -9,9 +9,6 @@ from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.model_selection.GridSearchSelector import GridSearchCVSelector
 from astrodata.ml.models.SklearnModel import SklearnModel
 from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
-from astrodata.utils.logger import setup_logger
-
-logger = setup_logger(__name__)
 
 # This example demonstrates how to use the tracking capabilities of astrodata.ml with a GridSearchCVSelector.
 # It performs hyperparameter tuning on a GradientBoostingClassifier model using cross-validation and tracks the
@@ -75,8 +72,8 @@ if __name__ == "__main__":
 
     gss.fit(X_train, y_train, X_test=X_test, y_test=y_test)
 
-    logger.info("Best parameters found: %s", gss.get_best_params())
-    logger.info("Best metrics: %s", gss.get_best_metrics())
+    print("Best parameters found: %s", gss.get_best_params())
+    print("Best metrics: %s", gss.get_best_metrics())
 
     # Here we tag for production the best model found during the grid search. The experiments in mlflow
     # are organized by the specified metric and the best performing one is registered.

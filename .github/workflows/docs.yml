@@ -1,0 +1,33 @@
+name: Build Sphinx Docs
+
+on: [push]
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'  # or your preferred version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install sphinx sphinx-autodoc-typehints
+          pip install sphinx_rtd_theme  # optional, for a nice theme
+          pip install .                # if your codebase is a package
+
+      - name: Build Sphinx docs
+        run: |
+          cd docs
+          make html
+
+      - name: Upload documentation HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: sphinx-html
+          path: docs/_build/html/

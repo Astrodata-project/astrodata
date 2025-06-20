@@ -3,15 +3,26 @@ import os
 from typing import List, Optional
 
 import mlflow
+import mlflow.models
+import mlflow.version
 
 from astrodata.ml.metrics._utils import get_loss_func
 from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.models import BaseModel
 from astrodata.tracking.ModelTracker import ModelTracker
+from astrodata.utils.logger import setup_logger
+
+logger = setup_logger(__name__)
 
 
 class MlflowBaseTracker(ModelTracker):
+    """
+    Base tracker class for MLflow experiment tracking.
+
+    Handles MLflow configuration and provides base methods for registering tracked models.
+    """
+
     def __init__(
         self,
         run_name: Optional[str] = None,
@@ -21,6 +32,24 @@ class MlflowBaseTracker(ModelTracker):
         tracking_username: Optional[str] = None,
         tracking_password: Optional[str] = None,
     ):
+        """
+        Initialize MlflowBaseTracker.
+
+        Parameters
+        ----------
+        run_name : str, optional
+            Name for MLflow run.
+        experiment_name : str, optional
+            Name of the MLflow experiment.
+        extra_tags : dict, optional
+            Extra tags to log with the run.
+        tracking_uri : str, optional
+            MLflow tracking server URI.
+        tracking_username : str, optional
+            Username for authentication (if needed).
+        tracking_password : str, optional
+            Password for authentication (if needed).
+        """
         super().__init__()
         self.run_name = run_name
         self.experiment_name = experiment_name
@@ -31,6 +60,9 @@ class MlflowBaseTracker(ModelTracker):
         self._configure_mlflow_tracking()
 
     def _configure_mlflow_tracking(self):
+        """
+        Configure MLflow tracking URI and environment variables for authentication.
+        """
         if self.tracking_uri:
             mlflow.set_tracking_uri(self.tracking_uri)
         if self.tracking_username:
@@ -38,8 +70,13 @@ class MlflowBaseTracker(ModelTracker):
         if self.tracking_password:
             os.environ["MLFLOW_TRACKING_PASSWORD"] = self.tracking_password
 
-    def wrap_fit(self, obj):
-        pass  # To be implemented in subclass
+    def wrap_fit(self, obj) -> BaseModel:
+        """
+        Placeholder for tracker-specific model wrapping.
+
+        To be implemented in subclass.
+        """
+        pass
 
     def register_best_model(
         self,
@@ -48,7 +85,33 @@ class MlflowBaseTracker(ModelTracker):
         registered_model_name: Optional[str] = None,
         split_name: str = "train",
         stage: str = "Production",
-    ):
+    ) -> None:
+        """
+        Register the best model in MLflow Model Registry based on a metric.
+
+        Parameters
+        ----------
+        metric : BaseMetric
+            Metric used to select the best run.
+        model_artifact_path : str, optional
+            Path to the model artifact in MLflow run.
+        registered_model_name : str, optional
+            Name for the registered model. Defaults to experiment name.
+        split_name : str, optional
+            Which split's metric to use ('train', 'val', or 'test').
+        stage : str, optional
+            Model stage to assign (e.g., 'Production', 'Staging').
+
+        Returns
+        -------
+        mlflow.entities.model_registry.RegisteredModelVersion
+            The result of the registration.
+
+        Raises
+        ------
+        ValueError
+            If the experiment or suitable run is not found.
+        """
         experiment = mlflow.get_experiment_by_name(self.experiment_name)
         if experiment is None:
             raise ValueError(f"Experiment '{self.experiment_name}' not found.")
@@ -73,12 +136,25 @@ class MlflowBaseTracker(ModelTracker):
             client.set_registered_model_alias(
                 name=model_name, alias=stage, version=result.version
             )
-        print(f"Registered model '{model_name}' version {result.version} as {stage}.")
-        return result
+
+        logger.info(
+            f"Registered model '{model_name}' version {result.version} as {stage}."
+        )
 
 
 class SklearnMLflowTracker(MlflowBaseTracker):
+    """
+    Tracker for scikit-learn models with MLflow integration.
+
+    Provides run lifecycle, parameter logging, metric logging, and optional model logging.
+    """
+
     def __init__(self, *args, **kwargs):
+        """
+        Initialize SklearnMLflowTracker.
+
+        Parameters are passed to MlflowBaseTracker.
+        """
         super().__init__(*args, **kwargs)
 
     def wrap_fit(
@@ -90,13 +166,55 @@ class SklearnMLflowTracker(MlflowBaseTracker):
         y_val=None,
         metrics: Optional[List[BaseMetric]] = None,
         log_model: bool = False,
-    ):
+    ) -> BaseModel:
+        """
+        Wrap a BaseModel's fit method to perform MLflow logging.
+
+        Parameters
+        ----------
+        model : BaseModel
+            The model to wrap.
+        X_test : array-like, optional
+            Test data for metric logging.
+        y_test : array-like, optional
+            Test labels for metric logging.
+        X_val : array-like, optional
+            Validation data for metric logging.
+        y_val : array-like, optional
+            Validation labels for metric logging.
+        metrics : list of BaseMetric, optional
+            Metrics to log. If missing, a default loss metric is added.
+        log_model : bool, optional
+            If True, log the fitted model as an MLflow artifact.
+
+        Returns
+        -------
+        BaseModel
+            A new instance of the model with an MLflow-logging fit method.
+        """
         orig_class = model.__class__
         tracker = self
         metrics = metrics or []
 
         @functools.wraps(orig_class.fit)
         def fit_with_tracking(self, X, y, *args, **kwargs):
+            """
+            Fit method replacement that logs parameters, metrics, and model to MLflow.
+
+            Parameters
+            ----------
+            X : array-like
+                Training features.
+            y : array-like
+                Training targets.
+            *args, **kwargs
+                Additional arguments for the fit method.
+
+            Returns
+            -------
+            self
+                Fitted model instance.
+            """
             mlflow.set_experiment(tracker.experiment_name)
             with mlflow.start_run(run_name=tracker.run_name):
                 mlflow.set_tags(tracker.extra_tags)
@@ -104,7 +222,7 @@ class SklearnMLflowTracker(MlflowBaseTracker):
                     params = self.get_params()
                     mlflow.log_params(params)
                 except Exception as e:
-                    print(f"Could not log params: {e}")
+                    logger.error(f"Could not log params: {e}")
 
                 result = orig_class.fit(self, X, y, *args, **kwargs)
 
@@ -113,10 +231,22 @@ class SklearnMLflowTracker(MlflowBaseTracker):
                     try:
                         mlflow.sklearn.log_model(self, "model", input_example=X[:5])
                     except Exception as e:
-                        print(f"Could not log model: {e}")
+                        logger.error(f"Could not log model: {e}")
 
                 # Helper for metrics and loss
                 def log_metrics_and_loss(X_split, y_split, split_name):
+                    """
+                    Log metrics and loss curves for a data split.
+
+                    Parameters
+                    ----------
+                    X_split : array-like
+                        Features.
+                    y_split : array-like
+                        Labels.
+                    split_name : str
+                        Name of the split ('train', 'val', 'test').
+                    """
                     if (
                         X_split is not None
                         and y_split is not None
