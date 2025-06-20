@@ -14,21 +14,26 @@ jobs:
         with:
           python-version: '3.11'  # or your preferred version
 
-      - name: Install dependencies
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+          enable-cache: true
+      
+      - name: Install dependencies (including dev)
         run: |
-          python -m pip install --upgrade pip
-          pip install sphinx sphinx-autodoc-typehints
-          pip install sphinx_rtd_theme  # optional, for a nice theme
-          pip install .                # if your codebase is a package
+          uv sync
+          uv sync --group dev
 
       - name: Build Sphinx docs
         run: |
+          source .venv/bin/activate
           cd docs
-          make singlehtml
+          make html
 
-      - name: Upload single HTML documentation
+      - name: Upload documentation HTML
         uses: actions/upload-artifact@v4
         with:
-          name: sphinx-singlehtml
-          path: docs/_build/singlehtml/
+          name: sphinx-html
+          path: docs/_build/html/
 

@@ -6,10 +6,10 @@ import pandas as pd
 from sklearn.base import is_classifier
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
-from astrodata.ml.models.BaseModel import BaseModel
+from astrodata.ml.models.BaseMlModel import BaseMlModel
 
 
-class SklearnModel(BaseModel):
+class SklearnModel(BaseMlModel):
     """
     A wrapper class for scikit-learn models to standardize the interface and add extended functionality.
     """
@@ -42,7 +42,7 @@ class SklearnModel(BaseModel):
         params.update(self.model_params)
         return params
 
-    def set_params(self, **params) -> BaseModel:
+    def set_params(self, **params) -> BaseMlModel:
         """
         Set parameters for this model.
 
@@ -94,7 +94,7 @@ class SklearnModel(BaseModel):
         """
         self.model_ = joblib.load(filepath, **kwargs)
 
-    def fit(self, X, y, **fit_params) -> BaseModel:
+    def fit(self, X, y, **fit_params) -> BaseMlModel:
         """
         Fit the model to data.
 

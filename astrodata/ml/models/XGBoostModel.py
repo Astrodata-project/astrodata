@@ -4,10 +4,10 @@ import joblib
 import pandas as pd
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
-from astrodata.ml.models.BaseModel import BaseModel
+from astrodata.ml.models.BaseMlModel import BaseMlModel
 
 
-class XGBoostModel(BaseModel):
+class XGBoostModel(BaseMlModel):
     """
     Wrapper for XGBoost models, providing a standardized interface and additional utilities.
     """
@@ -47,7 +47,7 @@ class XGBoostModel(BaseModel):
         params.update(self.model_params)
         return params
 
-    def set_params(self, **params) -> BaseModel:
+    def set_params(self, **params) -> BaseMlModel:
         """
         Set parameters for this model.
 
@@ -99,7 +99,7 @@ class XGBoostModel(BaseModel):
         """
         self.model_ = joblib.load(filepath, **kwargs)
 
-    def fit(self, X, y, **fit_params) -> BaseModel:
+    def fit(self, X, y, **fit_params) -> BaseMlModel:
         """
         Fit the XGBoost model.
 

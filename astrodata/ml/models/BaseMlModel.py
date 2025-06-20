@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
 
-class BaseModel(ABC):
+class BaseMlModel(ABC):
     """
     Abstract base class for machine learning models.
     Defines the standard interface expected from all models.
@@ -15,7 +15,7 @@ class BaseModel(ABC):
         pass
 
     @abstractmethod
-    def fit(self, X: Any, y: Any, **kwargs) -> "BaseModel":
+    def fit(self, X: Any, y: Any, **kwargs) -> "BaseMlModel":
         """
         Fit the model to the training data.
 
@@ -30,7 +30,7 @@ class BaseModel(ABC):
 
         Returns
         -------
-        BaseModel
+        BaseMlModel
             Returns self.
         """
         pass
@@ -90,7 +90,7 @@ class BaseModel(ABC):
         pass
 
     @abstractmethod
-    def load(self, filepath: str, **kwargs) -> "BaseModel":
+    def load(self, filepath: str, **kwargs) -> "BaseMlModel":
         """
         Load the model from the given filepath.
 
@@ -103,7 +103,7 @@ class BaseModel(ABC):
 
         Returns
         -------
-        BaseModel
+        BaseMlModel
             The loaded model instance.
         """
         pass
@@ -161,13 +161,13 @@ class BaseModel(ABC):
         """
         raise NotImplementedError
 
-    def clone(self) -> "BaseModel":
+    def clone(self) -> "BaseMlModel":
         """
         Create a (shallow) clone of this model instance.
 
         Returns
         -------
-        BaseModel
+        BaseMlModel
             Cloned model instance.
         """
         new_instance = self.__class__(model_class=self.model_class, **self.model_params)

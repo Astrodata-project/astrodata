@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from astrodata.ml.models import BaseModel
+from astrodata.ml.models import BaseMlModel
 
 
 class ModelTracker(ABC):
@@ -10,7 +10,7 @@ class ModelTracker(ABC):
     """
 
     @abstractmethod
-    def wrap_fit(self, obj: BaseModel) -> BaseModel:
+    def wrap_fit(self, obj: BaseMlModel) -> BaseMlModel:
         """
         Wrap the fit method of an object to add tracking or logging.
 
@@ -21,7 +21,7 @@ class ModelTracker(ABC):
 
         Returns
         -------
-        BaseModel
+        BaseMlModel
             The wrapped object.
         """
         pass

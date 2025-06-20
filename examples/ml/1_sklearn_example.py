@@ -14,7 +14,7 @@ from astrodata.ml.models.SklearnModel import SklearnModel
 
 if __name__ == "__main__":
 
-    # This example demonstrates how to use SklearnModel (or any astrodata.ml.models.BaseModel for that matter) for bsic tasks
+    # This example demonstrates how to use SklearnModel (or any astrodata.ml.models.BaseMlModel for that matter) for bsic tasks
 
     # Here we use the diabetes dataset, which is a regression dataset, skleadn.datasets.load_diabetes takes care of loading the data
     # and splitting it into features (X) and target (y). We then split the data into training and test sets using train_test_split from sklearn.model_selection.

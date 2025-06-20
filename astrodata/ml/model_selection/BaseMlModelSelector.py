@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
-from astrodata.ml.models import BaseModel
+from astrodata.ml.models import BaseMlModel
 
 
-class BaseModelSelector(ABC):
+class BaseMlModelSelector(ABC):
     """
     Abstract base class for model selection strategies.
 
@@ -13,11 +13,11 @@ class BaseModelSelector(ABC):
     """
 
     def __init__(self):
-        """Initialize the BaseModelSelector."""
+        """Initialize the BaseMlModelSelector."""
         pass
 
     @abstractmethod
-    def fit(self, X: Any, y: Any, *args, **kwargs) -> "BaseModelSelector":
+    def fit(self, X: Any, y: Any, *args, **kwargs) -> "BaseMlModelSelector":
         """
         Fit the model selector to data.
 
@@ -32,13 +32,13 @@ class BaseModelSelector(ABC):
 
         Returns
         -------
-        BaseModelSelector
+        BaseMlModelSelector
             Returns self.
         """
         pass
 
     @abstractmethod
-    def get_best_model(self) -> BaseModel:
+    def get_best_model(self) -> BaseMlModel:
         """
         Return the best model found during selection.
 
@@ -61,6 +61,19 @@ class BaseModelSelector(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_best_metrics(self) -> Dict[str, Any]:
+        """
+        Return the best metrics found during selection.
+
+        Returns
+        -------
+        dict
+            Dictionary of best metrics.
+        """
+        pass
+
+    @abstractmethod
     def get_params(self, **kwargs) -> Dict[str, Any]:
         """
         Return parameters of the selector. Can be optionally overridden.

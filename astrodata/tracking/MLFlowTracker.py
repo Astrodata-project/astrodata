@@ -9,7 +9,7 @@ import mlflow.version
 from astrodata.ml.metrics._utils import get_loss_func
 from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.models import BaseModel
+from astrodata.ml.models import BaseMlModel
 from astrodata.tracking.ModelTracker import ModelTracker
 from astrodata.utils.logger import setup_logger
 
@@ -70,7 +70,7 @@ class MlflowBaseTracker(ModelTracker):
         if self.tracking_password:
             os.environ["MLFLOW_TRACKING_PASSWORD"] = self.tracking_password
 
-    def wrap_fit(self, obj) -> BaseModel:
+    def wrap_fit(self, obj) -> BaseMlModel:
         """
         Placeholder for tracker-specific model wrapping.
 
@@ -159,20 +159,20 @@ class SklearnMLflowTracker(MlflowBaseTracker):
 
     def wrap_fit(
         self,
-        model: BaseModel,
+        model: BaseMlModel,
         X_test=None,
         y_test=None,
         X_val=None,
         y_val=None,
         metrics: Optional[List[BaseMetric]] = None,
         log_model: bool = False,
-    ) -> BaseModel:
+    ) -> BaseMlModel:
         """
-        Wrap a BaseModel's fit method to perform MLflow logging.
+        Wrap a BaseMlModel's fit method to perform MLflow logging.
 
         Parameters
         ----------
-        model : BaseModel
+        model : BaseMlModel
             The model to wrap.
         X_test : array-like, optional
             Test data for metric logging.
@@ -189,7 +189,7 @@ class SklearnMLflowTracker(MlflowBaseTracker):
 
         Returns
         -------
-        BaseModel
+        BaseMlModel
             A new instance of the model with an MLflow-logging fit method.
         """
         orig_class = model.__class__

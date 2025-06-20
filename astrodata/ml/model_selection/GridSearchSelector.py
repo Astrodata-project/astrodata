@@ -5,19 +5,19 @@ import numpy as np
 from sklearn.model_selection import KFold, train_test_split
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
-from astrodata.ml.model_selection.BaseModelSelector import BaseModelSelector
-from astrodata.ml.models.BaseModel import BaseModel
+from astrodata.ml.model_selection.BaseMlModelSelector import BaseMlModelSelector
+from astrodata.ml.models.BaseMlModel import BaseMlModel
 from astrodata.tracking.ModelTracker import ModelTracker
 
 
-class GridSearchCVSelector(BaseModelSelector):
+class GridSearchCVSelector(BaseMlModelSelector):
     """
     GridSearchCVSelector performs exhaustive grid search over a parameter grid using cross-validation.
     """
 
     def __init__(
         self,
-        model: BaseModel,
+        model: BaseMlModel,
         param_grid: dict,
         scorer: BaseMetric = None,
         cv=5,
@@ -31,7 +31,7 @@ class GridSearchCVSelector(BaseModelSelector):
 
         Parameters
         ----------
-        model : BaseModel
+        model : BaseMlModel
             The model to optimize.
         param_grid : dict
             Dictionary with parameters names (str) as keys and lists of parameter settings to try as values.
@@ -63,7 +63,9 @@ class GridSearchCVSelector(BaseModelSelector):
         self.tracker = tracker
         self.log_all_models = log_all_models
 
-    def fit(self, X, y, X_test=None, y_test=None, *args, **kwargs) -> BaseModelSelector:
+    def fit(
+        self, X, y, X_test=None, y_test=None, *args, **kwargs
+    ) -> BaseMlModelSelector:
         """
         Run grid search with cross-validation.
 
@@ -167,13 +169,13 @@ class GridSearchCVSelector(BaseModelSelector):
 
         return self
 
-    def get_best_model(self) -> Optional[BaseModel]:
+    def get_best_model(self) -> Optional[BaseMlModel]:
         """
         Get the best model fitted on all data using the best found parameters.
 
         Returns
         -------
-        BaseModel
+        BaseMlModel
             The best fitted model.
         """
         return self._best_model
@@ -221,14 +223,14 @@ class GridSearchCVSelector(BaseModelSelector):
         }
 
 
-class GridSearchSelector(BaseModelSelector):
+class GridSearchSelector(BaseMlModelSelector):
     """
     GridSearchSelector performs exhaustive grid search over a parameter grid using a single validation split.
     """
 
     def __init__(
         self,
-        model: BaseModel,
+        model: BaseMlModel,
         param_grid: dict,
         scorer: BaseMetric = None,
         val_size=0.2,
@@ -242,7 +244,7 @@ class GridSearchSelector(BaseModelSelector):
 
         Parameters
         ----------
-        model : BaseModel
+        model : BaseMlModel
             The model to optimize.
         param_grid : dict
             Dictionary with parameters names (str) as keys and lists of parameter settings to try as values.
@@ -284,7 +286,7 @@ class GridSearchSelector(BaseModelSelector):
         y_test=None,
         *args,
         **kwargs,
-    ) -> BaseModelSelector:
+    ) -> BaseMlModelSelector:
         """
         Run grid search using a single train/validation split.
 
@@ -387,13 +389,13 @@ class GridSearchSelector(BaseModelSelector):
 
         return self
 
-    def get_best_model(self) -> Optional[BaseModel]:
+    def get_best_model(self) -> Optional[BaseMlModel]:
         """
         Get the best model fitted on all data using the best found parameters.
 
         Returns
         -------
-        BaseModel
+        BaseMlModel
             The best fitted model.
         """
         return self._best_model
