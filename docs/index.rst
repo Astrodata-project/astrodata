@@ -7,8 +7,10 @@ Welcome to astrodata's documentation!
 =====================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 5
+   :caption: API Reference
+
+   api/modules
 
 .. automodule:: astrodata
    :members:
