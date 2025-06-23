@@ -7,14 +7,30 @@ from astrodata.tracking._utils import get_tracked_files
 from astrodata.utils.logger import setup_logger
 from astrodata.utils.utils import read_config
 
-from .CodeTracking import CodeTracker
-from .DataTracking import DataTracker
+from .CodeTracker import CodeTracker
+from .DataTracker import DataTracker
 
 logger = setup_logger(__name__)
 
 
 class Tracker:
+    """
+    Orchestrates code and data tracking for a project using Git and DVC.
+
+    This class manages both code and data versioning, providing methods to track,
+    commit, and push changes to remote repositories for reproducible research.
+
+    Args:
+        config_path (str): Path to the configuration file.
+    """
+
     def __init__(self, config_path: str):
+        """
+        Initialize the Tracker with the given configuration file.
+
+        Args:
+            config_path (str): Path to the configuration file.
+        """
         self.config = read_config(config_path)
         self.project_path = Path(self.config["project_path"]).resolve()
 
@@ -34,7 +50,13 @@ class Tracker:
 
     def track(self, commit_message: str = None):
         """
-        Orchestrates the tracking of data and code, pushing data and committing code.
+        Orchestrate the tracking of data and code, pushing data and committing code.
+
+        This method aligns the code repository with the remote, tracks data and code changes,
+        pushes data to the DVC remote, and commits and pushes code changes to the Git remote.
+
+        Args:
+            commit_message (str, optional): Commit message for the code changes.
         """
         code_config = self.config.get("code", {})
         remote_name = code_config.get("remote", {}).get("name", "origin")
@@ -54,7 +76,9 @@ class Tracker:
 
     def _pull_data(self):
         """
-        Pulls data files using the data tracker.
+        Pull data files using the data tracker.
+
+        This method pulls tracked data from the configured DVC remote storage.
         """
         if not self.data_tracker:
             return
@@ -63,7 +87,10 @@ class Tracker:
 
     def _track_data(self):
         """
-        Tracks data files using the data tracker.
+        Track data files using the data tracker.
+
+        This method adds specified data files or directories to DVC tracking,
+        based on the configuration.
         """
         if not self.data_tracker:
             return
@@ -81,7 +108,10 @@ class Tracker:
 
     def _track_code(self):
         """
-        Tracks code files using the code tracker, including handling remotes and branches.
+        Track code files using the code tracker, including handling remotes and branches.
+
+        This method ensures the code repository is properly configured with remotes,
+        adds tracked files to the Git index, and removes deleted files from the index.
         """
         if not self.code_tracker:
             return False
@@ -102,7 +132,9 @@ class Tracker:
 
     def _push_data(self):
         """
-        Pushes tracked data to the DVC remote.
+        Push tracked data to the DVC remote.
+
+        This method uploads tracked data files to the configured DVC remote storage.
         """
         if not self.data_tracker:
             return
@@ -111,7 +143,13 @@ class Tracker:
 
     def _commit_and_push_code(self, commit_message: str = None):
         """
-        Commits and pushes code changes to the git remote.
+        Commit and push code changes to the Git remote.
+
+        This method creates a commit with the specified message and pushes it to the
+        configured Git remote and branch.
+
+        Args:
+            commit_message (str, optional): Commit message for the code changes.
         """
         if not self.code_tracker:
             return
