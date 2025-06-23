@@ -1,11 +1,11 @@
 import pandas as pd
+from hyperopt import hp
 from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, f1_score, log_loss
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
-from hyperopt import hp
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.model_selection.HyperOptSelector import HyperOptSelector
 from astrodata.ml.models.SklearnModel import SklearnModel
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     # (care that the model now is part of the search space rather then being hard-coded)
     # This time we add a tracker to log the model training and evaluation metrics to MLflow.
     # log_all_models=False means that only the best model will be uploaded to MLflow.
-    
+
     param_space = {
         "model": hp.choice("model", [gradientboost]),
         "n_estimators": hp.choice("n_estimators", [50, 100]),
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         random_state=42,
         max_evals=20,  # You can increase this for a more thorough search
         metrics=None,
-        tracker=tracker
+        tracker=tracker,
     )
 
     hos.fit(X_train, y_train, X_test=X_test, y_test=y_test)

@@ -1,12 +1,14 @@
 import pandas as pd
+from hyperopt import hp
 from sklearn.datasets import load_breast_cancer
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 
-from hyperopt import hp
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.model_selection.HyperOptSelector import HyperOptSelector  # ← Make sure the import path matches your project
+from astrodata.ml.model_selection.HyperOptSelector import (  # ← Make sure the import path matches your project
+    HyperOptSelector,
+)
 from astrodata.ml.models.SklearnModel import SklearnModel
 
 if __name__ == "__main__":
