@@ -295,7 +295,8 @@ class CodeTracker:
         for obj in self.repo.index.diff(None):
             if obj.change_type == "D":
                 paths.append(obj.a_path)
-        self.repo.index.remove(paths, r=True)
+        if paths != []:
+            self.repo.index.remove(paths, r=True)
         logger.info(f"Removed {len(paths)} path(s) from index")
         return True
 
