@@ -62,7 +62,7 @@ if __name__ == "__main__":
     tracked_gradientboost.fit(X_train, y_train)
 
     print(
-        "Metrics on test set: %s",
+        f"Metrics on test set: %s",
         tracked_gradientboost.get_metrics(
             X_test,
             y_test,

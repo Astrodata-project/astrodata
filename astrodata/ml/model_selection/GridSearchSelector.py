@@ -5,6 +5,10 @@ import numpy as np
 from sklearn.model_selection import KFold, train_test_split
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
+from astrodata.ml.model_selection._utils import (
+    cross_validation_grid_search,
+    single_split_grid_search,
+)
 from astrodata.ml.model_selection.BaseMlModelSelector import BaseMlModelSelector
 from astrodata.ml.models.BaseMlModel import BaseMlModel
 from astrodata.tracking.ModelTracker import ModelTracker
@@ -91,66 +95,21 @@ class GridSearchCVSelector(BaseMlModelSelector):
         X = np.asarray(X)
         y = np.asarray(y)
 
-        # Cross-validation splitter
-        if isinstance(self.cv, int):
-            cv_splitter = KFold(
-                n_splits=self.cv, shuffle=True, random_state=self.random_state
-            )
-        else:
-            cv_splitter = self.cv
-
-        for param_tuple in itertools.product(*self.param_grid.values()):
-            params = dict(zip(self.param_grid.keys(), param_tuple))
-            fold_scores = []
-            fold_metrics = []
-
-            for train_idx, val_idx in cv_splitter.split(X, y):
-                X_train, X_val = X[train_idx], X[val_idx]
-                y_train, y_val = y[train_idx], y[val_idx]
-
-                model = self.model.clone()
-                model.set_params(**params)
-
-                if self.tracker:
-                    model = self.tracker.wrap_fit(
-                        model,
-                        X_val=X_val,
-                        y_val=y_val,
-                        metrics=self.metrics,
-                        log_model=self.log_all_models,
-                    )
-
-                model.fit(X_train, y_train)
-
-                # Score calculation
-                if self.scorer:
-                    score = model.get_metrics(X_val, y_val, metrics=[self.scorer])[
-                        self.scorer.get_name()
-                    ]
-                else:
-                    score = model.score(X_val, y_val)
-                fold_scores.append(score)
-
-                if self.metrics:
-                    fold_metrics.append(
-                        model.get_metrics(X_val, y_val, metrics=self.metrics)
-                    )
-
-            mean_score = np.mean(fold_scores)
-
-            if (greater_is_better and mean_score > best_score) or (
-                not greater_is_better and mean_score < best_score
-            ):
-                self._best_score = best_score = mean_score
-                self._best_params = params
-                self._best_metrics = (
-                    {
-                        k: sum(d[k] for d in fold_metrics) / len(fold_metrics)
-                        for k in fold_metrics[0]
-                    }
-                    if self.metrics
-                    else None
-                )
+        best_score, best_params, best_metrics = cross_validation_grid_search(
+            self.model,
+            self.param_grid,
+            self.scorer,
+            X,
+            y,
+            cv=self.cv,
+            random_state=self.random_state,
+            metrics=self.metrics,
+            tracker=self.tracker,
+            log_models=self.log_all_models,
+        )
+        self._best_score = best_score
+        self._best_params = best_params
+        self._best_metrics = best_metrics
 
         # Retrain best model on all data
         self._best_model = self.model.clone()
@@ -333,41 +292,21 @@ class GridSearchSelector(BaseMlModelSelector):
         self._X_train, self._y_train = X_train, y_train
         self._X_val, self._y_val = X_val, y_val
 
-        for param_tuple in itertools.product(*self.param_grid.values()):
-            params = dict(zip(self.param_grid.keys(), param_tuple))
-            model = self.model.clone()
-            model.set_params(**params)
-
-            # Optionally wrap with tracker/logging
-            if self.tracker:
-                model = self.tracker.wrap_fit(
-                    model,
-                    X_val=X_val,
-                    y_val=y_val,
-                    metrics=self.metrics,
-                    log_model=self.log_all_models,
-                )
-
-            model.fit(X_train, y_train)
-
-            # Score calculation
-            if self.scorer:
-                score = model.get_metrics(X_val, y_val, metrics=[self.scorer])[
-                    self.scorer.get_name()
-                ]
-            else:
-                score = model.score(X_val, y_val)
-
-            if (greater_is_better and score > best_score) or (
-                not greater_is_better and score < best_score
-            ):
-                self._best_score = best_score = score
-                self._best_params = params
-                self._best_metrics = (
-                    model.get_metrics(X_val, y_val, metrics=self.metrics)
-                    if self.metrics
-                    else None
-                )
+        best_score, best_params, best_metrics = single_split_grid_search(
+            self.model,
+            self.param_grid,
+            self.scorer,
+            X_train,
+            y_train,
+            X_val,
+            y_val,
+            metrics=self.metrics,
+            tracker=self.tracker,
+            log_models=self.log_all_models,
+        )
+        self._best_score = best_score
+        self._best_params = best_params
+        self._best_metrics = best_metrics
 
         # Refit best model on full data (train + val)
         X_full = np.concatenate([self._X_train, self._X_val])
