@@ -1,5 +1,19 @@
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score,
+    root_mean_squared_error,
+)
+from xgboost import XGBRegressor
+
 from astrodata.data import AbstractProcessor, DataPipeline, ParquetLoader, RawData
+from astrodata.ml.metrics.SklearnMetric import SklearnMetric
+from astrodata.ml.model_selection.GridSearchSelector import GridSearchSelector
+from astrodata.ml.models.XGBoostModel import XGBoostModel
 from astrodata.preml import OHE, MissingImputator, PremlPipeline
+from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
+
+# TODO rendere questo l'esempio definitivo, idealmente con hyperopt.
 
 # define loader
 loader = ParquetLoader()
@@ -61,3 +75,43 @@ print(f"X_train shape: {X_train.shape}")
 print(f"X_test shape: {X_test.shape}")
 print(f"y_train shape: {y_train.shape}")
 print(f"y_test shape: {y_test.shape}")
+
+# Instantiate and configure the XGBoost model
+gradientboost = XGBoostModel(model_class=XGBRegressor)
+
+tracker = SklearnMLflowTracker(
+    run_name="DemoRun",
+    experiment_name="examples_example_astrotaxi.py",
+    extra_tags={"stage": "testing"},
+)
+
+metrics = [
+    SklearnMetric(root_mean_squared_error, greater_is_better=False),
+    SklearnMetric(mean_absolute_error, greater_is_better=False),
+    SklearnMetric(mean_squared_error, greater_is_better=False),
+    SklearnMetric(r2_score),
+]
+
+gss = GridSearchSelector(
+    gradientboost,
+    param_grid={
+        "n_estimators": [50, 100],
+        "learning_rate": [0.01, 0.1],
+        "max_depth": [3, 5],
+    },
+    scorer=SklearnMetric(mean_absolute_error, greater_is_better=False),
+    tracker=tracker,
+    log_all_models=False,
+    metrics=metrics,
+)
+
+gss.fit(X_train, y_train, X_test=X_test, y_test=y_test)
+
+print(gss.get_best_params())
+print(gss.get_best_metrics())
+
+tracker.register_best_model(
+    metric=SklearnMetric(mean_absolute_error, greater_is_better=False),
+    split_name="test",
+    stage="Production",
+)
