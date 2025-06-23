@@ -32,7 +32,9 @@ class DataTracker:
     def add(self, path: str):
         abs_path = str(self.repo_path / path)
         try:
+            self.dvc_repo.scm_context.quiet = True
             self.dvc_repo.add(abs_path)
+            self.dvc_repo.scm_context.quiet = False
             logger.info(f"Added {abs_path} to DVC tracking")
         except OutputAlreadyTrackedError:
             logger.info(f"{abs_path} is already tracked by DVC")

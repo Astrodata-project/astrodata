@@ -181,33 +181,23 @@ class CodeTracker:
             else:
                 logger.error(f"Pull failed: {e}")
 
-    def track(
-        self,
-        paths: list,
-        commit_message: str,
-        remote_name: str = "origin",
-    ):
-        """Track specified paths by adding, committing, and pushing them."""
-        existing_paths = self._validate_paths(paths)
-        if not existing_paths:
-            logger.warning("No valid paths to track")
-            return False
-
-        if not self.add_to_index(existing_paths):
-            return False
-
-        commit = self.create_commit(commit_message)
-        if not commit:
-            return False
-
-        return self.push(remote_name, self.branch)
-
     @git_operation("add to index")
     def add_to_index(self, paths: list) -> bool:
         """Add paths to Git index."""
         # Convert to relative paths for ignored() check
         self.repo.index.add(paths)
         logger.info(f"Added {len(paths)} path(s) to index")
+        return True
+
+    @git_operation("remove from index")
+    def remove_deleted_from_index(self) -> bool:
+        """Removes deleted files from the Git index."""
+        paths = []
+        for obj in self.repo.index.diff(None):
+            if obj.change_type == "D":
+                paths.append(obj.a_path)
+        self.repo.index.remove(paths, r=True)
+        logger.info(f"Removed {len(paths)} path(s) from index")
         return True
 
     def _has_changes(self) -> bool:

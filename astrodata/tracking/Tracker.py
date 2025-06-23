@@ -46,7 +46,7 @@ class Tracker:
             if not self.code_tracker.pull(remote_name, branch):
                 logger.error("Please resolve manually any conflicts before tracking.")
                 return
-        self._pull_data()
+        # self._pull_data()
         self._track_data()
         self._track_code()
         self._push_data()
@@ -70,7 +70,14 @@ class Tracker:
         logger.info("Tracking data with DVC...")
         data_config = self.config.get("data", {})
         for path in data_config.get("paths", []):
-            self.data_tracker.add(path)
+            abs_path = (self.project_path / path).resolve()
+            if abs_path.is_dir():
+                for file in abs_path.rglob("*"):
+                    if file.is_file() and file.suffix != ".dvc":
+                        logger.info(f"Tracking file: {file}")
+                        self.data_tracker.add(str(file.relative_to(self.project_path)))
+            else:
+                self.data_tracker.add(path)
 
     def _track_code(self):
         """
@@ -91,35 +98,7 @@ class Tracker:
             self.project_path, code_config, self.data_tracker, data_config
         )
         self.code_tracker.add_to_index(final_files)
-
-    def _get_tracked_files(self, code_config):
-        """
-        Returns a list of files to be tracked by git, considering tracked_files and .gitignore.
-        """
-        all_files = [
-            os.path.join(dirpath, f)
-            for (dirpath, dirnames, filenames) in os.walk(self.project_path)
-            for f in filenames
-        ]
-        tracked_files = code_config.get("tracked_files", ["src", "pyproject.toml"])
-        if self.data_tracker:
-            tracked_files.extend(["/.dvc", "/.dvcignore", "/.gitignore"])
-            for path in self.config.get("data", {}).get("paths", []):
-                tracked_files.append(path + ".dvc")
-        tracked_files = [t if t.startswith("/") else "/" + t for t in tracked_files]
-        gitignore_files = []
-        for f in all_files:
-            if ".gitignore" in f:
-                with open(f, "r") as file:
-                    ignored = file.read().splitlines()
-                gitignore_files.extend([f.split(".gitignore")[0] + i for i in ignored])
-        final_files = all_files[:]
-        for f in final_files[:]:
-            if not any(t in f for t in tracked_files):
-                final_files.remove(f)
-            if any(g in f for g in gitignore_files):
-                final_files.remove(f)
-        return final_files
+        self.code_tracker.remove_deleted_from_index()
 
     def _push_data(self):
         """
