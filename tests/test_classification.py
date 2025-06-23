@@ -1,17 +1,20 @@
-import pytest
 import pandas as pd
+import pytest
 from sklearn.datasets import load_breast_cancer
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import accuracy_score, f1_score, log_loss
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from sklearn.ensemble import GradientBoostingClassifier
 from xgboost import XGBClassifier
 
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.model_selection.GridSearchSelector import GridSearchSelector, GridSearchCVSelector
+from astrodata.ml.model_selection.GridSearchSelector import (
+    GridSearchCVSelector,
+    GridSearchSelector,
+)
 from astrodata.ml.models.SklearnModel import SklearnModel
 from astrodata.ml.models.XGBoostModel import XGBoostModel
 
-from sklearn.metrics import accuracy_score, f1_score, log_loss
 
 @pytest.fixture(scope="module")
 def classification_data():
@@ -22,6 +25,7 @@ def classification_data():
     y = le.fit_transform(y)
     return train_test_split(X, y, test_size=0.25, random_state=42)
 
+
 @pytest.fixture(scope="module")
 def metrics():
     return [
@@ -29,6 +33,7 @@ def metrics():
         SklearnMetric(f1_score, average="micro"),
         SklearnMetric(log_loss, greater_is_better=False),
     ]
+
 
 @pytest.fixture(scope="module")
 def param_grids():
@@ -42,7 +47,9 @@ def param_grids():
             },
         },
         "xgb": {
-            "model": XGBoostModel(model_class=XGBClassifier, tree_method="hist", enable_categorical=True),
+            "model": XGBoostModel(
+                model_class=XGBClassifier, tree_method="hist", enable_categorical=True
+            ),
             "param_grid": {
                 "n_estimators": [50],
                 "learning_rate": [0.1],
@@ -52,23 +59,30 @@ def param_grids():
         },
     }
 
+
 @pytest.mark.parametrize("selector_cls", [GridSearchSelector, GridSearchCVSelector])
 @pytest.mark.parametrize("model_key", ["skl", "xgb"])
-def test_classification_model_selection(classification_data, metrics, param_grids, selector_cls, model_key):
+def test_classification_model_selection(
+    classification_data, metrics, param_grids, selector_cls, model_key
+):
     X_train, X_test, y_train, y_test = classification_data
     model = param_grids[model_key]["model"]
     param_grid = param_grids[model_key]["param_grid"]
     scorer = metrics[2]  # logloss
-    
+
     if selector_cls is GridSearchSelector:
-        selector = selector_cls(model, val_size=0.2, param_grid=param_grid, scorer=scorer, metrics=metrics)
+        selector = selector_cls(
+            model, val_size=0.2, param_grid=param_grid, scorer=scorer, metrics=metrics
+        )
     else:
-        selector = selector_cls(model, cv=2, param_grid=param_grid, scorer=scorer, metrics=metrics)
-    
+        selector = selector_cls(
+            model, cv=2, param_grid=param_grid, scorer=scorer, metrics=metrics
+        )
+
     selector.fit(X_train, y_train, X_test=X_test, y_test=y_test, verbose=False)
     best_params = selector.get_best_params()
     best_metrics = selector.get_best_metrics()
-    
+
     # Assert that best_params and best_metrics are not empty
     assert best_params, "No best parameters found"
     assert best_metrics, "No best metrics found"

@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     model = SklearnModel(model_class=LinearSVR, random_state=42)
 
-    print("Model instantiated: %s", model)
+    print(f"Model instantiated: %s", model)
 
     # We can define the metrics we want to use for evaluation.
     # SklearnMetric is a wrapper around sklearn metrics that provides compatibility with the astrodata.ml framework.
@@ -64,4 +64,4 @@ if __name__ == "__main__":
         metrics=metrics,
     )
 
-    print("Metrics on test set: %s", metrics)
+    print(f"Metrics on test set: %s", metrics)

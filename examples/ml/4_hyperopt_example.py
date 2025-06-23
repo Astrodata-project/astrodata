@@ -1,67 +1,51 @@
 import pandas as pd
-from hyperopt import hp
 from sklearn.datasets import load_breast_cancer
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 
-from astrodata.ml.model_selection.HyperOptSelector import HyperOptSelector
+from hyperopt import hp
+from astrodata.ml.metrics.SklearnMetric import SklearnMetric
+from astrodata.ml.model_selection.HyperOptSelector import HyperOptSelector  # ← Make sure the import path matches your project
 from astrodata.ml.models.SklearnModel import SklearnModel
 
-data = load_breast_cancer()
-X = pd.DataFrame(data.data, columns=data.feature_names)
-y = pd.Series(data.target)
+if __name__ == "__main__":
+    # Load the breast cancer dataset
+    data = load_breast_cancer()
+    X = pd.DataFrame(data.data, columns=data.feature_names)
+    y = pd.Series(data.target)
 
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.25, random_state=42
+    )
 
-space = {
-    "C": hp.loguniform("C", -4, 2),  # valori tra 10^-4 e 10^2
-    "dual": hp.choice("dual", [True, False]),
-    "tol": hp.loguniform("tol", -6, -1),  # tipo 1e-6 a 1e-1
-    "max_iter": hp.quniform("max_iter", 100, 2000, 100),
-}
+    # Instantiate the SklearnModel with LinearSVC and a metric
+    model = SklearnModel(model_class=LinearSVC, penalty="l2", loss="squared_hinge")
+    accuracy = SklearnMetric(accuracy_score, greater_is_better=True)
 
+    # Define the hyperopt search space
+    param_space = {
+        "model": hp.choice("model", [model]),
+        "C": hp.choice("C", [0.1, 1, 10]),
+        "max_iter": hp.choice("max_iter", [1000, 2000]),
+        "tol": hp.choice("tol", [1e-3, 1e-4]),
+    }
 
-wrapped_model = SklearnModel(LinearSVC(penalty="l2", loss="squared_hinge"))
+    # Instantiate HyperOptSelector (using cross-validation in this example)
+    hos = HyperOptSelector(
+        param_space=param_space,
+        scorer=accuracy,
+        use_cv=True,
+        cv=5,
+        random_state=42,
+        max_evals=100,  # You can increase this for a more thorough search
+        metrics=None,
+    )
 
-selector = HyperOptSelector(
-    model=wrapped_model,  # attenzione poi c'è in HyperOptSelector  model.clone()
-    cv=3,
-    metrics=["accuracy"],  # tolgo?
-)
+    print(hos)
 
+    hos.fit(X_train, y_train, X_test=X_test, y_test=y_test)
 
-selector = HyperOptSelector(
-    model_class=LinearSVC, model_kwargs={"penalty": "l2", "loss": "squared_hinge"}
-)
-
-"""
-gss = GridSearchCVSelector(
-    model,
-    param_grid={
-        "C": [0.1, 1, 10],
-    },
-    scoring="accuracy",
-    n_jobs=1,
-    cv=3,
-)
-
-print(gss)
-
-"""
-
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.25, random_state=42
-)
-
-"""
-gss.fit(X_train, y_train)
-print(gss.get_best_params())
-print(gss.get_best_model())
-print(type(gss.get_best_model()))
-"""
-
-selector.fit(X, y, space)
-
-print(selector.get_params())
-print(selector.fitted_model)
-print(type(selector.get_best_model()))
+    print(f"Best parameters found:", hos.get_best_params())
+    print(f"Best metrics:", hos.get_best_metrics())
+    print(f"Best model params:", hos.get_best_model().get_params())
