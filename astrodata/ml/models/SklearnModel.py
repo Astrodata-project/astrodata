@@ -250,9 +250,9 @@ class SklearnModel(BaseMlModel):
             return self.model_.train_score_
         raise AttributeError(f"{type(self.model_)} does not have 'train_score_'.")
 
-    def get_loss_history_metric(
-        self, X=None, y=None, metric: BaseMetric = None
-    ) -> np.ndarray:
+    def get_loss_history_metrics(
+        self, X=None, y=None, metrics: List[BaseMetric] = None
+    ) -> dict:
         """
         Get the evolution of a metric over training stages.
 
@@ -262,8 +262,8 @@ class SklearnModel(BaseMlModel):
             Data features to use for staged predictions.
         y : array-like, optional
             True labels for X.
-        metric : BaseMetric, optional
-            Metric to compute for each stage.
+        metrics : List[BaseMetric], optional
+            Metrics to compute for each stage.
 
         Returns
         -------
@@ -281,17 +281,26 @@ class SklearnModel(BaseMlModel):
         """
         if self.model_ is None:
             raise RuntimeError("Model is not fitted yet.")
-        if metric and self.has_loss_history:
-            if X is None or y is None:
-                raise ValueError("X and y required for metric history.")
-            try:
-                return [
-                    metric(y, y_pred) for y_pred in self.model_.staged_predict_proba(X)
-                ]
-            except ValueError:
-                return [metric(y, y_pred) for y_pred in self.model_.staged_predict(X)]
+
+        results = {}
+
+        if self.has_loss_history:
+            for metric in metrics:
+                if X is None or y is None:
+                    raise ValueError("X and y required for metric history.")
+                try:
+                    results[f"{metric.get_name()}_step"] = [
+                        metric(y, y_pred)
+                        for y_pred in self.model_.staged_predict_proba(X)
+                    ]
+
+                except (AttributeError, ValueError):
+                    results[f"{metric.get_name()}_step"] = [
+                        metric(y, y_pred) for y_pred in self.model_.staged_predict(X)
+                    ]
         else:
             raise AttributeError(f"{type(self.model_)} does not support loss history.")
+        return results
 
     @property
     def has_loss_history(self) -> bool:

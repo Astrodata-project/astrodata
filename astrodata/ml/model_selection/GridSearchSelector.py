@@ -5,10 +5,7 @@ import numpy as np
 from sklearn.model_selection import KFold, train_test_split
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
-from astrodata.ml.model_selection._utils import (
-    cross_validation_grid_search,
-    single_split_grid_search,
-)
+from astrodata.ml.model_selection._utils import fit_model_score, fit_model_score_cv
 from astrodata.ml.model_selection.BaseMlModelSelector import BaseMlModelSelector
 from astrodata.ml.models.BaseMlModel import BaseMlModel
 from astrodata.tracking.ModelTracker import ModelTracker
@@ -95,38 +92,58 @@ class GridSearchCVSelector(BaseMlModelSelector):
         X = np.asarray(X)
         y = np.asarray(y)
 
-        best_score, best_params, best_metrics = cross_validation_grid_search(
-            self.model,
-            self.param_grid,
-            self.scorer,
-            X,
-            y,
-            cv=self.cv,
-            random_state=self.random_state,
-            metrics=self.metrics,
-            tracker=self.tracker,
-            log_models=self.log_all_models,
-        )
-        self._best_score = best_score
-        self._best_params = best_params
-        self._best_metrics = best_metrics
+        best_params = None
+        best_metrics = None
 
-        # Retrain best model on all data
-        self._best_model = self.model.clone()
-        self._best_model.set_params(**self._best_params)
+        # Cross-validation splitter
+        if isinstance(self.cv, int):
+            cv_splitter = KFold(
+                n_splits=self.cv, shuffle=True, random_state=self.random_state
+            )
+        else:
+            cv_splitter = self.cv
 
-        if self.tracker:
-            self._best_model = self.tracker.wrap_fit(
-                self._best_model,
-                X_test=X_test,
-                y_test=y_test,
+        for param_tuple in itertools.product(*self.param_grid.values()):
+            params = dict(zip(self.param_grid.keys(), param_tuple))
+
+            m, mean_metrics, mean_score = fit_model_score_cv(
+                model=self.model,
+                params=params,
+                scorer=self.scorer,
+                X=X,
+                y=y,
+                cv_splitter=cv_splitter,
                 metrics=self.metrics,
-                log_model=True,
+                tracker=self.tracker,
+                log_models=self.log_all_models,
             )
 
-        self._best_model.fit(X, y)
+            if (greater_is_better and mean_score > best_score) or (
+                not greater_is_better and mean_score < best_score
+            ):
+                best_score = mean_score
+                best_params = params
+                best_metrics = mean_metrics
+            self._best_score = best_score
+            self._best_params = best_params
+            self._best_metrics = best_metrics
 
-        return self
+            # Retrain best model on all data
+            self._best_model = self.model.clone()
+            self._best_model.set_params(**self._best_params)
+
+            if self.tracker:
+                self._best_model = self.tracker.wrap_fit(
+                    self._best_model,
+                    X_test=X_test,
+                    y_test=y_test,
+                    metrics=self.metrics,
+                    log_model=True,
+                )
+
+            self._best_model.fit(X, y)
+
+            return self
 
     def get_best_model(self) -> Optional[BaseMlModel]:
         """
@@ -292,18 +309,31 @@ class GridSearchSelector(BaseMlModelSelector):
         self._X_train, self._y_train = X_train, y_train
         self._X_val, self._y_val = X_val, y_val
 
-        best_score, best_params, best_metrics = single_split_grid_search(
-            self.model,
-            self.param_grid,
-            self.scorer,
-            X_train,
-            y_train,
-            X_val,
-            y_val,
-            metrics=self.metrics,
-            tracker=self.tracker,
-            log_models=self.log_all_models,
-        )
+        best_params = None
+        best_metrics = None
+
+        for param_tuple in itertools.product(*self.param_grid.values()):
+            params = dict(zip(self.param_grid.keys(), param_tuple))
+            m, metrics, score = fit_model_score(
+                model=self.model,
+                params=params,
+                scorer=self.scorer,
+                X_train=X_train,
+                y_train=y_train,
+                X_val=X_val,
+                y_val=y_val,
+                metrics=self.metrics,
+                tracker=self.tracker,
+                log_model=self.log_all_models,
+            )
+
+            if (greater_is_better and score > best_score) or (
+                not greater_is_better and score < best_score
+            ):
+                best_score = score
+                best_params = params
+                best_metrics = metrics
+
         self._best_score = best_score
         self._best_params = best_params
         self._best_metrics = best_metrics

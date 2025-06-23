@@ -82,7 +82,11 @@ def test_classification_model_selection(
     selector.fit(X_train, y_train, X_test=X_test, y_test=y_test, verbose=False)
     best_params = selector.get_best_params()
     best_metrics = selector.get_best_metrics()
+    history_metrics = selector.get_best_model().get_loss_history_metrics(
+        X_test, y_test, metrics
+    )
 
     # Assert that best_params and best_metrics are not empty
     assert best_params, "No best parameters found"
     assert best_metrics, "No best metrics found"
+    assert isinstance(history_metrics, dict), "No best history_metrics found"

@@ -1,14 +1,14 @@
 import pandas as pd
 from hyperopt import hp
 from sklearn.datasets import load_breast_cancer
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score, log_loss
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.model_selection.HyperOptSelector import (  # ← Make sure the import path matches your project
+from astrodata.ml.model_selection.HyperOptSelector import (
     HyperOptSelector,
-)
+)  # ← Make sure the import path matches your project
 from astrodata.ml.models.SklearnModel import SklearnModel
 
 if __name__ == "__main__":
@@ -23,7 +23,11 @@ if __name__ == "__main__":
 
     # Instantiate the SklearnModel with LinearSVC and a metric
     model = SklearnModel(model_class=LinearSVC, penalty="l2", loss="squared_hinge")
-    accuracy = SklearnMetric(accuracy_score, greater_is_better=True)
+    accuracy = SklearnMetric(accuracy_score)
+    f1 = SklearnMetric(f1_score, average="micro")
+    logloss = SklearnMetric(log_loss, greater_is_better=False)
+
+    metrics = [accuracy, f1, logloss]
 
     # Define the hyperopt search space
     param_space = {
@@ -41,7 +45,7 @@ if __name__ == "__main__":
         cv=5,
         random_state=42,
         max_evals=100,  # You can increase this for a more thorough search
-        metrics=None,
+        metrics=metrics,
     )
 
     print(hos)

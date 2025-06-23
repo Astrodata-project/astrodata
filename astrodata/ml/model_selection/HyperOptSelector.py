@@ -3,15 +3,16 @@ from typing import Any, Dict, Optional
 import numpy as np
 from hyperopt import STATUS_OK, Trials, fmin, tpe
 from hyperopt.pyll.base import Apply
+from sklearn.model_selection import KFold, train_test_split
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
-from astrodata.ml.model_selection._utils import (
-    cross_validation_grid_search,
-    single_split_grid_search,
-)
+from astrodata.ml.model_selection._utils import fit_model_score_cv, fit_model_score
 from astrodata.ml.model_selection.BaseMlModelSelector import BaseMlModelSelector
 from astrodata.ml.models.BaseMlModel import BaseMlModel
 from astrodata.tracking.ModelTracker import ModelTracker
+from astrodata.utils.logger import setup_logger
+
+logger = setup_logger(__name__)
 
 
 class HyperOptSelector(BaseMlModelSelector):
@@ -32,6 +33,30 @@ class HyperOptSelector(BaseMlModelSelector):
         tracker: Optional[ModelTracker] = None,
         log_all_models: bool = False,
     ):
+        """
+        Initialize the HyperOptSelector.
+
+        Parameters
+        ----------
+        param_grid : dict
+            Dictionary with parameter search spaces as shown in https://hyperopt.github.io/hyperopt/getting-started/search_spaces/.
+        scorer : BaseMetric, optional
+            The metric used to select the best model. If None, model's default score method is used.
+        use_cv: bool
+            Wether to use cross validation or regular validation split.
+        cv : int or cross-validation splitter (default=5)
+            Number of folds (int) or an object that yields train/test splits.
+        max_evals: int
+            Maximum number of evaluations hyperopt can run.
+        random_state : int, optional
+            Random seed for reproducibility.
+        metrics : list of BaseMetric, optional
+            Additional metrics to evaluate on validation folds.
+        tracker : ModelTracker, optional
+            Optional experiment/model tracker for logging.
+        log_all_models : bool, optional
+            If True, logs all models, not just the best one.
+        """
         self.param_space = param_space
         self.scorer = scorer
         self.use_cv = use_cv
@@ -65,21 +90,24 @@ class HyperOptSelector(BaseMlModelSelector):
             raise TypeError(f"{model} is not a BaseMlModel instance")
 
         if self.use_cv:
-            score, _, _ = cross_validation_grid_search(
+
+            cv_splitter = KFold(
+                n_splits=self.cv, shuffle=True, random_state=self.random_state
+            )
+
+            m, metrics, score = fit_model_score_cv(
                 model,
-                {k: [v] for k, v in params.items()},  # wrap values in lists
+                params,  # wrap values in lists
                 self.scorer,
                 X,
                 y,
-                cv=self.cv,
-                random_state=self.random_state,
+                cv_splitter=cv_splitter,
                 metrics=self.metrics,
                 tracker=self.tracker,
                 log_models=self.log_all_models,
             )
         else:
             if X_val is None or y_val is None:
-                from sklearn.model_selection import train_test_split
 
                 X_train, X_val, y_train, y_val = train_test_split(
                     X, y, test_size=self.val_size, random_state=self.random_state
@@ -87,9 +115,9 @@ class HyperOptSelector(BaseMlModelSelector):
             else:
                 X_train, y_train = X, y
 
-            score, _, _ = single_split_grid_search(
+            m, metrics, score = fit_model_score(
                 model,
-                {k: [v] for k, v in params.items()},
+                params,
                 self.scorer,
                 X_train,
                 y_train,
@@ -102,7 +130,7 @@ class HyperOptSelector(BaseMlModelSelector):
 
         greater_is_better = self.scorer.greater_is_better if self.scorer else True
         loss = -score if greater_is_better else score
-        return {"loss": loss, "status": STATUS_OK}
+        return {"loss": loss, "status": STATUS_OK, "metrics": metrics}
 
     def fit(
         self, X, y, X_val=None, y_val=None, X_test=None, y_test=None, *args, **kwargs
@@ -155,10 +183,7 @@ class HyperOptSelector(BaseMlModelSelector):
                 log_model=True,
             )
         self._best_model.fit(X_full, y_full)
-        self._best_metrics = self._best_model.get_metrics(
-            X=X_test, y=y_test, metrics=self.metrics
-        )
-
+        self._best_metrics = _getBestMetricsfromTrials(trials)
         return self
 
     def get_best_model(self) -> Optional[BaseMlModel]:
@@ -240,3 +265,13 @@ def _map_hyperopt_best_params(best_params: dict, search_space: dict) -> dict:
         else:
             mapped[k] = v
     return mapped
+
+
+def _getBestMetricsfromTrials(trials):
+    valid_trial_list = [
+        trial for trial in trials if STATUS_OK == trial["result"]["status"]
+    ]
+    losses = [float(trial["result"]["loss"]) for trial in valid_trial_list]
+    index_having_minumum_loss = np.argmin(losses)
+    best_trial_obj = valid_trial_list[index_having_minumum_loss]
+    return best_trial_obj["result"]["metrics"]

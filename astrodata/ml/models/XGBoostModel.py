@@ -230,8 +230,8 @@ class XGBoostModel(BaseMlModel):
             return self._evals_result[train_key][metric_key]
         raise AttributeError("No loss curve available. Make sure fit() was called.")
 
-    def get_loss_history_metric(
-        self, X=None, y=None, metric: BaseMetric = None
+    def get_loss_history_metrics(
+        self, X=None, y=None, metrics: List[BaseMetric] = None
     ) -> List[float]:
         """
         Get the evolution of a custom metric over boosting rounds.
@@ -242,8 +242,8 @@ class XGBoostModel(BaseMlModel):
             Data features to use for staged predictions.
         y : array-like, optional
             True labels for X.
-        metric : BaseMetric, optional
-            Metric to compute for each boosting stage.
+        metrics : List[BaseMetric], optional
+            Metrics to compute for each boosting stage.
 
         Returns
         -------
@@ -261,30 +261,33 @@ class XGBoostModel(BaseMlModel):
         """
         if self.model_ is None:
             raise RuntimeError("Model is not fitted yet.")
-        if metric:
-            if X is None or y is None:
-                raise ValueError(
-                    "X and y must be provided to compute metric at each step."
-                )
-            n_estimators = self.model_.get_booster().num_boosted_rounds()
-            results = []
-            for i in range(1, n_estimators + 1):
-                y_pred_proba = (
-                    self.model_.predict_proba(X, iteration_range=(0, i))
-                    if hasattr(self.model_, "predict_proba")
-                    else None
-                )
-                y_pred = self.model_.predict(X, iteration_range=(0, i))
-                try:
-                    results.append(metric(y, y_pred_proba))
-                except ValueError:
-                    results.append(metric(y, y_pred))
-            return results
-        if self._evals_result is not None:
-            train_key = list(self._evals_result.keys())[0]
-            metric_key = list(self._evals_result[train_key].keys())[0]
-            return self._evals_result[train_key][metric_key]
-        raise AttributeError("No loss curve available. Make sure fit() was called.")
+
+        results = {}
+
+        if self.has_loss_history:
+            for metric in metrics:
+                if X is None or y is None:
+                    raise ValueError(
+                        "X and y must be provided to compute metric at each step."
+                    )
+                n_estimators = self.model_.get_booster().num_boosted_rounds()
+                r = []
+                for i in range(1, n_estimators + 1):
+                    y_pred_proba = (
+                        self.model_.predict_proba(X, iteration_range=(0, i))
+                        if hasattr(self.model_, "predict_proba")
+                        else None
+                    )
+                    y_pred = self.model_.predict(X, iteration_range=(0, i))
+                    try:
+                        r.append(metric(y, y_pred_proba))
+                    except ValueError:
+                        r.append(metric(y, y_pred))
+                results[f"{metric.get_name()}_step"] = r
+
+        else:
+            raise AttributeError(f"{type(self.model_)} does not support loss history.")
+        return results
 
     @property
     def has_loss_history(self) -> bool:

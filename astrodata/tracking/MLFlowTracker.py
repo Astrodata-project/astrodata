@@ -257,14 +257,15 @@ class SklearnMLflowTracker(MlflowBaseTracker):
                             {f"{k}_{split_name}": v for k, v in scores.items()}
                         )
                         # Loss curve
-                        for metric in metrics:
-                            if hasattr(self, "get_loss_history_metric"):
-                                curve = self.get_loss_history_metric(
-                                    X_split, y_split, metric=metric
-                                )
-                                for i, loss in enumerate(curve):
+                        if hasattr(self, "get_loss_history_metrics"):
+                            curves = self.get_loss_history_metrics(
+                                X_split, y_split, metrics=metrics
+                            )
+
+                            for key, value in curves.items():
+                                for i, loss in enumerate(value):
                                     mlflow.log_metric(
-                                        f"{metric.get_name()}_{split_name}_step",
+                                        f"{key}_{split_name}",
                                         loss,
                                         step=i,
                                     )

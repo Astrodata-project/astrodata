@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # by providing a tracking_uri, tracking_username and tracking_password, you can connect to a remote MLflow server.
 
     tracker = SklearnMLflowTracker(
-        run_name="GridSearchCVRun",
+        run_name="MlFlowSimpleRun",
         experiment_name="examples_ml_5_mlflow_simple_example.py",
         extra_tags={"stage": "testing"},
     )
