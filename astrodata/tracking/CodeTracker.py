@@ -10,7 +10,15 @@ logger = setup_logger(__name__)
 
 
 def git_operation(operation_name: str):
-    """Decorator to handle Git operation errors gracefully."""
+    """
+    Decorator to handle Git operation errors gracefully.
+
+    Args:
+        operation_name (str): The name of the Git operation for logging and error messages.
+
+    Returns:
+        Callable: A decorator that wraps the function and handles Git errors.
+    """
 
     def decorator(func):
         @wraps(func)
@@ -36,6 +44,19 @@ def git_operation(operation_name: str):
 
 
 class CodeTracker:
+    """
+    A class to manage and track code changes in a Git repository.
+
+    This class provides methods for common Git operations such as branch management,
+    remote handling, committing, pushing, and synchronizing with remotes.
+
+    Args:
+        repo_path (str): Path to the local Git repository.
+        ssh_key_path (str, optional): Path to the SSH private key for authentication.
+        token (str, optional): Personal access token for HTTPS authentication.
+        branch (str, optional): Default branch to use. Defaults to "main".
+    """
+
     def __init__(
         self,
         repo_path: str,
@@ -50,7 +71,12 @@ class CodeTracker:
         self.branch = branch
 
     def _initialize_repo(self):
-        """Initialize or open existing Git repository."""
+        """
+        Initialize or open an existing Git repository.
+
+        Returns:
+            Repo: An instance of the GitPython Repo object.
+        """
         try:
             repo = Repo(self.repo_path)
             logger.info(f"Using existing Git repo at {self.repo_path}")
@@ -61,7 +87,12 @@ class CodeTracker:
             return repo
 
     def _git_env(self):
-        """Set up environment variables for Git authentication."""
+        """
+        Set up environment variables for Git authentication.
+
+        Returns:
+            dict: A copy of the environment variables with Git authentication settings.
+        """
         env = os.environ.copy()
         if self.ssh_key_path:
             env["GIT_SSH_COMMAND"] = f"ssh -i {self.ssh_key_path}"
@@ -72,11 +103,24 @@ class CodeTracker:
         return env
 
     def _has_commits(self) -> bool:
-        """Check if repository has any commits."""
+        """
+        Check if the repository has any commits.
+
+        Returns:
+            bool: True if the repository has at least one commit, False otherwise.
+        """
         return self.repo.head.is_valid()
 
     def _validate_paths(self, paths: list) -> list:
-        """Convert and validate file paths."""
+        """
+        Convert and validate file paths, ensuring they exist.
+
+        Args:
+            paths (list): List of file or directory paths.
+
+        Returns:
+            list: List of existing absolute paths as strings.
+        """
         existing_paths = []
         for path in paths:
             path_obj = Path(path)
@@ -93,7 +137,14 @@ class CodeTracker:
     def checkout(self, branch_name: str):
         """
         Checkout to the specified branch.
-        If branch does not exist, create it from HEAD.
+
+        If the branch does not exist, create it from HEAD.
+
+        Args:
+            branch_name (str): The name of the branch to checkout.
+
+        Returns:
+            bool: True if checked out to an existing branch, False if a new branch was created.
         """
         if branch_name in [b.name for b in self.repo.heads]:
             self.repo.heads[branch_name].checkout()
@@ -108,8 +159,14 @@ class CodeTracker:
     @git_operation("create branch")
     def _create_branch(self, branch_name: str, base: str = "HEAD") -> bool:
         """
-        Create a new branch from the given base (default: HEAD).
-        Returns True if created.
+        Create a new branch from the given base.
+
+        Args:
+            branch_name (str): The name of the new branch.
+            base (str, optional): The base commit or branch. Defaults to "HEAD".
+
+        Returns:
+            bool: True if the branch was created successfully.
         """
         self.repo.create_head(branch_name, base)
         self.repo.heads[branch_name].checkout()
@@ -119,7 +176,16 @@ class CodeTracker:
 
     @git_operation("add remote")
     def add_remote(self, name: str, url: str):
-        """Add a remote if it doesn't already exist, and fetch/pull if repo is empty."""
+        """
+        Add a remote if it doesn't already exist, and fetch/pull if the repo is empty.
+
+        Args:
+            name (str): The name of the remote.
+            url (str): The URL of the remote repository.
+
+        Returns:
+            bool: True if the remote was added or already exists.
+        """
         if name in self.repo.remotes:
             logger.info(f"Remote {name} already exists")
             return True
@@ -143,7 +209,16 @@ class CodeTracker:
 
     @git_operation("pull")
     def pull(self, remote_name: str, branch: str):
-        """Fetch and pull from remote for empty repository."""
+        """
+        Fetch and pull from remote for empty repository.
+
+        Args:
+            remote_name (str): The name of the remote.
+            branch (str): The branch to pull.
+
+        Returns:
+            bool: True if pull was successful, None otherwise.
+        """
         remote = self.repo.remotes[remote_name]
         with self.repo.git.custom_environment(**self._git_env()):
             remote.fetch()
@@ -156,12 +231,24 @@ class CodeTracker:
     def _reset_merge(self):
         """
         Abort a merge in progress (used to recover from conflicts).
+
+        Returns:
+            None
         """
         self.repo.git.merge("--abort")
         logger.info("Merge aborted due to conflict")
 
     def _try_pull(self, remote_name: str, branch: str) -> bool:
-        """Try to pull from a specific branch. Abort if merge conflict occurs."""
+        """
+        Try to pull from a specific branch. Abort if merge conflict occurs.
+
+        Args:
+            remote_name (str): The name of the remote.
+            branch (str): The branch to pull.
+
+        Returns:
+            bool: True if pull was successful, False otherwise.
+        """
         try:
             self.repo.git.pull(remote_name, branch)
             logger.info(f"Pulled from {remote_name}/{branch}")
@@ -181,37 +268,45 @@ class CodeTracker:
             else:
                 logger.error(f"Pull failed: {e}")
 
-    def track(
-        self,
-        paths: list,
-        commit_message: str,
-        remote_name: str = "origin",
-    ):
-        """Track specified paths by adding, committing, and pushing them."""
-        existing_paths = self._validate_paths(paths)
-        if not existing_paths:
-            logger.warning("No valid paths to track")
-            return False
-
-        if not self.add_to_index(existing_paths):
-            return False
-
-        commit = self.create_commit(commit_message)
-        if not commit:
-            return False
-
-        return self.push(remote_name, self.branch)
-
-    @git_operation("add to index")
     def add_to_index(self, paths: list) -> bool:
-        """Add paths to Git index."""
+        """
+        Add paths to the Git index (staging area).
+
+        Args:
+            paths (list): List of file or directory paths to add.
+
+        Returns:
+            bool: True if files were added to the index.
+        """
         # Convert to relative paths for ignored() check
         self.repo.index.add(paths)
         logger.info(f"Added {len(paths)} path(s) to index")
         return True
 
+    @git_operation("remove from index")
+    def remove_deleted_from_index(self) -> bool:
+        """
+        Remove deleted files from the Git index.
+
+        Returns:
+            bool: True if deleted files were removed from the index.
+        """
+        paths = []
+        for obj in self.repo.index.diff(None):
+            if obj.change_type == "D":
+                paths.append(obj.a_path)
+        if paths != []:
+            self.repo.index.remove(paths, r=True)
+        logger.info(f"Removed {len(paths)} path(s) from index")
+        return True
+
     def _has_changes(self) -> bool:
-        """Check if there are changes to commit."""
+        """
+        Check if there are changes to commit.
+
+        Returns:
+            bool: True if there are staged changes to commit, False otherwise.
+        """
         if not self._has_commits():
             # If no commits yet, any staged files are changes
             return bool(self.repo.index.entries)
@@ -219,7 +314,15 @@ class CodeTracker:
 
     @git_operation("commit")
     def create_commit(self, message: str):
-        """Create a commit with the given message."""
+        """
+        Create a commit with the given message.
+
+        Args:
+            message (str): The commit message.
+
+        Returns:
+            Commit: The created commit object, or False if no changes to commit.
+        """
         if not self._has_changes():
             logger.info("No changes to commit")
             return False
@@ -229,7 +332,17 @@ class CodeTracker:
 
     @git_operation("push")
     def push(self, remote_name: str, branch: str, remote_url: str = None) -> bool:
-        """Push current branch to remote."""
+        """
+        Push the current branch to the specified remote.
+
+        Args:
+            remote_name (str): The name of the remote.
+            branch (str): The branch to push.
+            remote_url (str, optional): The URL of the remote, if it needs to be created.
+
+        Returns:
+            bool: True if push was successful, False otherwise.
+        """
         if remote_name not in self.repo.remotes:
             if remote_url:
                 self.repo.create_remote(remote_name, remote_url)
@@ -260,7 +373,15 @@ class CodeTracker:
         return True
 
     def _ensure_branch(self, branch: str):
-        """Ensure we're on the correct branch."""
+        """
+        Ensure the repository is on the specified branch, creating it if necessary.
+
+        Args:
+            branch (str): The branch to switch to or create.
+
+        Returns:
+            None
+        """
         current_branch = self.repo.active_branch.name
         if current_branch == branch:
             return
@@ -276,7 +397,13 @@ class CodeTracker:
     @git_operation("prune and align branches")
     def align_with_remote(self, remote_name: str = "origin"):
         """
-        Prune deleted remote branches and optionally delete local branches whose remote is gone.
+        Prune deleted remote branches and delete local branches whose remote is gone.
+
+        Args:
+            remote_name (str, optional): The name of the remote to align with. Defaults to "origin".
+
+        Returns:
+            None
         """
         # Prune remote-tracking branches
         self.repo.git.fetch("--prune", remote_name)

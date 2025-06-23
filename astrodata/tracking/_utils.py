@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 
 def get_tracked_files(project_path, code_config, data_tracker=None, data_config=None):
@@ -30,6 +31,11 @@ def get_tracked_files(project_path, code_config, data_tracker=None, data_config=
             final_files.remove(f)
     if data_tracker and data_config:
         for path in data_config.get("paths", []):
-            final_files.append(str(project_path) + "/" + path + ".dvc")
+            abs_path = (Path(project_path) / path).resolve()
+            if abs_path.is_dir():
+                for file in abs_path.rglob("*.dvc"):
+                    final_files.append(str(file))
+            else:
+                final_files.append(str(project_path) + "/" + path + ".dvc")
     final_files = [f.replace("//", "/") for f in final_files]
     return final_files
