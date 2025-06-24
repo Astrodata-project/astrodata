@@ -25,7 +25,9 @@ dev = [
     "sphinx-autodoc-typehints>=3.0.1",
     "sphinx-rtd-theme>=3.0.2",
     "jupyter>=1.1.1",
-    "pytest>=8.3.5",
+]
+tests = [
+    "pytest>=8.3.5"
 ]
 
 [tool.uv]
@@ -43,9 +45,5 @@ tensorflow = [
     "tensorflow>=2.0.0"
 ]
 pytorch = [
-    "torch>=2.0.0"
-]
-full = [
-    "tensorflow>=2.0.0",
     "torch>=2.0.0"
 ]

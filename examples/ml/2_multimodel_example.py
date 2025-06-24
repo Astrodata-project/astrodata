@@ -44,10 +44,10 @@ if __name__ == "__main__":
     # Once everything is set up, we can loop through the models, fit them to the training data, and evaluate their performance on the test set.
 
     for model in models:
-        print(f"Model instantiated: %s", model)
+        print(f"Model instantiated: {model}")
         model.fit(X_train, y_train)
 
         preds = model.predict(X_test)
         res = model.get_metrics(X_test, y_test, metrics=metrics)
 
-        print(f"Metrics for model %s: %s", model, res)
+        print(f"Metrics for model {model}: {res}")

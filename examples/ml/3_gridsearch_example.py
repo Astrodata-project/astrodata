@@ -49,6 +49,6 @@ if __name__ == "__main__":
 
     gss.fit(X_train, y_train, X_test=X_test, y_test=y_test)
 
-    print("Best parameters found: %s", gss.get_best_params())
-    print("Best metrics: %s", gss.get_best_metrics())
-    print("Best model: %s", gss.get_best_model().get_params())
+    print(f"Best parameters found: {gss.get_best_params()}")
+    print(f"Best metrics: {gss.get_best_metrics()}")
+    print(f"Best model: {gss.get_best_model().get_params()}")
