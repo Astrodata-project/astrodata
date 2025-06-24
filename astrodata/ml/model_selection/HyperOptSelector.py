@@ -6,7 +6,7 @@ from hyperopt.pyll.base import Apply
 from sklearn.model_selection import KFold, train_test_split
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
-from astrodata.ml.model_selection._utils import fit_model_score_cv, fit_model_score
+from astrodata.ml.model_selection._utils import fit_model_score, fit_model_score_cv
 from astrodata.ml.model_selection.BaseMlModelSelector import BaseMlModelSelector
 from astrodata.ml.models.BaseMlModel import BaseMlModel
 from astrodata.tracking.ModelTracker import ModelTracker
@@ -24,10 +24,10 @@ class HyperOptSelector(BaseMlModelSelector):
         self,
         param_space: dict,  # hyperopt search space
         scorer: Optional[BaseMetric] = None,
-        use_cv: bool = True,
-        cv: int = 5,
-        val_size: float = 0.2,
-        max_evals: int = 50,
+        use_cv: bool = False,
+        cv: Optional[int] = 2,
+        val_size: Optional[float] = 0.2,
+        max_evals: int = 20,
         random_state: int = 42,
         metrics: Optional[list] = None,
         tracker: Optional[ModelTracker] = None,

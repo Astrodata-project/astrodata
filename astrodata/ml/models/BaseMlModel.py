@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
+from astrodata.ml.metrics.BaseMetric import BaseMetric
+
 
 class BaseMlModel(ABC):
     """
@@ -72,6 +74,13 @@ class BaseMlModel(ABC):
         -------
         float
             Model score.
+        """
+        pass
+
+    @abstractmethod
+    def get_scorer_metric(self) -> BaseMetric:
+        """
+        Returns the score function default metric.
         """
         pass
 
