@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Optional
 
+import random
 import joblib
 import numpy as np
 import pandas as pd
@@ -16,7 +17,7 @@ class SklearnModel(BaseMlModel):
     A wrapper class for scikit-learn models to standardize the interface and add extended functionality.
     """
 
-    def __init__(self, model_class, **model_params):
+    def __init__(self, model_class, random_state=random.randint(0, 2**32), **model_params):
         """
         Initialize the SklearnModel.
 
@@ -27,6 +28,7 @@ class SklearnModel(BaseMlModel):
         **model_params : dict
             Parameters for the scikit-learn model.
         """
+        self.random_state = random_state
         self.model_class = model_class
         self.model_params = model_params
         self.model_ = None
@@ -41,6 +43,7 @@ class SklearnModel(BaseMlModel):
             Dictionary containing the model class and its parameters.
         """
         params = {"model_class": self.model_class}
+        params["random_state"] = self.random_state
         params.update(self.model_params)
         return params
 

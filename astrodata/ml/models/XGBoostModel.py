@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
 
 import joblib
+import random
 import pandas as pd
 from sklearn.base import is_classifier, is_clusterer, is_outlier_detector, is_regressor
 from sklearn.metrics import accuracy_score, adjusted_rand_score, r2_score, roc_auc_score
@@ -15,7 +16,7 @@ class XGBoostModel(BaseMlModel):
     Wrapper for XGBoost models, providing a standardized interface and additional utilities.
     """
 
-    def __init__(self, model_class, **model_params):
+    def __init__(self, model_class, random_state=random.randint(0, 2**32), **model_params):
         """
         Initialize the XGBoostModel.
 
@@ -35,6 +36,7 @@ class XGBoostModel(BaseMlModel):
         self.model_class = model_class
         self.model_params = model_params
         self.model_ = None
+        self.random_state = random_state
         self._evals_result = None
 
     def get_params(self, **kwargs) -> dict:
@@ -47,6 +49,7 @@ class XGBoostModel(BaseMlModel):
             Dictionary containing the model class and its parameters.
         """
         params = {"model_class": self.model_class}
+        params["random_state"] = self.random_state
         params.update(self.model_params)
         return params
 

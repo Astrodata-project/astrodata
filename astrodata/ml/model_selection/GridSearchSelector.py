@@ -1,7 +1,10 @@
 import itertools
 from typing import Any, Dict, List, Optional
 
+from tqdm import tqdm
 import numpy as np
+import pandas as pd
+import random
 from sklearn.model_selection import KFold, train_test_split
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
@@ -9,6 +12,9 @@ from astrodata.ml.model_selection._utils import fit_model_score, fit_model_score
 from astrodata.ml.model_selection.BaseMlModelSelector import BaseMlModelSelector
 from astrodata.ml.models.BaseMlModel import BaseMlModel
 from astrodata.tracking.ModelTracker import ModelTracker
+from astrodata.utils.logger import setup_logger
+
+logger = setup_logger(__name__)
 
 
 class GridSearchSelector(BaseMlModelSelector):
@@ -22,7 +28,7 @@ class GridSearchSelector(BaseMlModelSelector):
         param_grid: dict,
         scorer: BaseMetric = None,
         val_size=None,
-        random_state=42,
+        random_state=random.randint(0, 2**32),
         metrics=None,
         tracker: ModelTracker = None,
         log_all_models: bool = False,
@@ -124,7 +130,12 @@ class GridSearchSelector(BaseMlModelSelector):
         best_params = None
         best_metrics = None
 
-        for param_tuple in itertools.product(*self.param_grid.values()):
+        param_iter = itertools.product(*self.param_grid.values())
+        total = 1
+        for v in self.param_grid.values():
+            total *= len(v)
+
+        for param_tuple in tqdm(param_iter, total=total, desc="Grid search"):
             params = dict(zip(self.param_grid.keys(), param_tuple))
             m, metrics, score = fit_model_score(
                 model=self.model,
@@ -137,6 +148,7 @@ class GridSearchSelector(BaseMlModelSelector):
                 metrics=self.metrics,
                 tracker=self.tracker,
                 log_model=self.log_all_models,
+                tags={"stage": "training", "is_final": False, "params": params},
             )
 
             if (greater_is_better and score > best_score) or (
@@ -151,22 +163,28 @@ class GridSearchSelector(BaseMlModelSelector):
         self._best_metrics = best_metrics
 
         # Refit best model on full data (train + val)
-        X_full = np.concatenate([self._X_train, self._X_val])
-        y_full = np.concatenate([self._y_train, self._y_val])
-
-        self._best_model = self.model.clone()
-        self._best_model.set_params(**self._best_params)
+        X_full = pd.concat([self._X_train, self._X_val])
+        y_full = pd.concat([self._y_train, self._y_val])
 
         if self.tracker:
-            self._best_model = self.tracker.wrap_fit(
-                self._best_model,
-                metrics=self.metrics,
+            self._best_model, _, _ = fit_model_score(
+                model=self.model,
+                params=self._best_params,
+                scorer=self.scorer,
+                X_train=X_full,
+                y_train=y_full,
                 X_test=X_test,
                 y_test=y_test,
+                metrics=self.metrics,
+                tracker=self.tracker,
                 log_model=True,
+                tags={
+                    "stage": "training",
+                    "is_final": True,
+                    "params": self._best_params,
+                },
+                manual_metrics=(self._best_metrics, "val"),
             )
-
-        self._best_model.fit(X_full, y_full)
 
         return self
 
@@ -235,7 +253,7 @@ class GridSearchCVSelector(BaseMlModelSelector):
         param_grid: dict,
         scorer: BaseMetric = None,
         cv=5,
-        random_state=42,
+        random_state=random.randint(0, 2**32),
         metrics: List[BaseMetric] = None,
         tracker: ModelTracker = None,
         log_all_models: bool = False,
@@ -302,8 +320,8 @@ class GridSearchCVSelector(BaseMlModelSelector):
         greater_is_better = self.scorer.greater_is_better if self.scorer else True
         best_score = -np.inf if greater_is_better else np.inf
 
-        X = np.asarray(X)
-        y = np.asarray(y)
+        X = pd.DataFrame(X)
+        y = pd.DataFrame(y)
 
         best_params = None
         best_metrics = None
@@ -316,7 +334,12 @@ class GridSearchCVSelector(BaseMlModelSelector):
         else:
             cv_splitter = self.cv
 
-        for param_tuple in itertools.product(*self.param_grid.values()):
+        param_iter = itertools.product(*self.param_grid.values())
+        total = 1
+        for v in self.param_grid.values():
+            total *= len(v)
+
+        for param_tuple in tqdm(param_iter, total=total, desc="Grid search"):
             params = dict(zip(self.param_grid.keys(), param_tuple))
 
             m, mean_metrics, mean_score = fit_model_score_cv(
@@ -329,6 +352,7 @@ class GridSearchCVSelector(BaseMlModelSelector):
                 metrics=self.metrics,
                 tracker=self.tracker,
                 log_models=self.log_all_models,
+                tags={"stage": "training", "is_final": False, "params": params},
             )
 
             if (greater_is_better and mean_score > best_score) or (
@@ -341,22 +365,29 @@ class GridSearchCVSelector(BaseMlModelSelector):
             self._best_params = best_params
             self._best_metrics = best_metrics
 
-            # Retrain best model on all data
-            self._best_model = self.model.clone()
-            self._best_model.set_params(**self._best_params)
+        # Retrain best model on all data
 
-            if self.tracker:
-                self._best_model = self.tracker.wrap_fit(
-                    self._best_model,
-                    X_test=X_test,
-                    y_test=y_test,
-                    metrics=self.metrics,
-                    log_model=True,
-                )
+        if self.tracker:
+            self._best_model, _, _ = fit_model_score(
+                model=self.model,
+                params=self._best_params,
+                scorer=self.scorer,
+                X_train=X,
+                y_train=y,
+                X_test=X_test,
+                y_test=y_test,
+                metrics=self.metrics,
+                tracker=self.tracker,
+                log_model=True,
+                tags={
+                    "stage": "training",
+                    "is_final": True,
+                    "params": self._best_params,
+                },
+                manual_metrics=(self._best_metrics, "val"),
+            )
 
-            self._best_model.fit(X, y)
-
-            return self
+        return self
 
     def get_best_model(self) -> Optional[BaseMlModel]:
         """

@@ -1,6 +1,8 @@
 from typing import Any, Dict, Optional
+import random
 
 import numpy as np
+import pandas as pd
 from hyperopt import STATUS_OK, Trials, fmin, tpe
 from hyperopt.pyll.base import Apply
 from sklearn.model_selection import KFold, train_test_split
@@ -28,7 +30,7 @@ class HyperOptSelector(BaseMlModelSelector):
         cv: Optional[int] = 2,
         val_size: Optional[float] = 0.2,
         max_evals: int = 20,
-        random_state: int = 42,
+        random_state: int = random.randint(0, 2**32),
         metrics: Optional[list] = None,
         tracker: Optional[ModelTracker] = None,
         log_all_models: bool = False,
@@ -78,13 +80,8 @@ class HyperOptSelector(BaseMlModelSelector):
         self, params: Dict[str, Any], X, y, X_val=None, y_val=None
     ) -> Dict[str, Any]:
         # hyperopt passes numpy floats, so cast where needed
-        params = {
-            k: (
-                int(v) if isinstance(v, np.generic) and isinstance(v.item(), int) else v
-            )
-            for k, v in params.items()
-        }
-        model = params.pop("model")
+        params_t = params.copy()
+        model = params_t.pop("model")
 
         if not isinstance(model, BaseMlModel):
             raise TypeError(f"{model} is not a BaseMlModel instance")
@@ -97,7 +94,7 @@ class HyperOptSelector(BaseMlModelSelector):
 
             m, metrics, score = fit_model_score_cv(
                 model,
-                params,  # wrap values in lists
+                params_t,
                 self.scorer,
                 X,
                 y,
@@ -105,6 +102,7 @@ class HyperOptSelector(BaseMlModelSelector):
                 metrics=self.metrics,
                 tracker=self.tracker,
                 log_models=self.log_all_models,
+                tags={"stage": "training", "is_final": False, "params": params},
             )
         else:
             if X_val is None or y_val is None:
@@ -114,10 +112,12 @@ class HyperOptSelector(BaseMlModelSelector):
                 )
             else:
                 X_train, y_train = X, y
+                
+            
 
             m, metrics, score = fit_model_score(
                 model,
-                params,
+                params_t,
                 self.scorer,
                 X_train,
                 y_train,
@@ -125,18 +125,18 @@ class HyperOptSelector(BaseMlModelSelector):
                 y_val,
                 metrics=self.metrics,
                 tracker=self.tracker,
-                log_models=self.log_all_models,
+                log_model=self.log_all_models,
+                tags={"stage": "training", "is_final": False, "params": params},
             )
 
         greater_is_better = self.scorer.greater_is_better if self.scorer else True
         loss = -score if greater_is_better else score
-        return {"loss": loss, "status": STATUS_OK, "metrics": metrics}
+        return {"loss": loss, "status": STATUS_OK, "metrics": metrics, "params": params}
 
     def fit(
         self, X, y, X_val=None, y_val=None, X_test=None, y_test=None, *args, **kwargs
     ) -> "HyperOptSelector":
-        X = np.asarray(X)
-        y = np.asarray(y)
+
         trials = Trials()
         best_params = fmin(
             fn=lambda params: self._objective(params, X, y, X_val, y_val),
@@ -148,43 +148,38 @@ class HyperOptSelector(BaseMlModelSelector):
         )
 
         # Evaluate best to get metrics
-        best_params = {
-            k: (
-                int(v) if isinstance(v, np.generic) and isinstance(v.item(), int) else v
-            )
-            for k, v in best_params.items()
-        }
         if self.use_cv:
             X_full, y_full = X, y
         else:
             if X_val is not None and y_val is not None:
-                X_full = np.concatenate([X, X_val])
-                y_full = np.concatenate([y, y_val])
+                X_full = pd.concat([X, X_val])
+                y_full = pd.concat([y, y_val])
             else:
                 X_full, y_full = X, y
 
-        self._best_params = _map_hyperopt_best_params(best_params, self.param_space)
-
         # Train best model on all data
-        best_model = self._best_params.pop("model")
-        if hasattr(best_model, "clone"):
-            self._best_model = best_model.clone()
-        else:
-            import copy
-
-            self._best_model = copy.deepcopy(best_model)
-        self._best_model.set_params(**self._best_params)
-        if self.tracker:
-            self._best_model = self.tracker.wrap_fit(
-                self._best_model,
+        self._best_metrics, self._best_params = _getBestMetricsParamsfromTrials(trials)
+        
+        if self.tracker:            
+            best_params_t = self._best_params.copy()
+            
+            self._best_model, _, _ = fit_model_score(
+                model=best_params_t.pop("model"),
+                params=best_params_t,
+                scorer=self.scorer,
+                X_train=X_full,
+                y_train=y_full,
                 X_test=X_test,
                 y_test=y_test,
                 metrics=self.metrics,
+                tracker=self.tracker,
                 log_model=True,
+                tags={"stage": "training", "is_final": True, "params": self._best_params},
+                manual_metrics = (self._best_metrics, "val")
             )
-        self._best_model.fit(X_full, y_full)
-        self._best_metrics = _getBestMetricsfromTrials(trials)
+
         return self
+        
 
     def get_best_model(self) -> Optional[BaseMlModel]:
         """
@@ -242,36 +237,11 @@ class HyperOptSelector(BaseMlModelSelector):
         }
 
 
-def _map_hyperopt_best_params(best_params: dict, search_space: dict) -> dict:
-    """
-    Maps indices in best_params back to actual values from hp.choice in search_space.
-    Handles nested and scope-wrapped choices.
-    """
-    mapped = {}
-    for k, v in best_params.items():
-        space = search_space[k]
-        # Unwrap "scope" functions (like scope.int)
-        node = space
-        while isinstance(node, Apply) and node.name.startswith("scope"):
-            node = node.pos_args[0]
-        # Now check if it's an hp.choice
-        if isinstance(node, Apply) and node.name == "switch":
-            # node.pos_args[1:] are the choices
-            choices = node.pos_args[1:]
-            mapped[k] = choices[v]  # v is the index
-            # If choices are themselves Apply nodes (e.g., lists), evaluate them
-            if hasattr(mapped[k], "eval"):
-                mapped[k] = mapped[k].eval()
-        else:
-            mapped[k] = v
-    return mapped
-
-
-def _getBestMetricsfromTrials(trials):
+def _getBestMetricsParamsfromTrials(trials):
     valid_trial_list = [
         trial for trial in trials if STATUS_OK == trial["result"]["status"]
     ]
     losses = [float(trial["result"]["loss"]) for trial in valid_trial_list]
     index_having_minumum_loss = np.argmin(losses)
     best_trial_obj = valid_trial_list[index_having_minumum_loss]
-    return best_trial_obj["result"]["metrics"]
+    return best_trial_obj["result"]["metrics"], best_trial_obj["result"]["params"]

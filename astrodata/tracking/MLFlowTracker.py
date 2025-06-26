@@ -1,11 +1,9 @@
 import functools
 import os
-from typing import List, Optional
+from typing import List, Optional, Dict, Any, Tuple
 
 import mlflow
-import mlflow.models
-import mlflow.version
-
+import warnings
 from astrodata.ml.metrics._utils import get_loss_func
 from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
@@ -14,6 +12,8 @@ from astrodata.tracking.ModelTracker import ModelTracker
 from astrodata.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
+
+warnings.filterwarnings("ignore", module=r"mlflow.*")
 
 
 class MlflowBaseTracker(ModelTracker):
@@ -81,7 +81,6 @@ class MlflowBaseTracker(ModelTracker):
     def register_best_model(
         self,
         metric: BaseMetric,
-        model_artifact_path: str = "model",
         registered_model_name: Optional[str] = None,
         split_name: str = "train",
         stage: str = "Production",
@@ -112,6 +111,7 @@ class MlflowBaseTracker(ModelTracker):
         ValueError
             If the experiment or suitable run is not found.
         """
+        
         experiment = mlflow.get_experiment_by_name(self.experiment_name)
         if experiment is None:
             raise ValueError(f"Experiment '{self.experiment_name}' not found.")
@@ -120,6 +120,7 @@ class MlflowBaseTracker(ModelTracker):
         order = "DESC" if metric.greater_is_better else "ASC"
         runs_df = mlflow.search_runs(
             experiment_ids=[experiment_id],
+            filter_string="tags.is_final='True'",
             order_by=[f"metrics.{metric.get_name()}_{split_name} {order}"],
             max_results=1,
         )
@@ -127,12 +128,19 @@ class MlflowBaseTracker(ModelTracker):
             raise ValueError(f"No runs found in experiment '{self.experiment_name}'.")
 
         best_run_id = runs_df.iloc[0].run_id
+        
+        logged_models = mlflow.search_logged_models(experiment_ids=[experiment_id])
+        best_model_id = logged_models[logged_models["source_run_id"]==best_run_id].iloc[0]["model_id"]
+        
+        model_uri = f"experiments:/{experiment_id}/{best_model_id}"
+        
         model_name = registered_model_name or self.experiment_name
-        model_uri = f"runs:/{best_run_id}/{model_artifact_path}"
+
         result = mlflow.register_model(model_uri, model_name)
 
         if stage:
             client = mlflow.tracking.MlflowClient()
+            client.set_tag(best_run_id, "stage", stage)
             client.set_registered_model_alias(
                 name=model_name, alias=stage, version=result.version
             )
@@ -166,6 +174,8 @@ class SklearnMLflowTracker(MlflowBaseTracker):
         y_val=None,
         metrics: Optional[List[BaseMetric]] = None,
         log_model: bool = False,
+        tags: Dict[str, Any] = {},
+        manual_metrics: Tuple[Dict[str, Any], str] = None,
     ) -> BaseMlModel:
         """
         Wrap a BaseMlModel's fit method to perform MLflow logging.
@@ -186,6 +196,10 @@ class SklearnMLflowTracker(MlflowBaseTracker):
             Metrics to log. If missing, a default loss metric is added.
         log_model : bool, optional
             If True, log the fitted model as an MLflow artifact.
+        tags: Dict[str, Any] default {}
+            Any additional tags that should be added to the model. By default the tag "is_final" is set as equal to log_model so that
+            any logged model is considered as a candidate for production (for register_best_model) unless specified otherwise 
+            (e.g. in the model selectors for intermediate steps)
 
         Returns
         -------
@@ -193,6 +207,8 @@ class SklearnMLflowTracker(MlflowBaseTracker):
             A new instance of the model with an MLflow-logging fit method.
         """
         orig_class = model.__class__
+        if "is_final" not in tags.keys():
+            tags["is_final"] = log_model
         tracker = self
         metrics = metrics or []
 
@@ -207,6 +223,8 @@ class SklearnMLflowTracker(MlflowBaseTracker):
                 Training features.
             y : array-like
                 Training targets.
+            tags : Dict[str, Any]
+                A dictionary of tags that should be logged with the model.
             *args, **kwargs
                 Additional arguments for the fit method.
 
@@ -217,7 +235,7 @@ class SklearnMLflowTracker(MlflowBaseTracker):
             """
             mlflow.set_experiment(tracker.experiment_name)
             with mlflow.start_run(run_name=tracker.run_name):
-                mlflow.set_tags(tracker.extra_tags)
+                mlflow.set_tags({**tags, **tracker.extra_tags})
                 try:
                     params = self.get_params()
                     mlflow.log_params(params)
@@ -229,55 +247,16 @@ class SklearnMLflowTracker(MlflowBaseTracker):
                 # Optionally log model
                 if log_model:
                     try:
-                        mlflow.sklearn.log_model(self, "model", input_example=X[:5])
+                        mlflow.sklearn.log_model(self, name="model", input_example=X[:5])
                     except Exception as e:
                         logger.error(f"Could not log model: {e}")
 
-                # Helper for metrics and loss
-                def log_metrics_and_loss(X_split, y_split, split_name):
-                    """
-                    Log metrics and loss curves for a data split.
+                log_metrics_and_loss(X, y, self, metrics, "train")
+                log_metrics_and_loss(X_test, y_test, self, metrics, "test")
+                log_metrics_and_loss(X_val, y_val, self, metrics, "val")
 
-                    Parameters
-                    ----------
-                    X_split : array-like
-                        Features.
-                    y_split : array-like
-                        Labels.
-                    split_name : str
-                        Name of the split ('train', 'val', 'test').
-                    """
-                    if (
-                        X_split is not None
-                        and y_split is not None
-                        and hasattr(self, "get_metrics")
-                    ):
-                        scores = self.get_metrics(X=X_split, y=y_split, metrics=metrics)
-                        mlflow.log_metrics(
-                            {f"{k}_{split_name}": v for k, v in scores.items()}
-                        )
-                        # Loss curve
-                        if hasattr(self, "get_loss_history_metrics"):
-                            curves = self.get_loss_history_metrics(
-                                X_split, y_split, metrics=metrics
-                            )
-
-                            for key, value in curves.items():
-                                for i, loss in enumerate(value):
-                                    mlflow.log_metric(
-                                        f"{key}_{split_name}",
-                                        loss,
-                                        step=i,
-                                    )
-
-                # Add default loss metric if not present
-                loss_metric = SklearnMetric(get_loss_func(self.model_))
-                if loss_metric.get_name() not in [m.get_name() for m in metrics]:
-                    metrics.append(loss_metric)
-
-                log_metrics_and_loss(X, y, "train")
-                log_metrics_and_loss(X_test, y_test, "test")
-                log_metrics_and_loss(X_val, y_val, "val")
+                if manual_metrics is not None:
+                    log_metrics_manual(*manual_metrics)
 
                 return result
 
@@ -289,3 +268,47 @@ class SklearnMLflowTracker(MlflowBaseTracker):
 
         # Return a new instance with the same parameters as the original model
         return SklearnMLflowWrappedModel(**model.get_params())
+
+
+# Helper for metrics and loss
+def log_metrics_and_loss(
+    X_split, y_split, model: BaseMlModel, metrics: BaseMetric, split_name: str
+):
+    """
+    Log metrics and loss curves for a data split.
+
+    Parameters
+    ----------
+    X_split : array-like
+        Features.
+    y_split : array-like
+        Labels.
+    split_name : str
+        Name of the split ('train', 'val', 'test').
+    """
+    if X_split is not None and y_split is not None and hasattr(model, "get_metrics"):
+        scores = model.get_metrics(X=X_split, y=y_split, metrics=metrics)
+        mlflow.log_metrics({f"{k}_{split_name}": v for k, v in scores.items()})
+        # Loss curve
+        if hasattr(model, "get_loss_history_metrics"):
+            curves = model.get_loss_history_metrics(X_split, y_split, metrics=metrics)
+
+            for key, value in curves.items():
+                for i, loss in enumerate(value):
+                    mlflow.log_metric(
+                        f"{key}_{split_name}",
+                        loss,
+                        step=i,
+                    )
+
+    # Add default loss metric if not present
+    loss_metric = SklearnMetric(get_loss_func(model.model_))
+    if loss_metric.get_name() not in [m.get_name() for m in metrics]:
+        metrics.append(loss_metric)
+
+
+# Helper for manual metrics
+def log_metrics_manual(metrics: Dict[str, Any], split_name: str):
+
+    for key, value in metrics.items():
+        mlflow.log_metric(f"{key}_{split_name}", value)

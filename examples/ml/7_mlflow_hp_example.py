@@ -42,7 +42,7 @@ if __name__ == "__main__":
     tracker = SklearnMLflowTracker(
         run_name="HyperOpt",
         experiment_name="examples_ml_7_mlflow_hp_example.py",
-        extra_tags={"stage": "testing"},
+        extra_tags=None,
     )
 
     # Define the metrics to be used for evaluation
@@ -70,18 +70,17 @@ if __name__ == "__main__":
     hos = HyperOptSelector(
         param_space=param_space,
         scorer=accuracy,
-        use_cv=True,
-        cv=2,
+        use_cv=False,
         random_state=42,
-        max_evals=20,  # You can increase this for a more thorough search
+        max_evals=10,  # You can increase this for a more thorough search
         metrics=None,
         tracker=tracker,
     )
 
     hos.fit(X_train, y_train, X_test=X_test, y_test=y_test)
 
-    print(f"Best parameters found: %s", hos.get_best_params())
-    print(f"Best metrics: %s", hos.get_best_metrics())
+    print(f"Best parameters found: ", hos.get_best_params())
+    print(f"Best metrics: ", hos.get_best_metrics())
 
     # Here we tag for production the best model found during the grid search. The experiments in mlflow
     # are organized by the specified metric and the best performing one is registered.
@@ -89,6 +88,6 @@ if __name__ == "__main__":
 
     tracker.register_best_model(
         metric=logloss,
-        split_name="test",
+        split_name="val",
         stage="Production",
     )

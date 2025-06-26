@@ -280,6 +280,7 @@ dependencies = [
     { name = "pyarrow" },
     { name = "pydantic" },
     { name = "scikit-learn" },
+    { name = "tqdm" },
     { name = "xgboost" },
 ]
 
@@ -319,6 +320,7 @@ requires-dist = [
     { name = "scikit-learn", specifier = ">=1.6.1" },
     { name = "tensorflow", marker = "extra == 'tensorflow'", specifier = ">=2.0.0" },
     { name = "torch", marker = "extra == 'pytorch'", specifier = ">=2.0.0" },
+    { name = "tqdm", specifier = ">=4.67.1" },
     { name = "xgboost", specifier = ">=3.0.0" },
 ]
 

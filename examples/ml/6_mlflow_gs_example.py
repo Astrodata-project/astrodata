@@ -41,7 +41,7 @@ if __name__ == "__main__":
     tracker = SklearnMLflowTracker(
         run_name="GridSearchCVRun",
         experiment_name="examples_ml_6_mlflow_gs_example.py",
-        extra_tags={"stage": "testing"},
+        extra_tags=None,
     )
 
     # Define the metrics to be used for evaluation
@@ -61,7 +61,7 @@ if __name__ == "__main__":
         cv=2,
         param_grid={
             "n_estimators": [50, 100],
-            "learning_rate": [0.01, 0.1],
+            "learning_rate": [0.01],
             "max_depth": [3, 5],
         },
         scorer=logloss,
@@ -72,8 +72,8 @@ if __name__ == "__main__":
 
     gss.fit(X_train, y_train, X_test=X_test, y_test=y_test)
 
-    print("Best parameters found: %s", gss.get_best_params())
-    print("Best metrics: %s", gss.get_best_metrics())
+    print(f"Best parameters found: {gss.get_best_params()}")
+    print(f"Best metrics: {gss.get_best_metrics()}")
 
     # Here we tag for production the best model found during the grid search. The experiments in mlflow
     # are organized by the specified metric and the best performing one is registered.
@@ -81,6 +81,6 @@ if __name__ == "__main__":
 
     tracker.register_best_model(
         metric=logloss,
-        split_name="test",
-        stage="Production",
+        split_name="val",
+        stage="production",
     )
