@@ -172,6 +172,7 @@ class CodeTracker:
         self.repo.heads[branch_name].checkout()
         self.branch = branch_name
         logger.info(f"Created branch '{branch_name}' from '{base}'")
+        self.repo.git.push("--set-upstream", "origin", branch_name)
         return True
 
     @git_operation("add remote")
@@ -357,8 +358,6 @@ class CodeTracker:
             logger.warning("Repository has no commits yet")
             return False
 
-        self._ensure_branch(branch)
-
         remote = self.repo.remotes[remote_name]
         with self.repo.git.custom_environment(**self._git_env()):
             try:
@@ -371,28 +370,6 @@ class CodeTracker:
                 else:
                     raise
         return True
-
-    def _ensure_branch(self, branch: str):
-        """
-        Ensure the repository is on the specified branch, creating it if necessary.
-
-        Args:
-            branch (str): The branch to switch to or create.
-
-        Returns:
-            None
-        """
-        current_branch = self.repo.active_branch.name
-        if current_branch == branch:
-            return
-
-        if branch in [b.name for b in self.repo.heads]:
-            self.repo.heads[branch].checkout()
-            logger.info(f"Switched to existing branch: {branch}")
-        else:
-            new_branch = self.repo.create_head(branch)
-            new_branch.checkout()
-            logger.info(f"Created and switched to new branch: {branch}")
 
     @git_operation("prune and align branches")
     def align_with_remote(self, remote_name: str = "origin"):
