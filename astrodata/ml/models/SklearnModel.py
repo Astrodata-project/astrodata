@@ -3,9 +3,11 @@ from typing import Any, Dict, List, Optional
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn.base import is_classifier
+from sklearn.base import is_classifier, is_clusterer, is_outlier_detector, is_regressor
+from sklearn.metrics import accuracy_score, adjusted_rand_score, r2_score, roc_auc_score
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
+from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.models.BaseMlModel import BaseMlModel
 
 
@@ -196,6 +198,22 @@ class SklearnModel(BaseMlModel):
         if self.model_ is None:
             raise RuntimeError("Model is not fitted yet.")
         return self.model_.score(X, y, **kwargs)
+
+    def get_scorer_metric(self) -> SklearnMetric:
+        """
+        Returns the default metric used by the model's scoring function.
+        """
+        match True:
+            case _ if is_classifier(self.model_class()):
+                return SklearnMetric(accuracy_score)
+            case _ if is_regressor(self.model_class()):
+                return SklearnMetric(r2_score)
+            case _ if is_clusterer(self.model_class()):
+                return SklearnMetric(adjusted_rand_score)
+            case _ if is_outlier_detector(self.model_class()):
+                return SklearnMetric(roc_auc_score)
+            case _:
+                raise ValueError("Unknown model type")
 
     def get_metrics(self, X, y, metrics: List[BaseMetric] = None) -> Dict[str, Any]:
         """
