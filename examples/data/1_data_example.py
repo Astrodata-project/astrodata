@@ -17,6 +17,8 @@ def remove_dummy_csv_file():
 
 if __name__ == "__main__":
     # This example demonstrates how to use the DataPipeline along with AbstractProcessor and BaseLoader classes to process data.
+    # The DataPipeline class orchestrates the loading and processing of data through a series of defined processors.
+    # It should be used when you want to apply a sequence of transformations to your data, aimed to prepare it for machine learning tasks.
     # We will create a dummy CSV file, load it using CsvLoader, and process it with a custom processor.
 
     # Create a dummy CSV file for demonstration purposes

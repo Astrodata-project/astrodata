@@ -1,0 +1,23 @@
+
+preml:
+  train_test_split:
+    targets:
+      - "target"
+    test_size: 0.2
+    random_state: 42
+    validation:
+      enabled: false
+      size: 0.1
+  OHE:
+    categorical_columns:
+      - "feature2"
+    numerical_columns:
+      - "feature1"
+      - "feature3"
+  MissingImputator:
+    categorical_columns:
+      - "feature2"
+    numerical_columns:
+      - "feature1"
+      - "feature3"
+
