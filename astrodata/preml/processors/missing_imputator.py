@@ -92,7 +92,8 @@ class MissingImputator(AbstractProcessor):
                 )
             )
 
-            self.save_artifact((num_imputer, cat_imputer), self.kwargs["save_path"])
+            if self.kwargs.get("save_path"):
+                self.save_artifact((num_imputer, cat_imputer), self.kwargs["save_path"])
 
             # Apply imputers to test features
             preml.test_features[self.kwargs["numerical_columns"]] = (

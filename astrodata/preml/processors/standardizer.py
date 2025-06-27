@@ -70,7 +70,8 @@ class Standardizer(AbstractProcessor):
                 preml.train_features[self.kwargs["numerical_columns"]]
             )
 
-            self.save_artifact(scaler, self.kwargs["save_path"])
+            if self.kwargs.get("save_path"):
+                self.save_artifact(scaler, self.kwargs["save_path"])
 
             # Apply scaler to test features
             preml.test_features[self.kwargs["numerical_columns"]] = scaler.transform(

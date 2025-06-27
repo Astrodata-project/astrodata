@@ -21,6 +21,8 @@ class AbstractProcessor(ABC):
     def __init__(self, artifact: Optional[str] = None, **kwargs: Any):
         """
         Initializes the processor with an empty dictionary to store artifacts.
+
+        Each processor can take an arbitrary number of keyword arguments, which can be accessed within the process method.
         """
         self.artifact = self.load_artifact(artifact)
         self.kwargs = kwargs

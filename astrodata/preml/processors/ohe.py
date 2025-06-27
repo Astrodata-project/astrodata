@@ -86,7 +86,8 @@ class OHE(AbstractProcessor):
                 [preml.train_features[self.kwargs["numerical_columns"]], ohe_df_train],
                 axis=1,
             )
-            self.save_artifact(ohe, self.kwargs["save_path"])
+            if self.kwargs.get("save_path"):
+                self.save_artifact(ohe, self.kwargs["save_path"])
             cat_ohe_test = ohe.transform(
                 preml.test_features[self.kwargs["categorical_columns"]]
             )
