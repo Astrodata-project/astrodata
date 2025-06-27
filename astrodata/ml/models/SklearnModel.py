@@ -1,6 +1,6 @@
+import random
 from typing import Any, Dict, List, Optional
 
-import random
 import joblib
 import numpy as np
 import pandas as pd
@@ -17,7 +17,9 @@ class SklearnModel(BaseMlModel):
     A wrapper class for scikit-learn models to standardize the interface and add extended functionality.
     """
 
-    def __init__(self, model_class, random_state=random.randint(0, 2**32), **model_params):
+    def __init__(
+        self, model_class, random_state=random.randint(0, 2**32), **model_params
+    ):
         """
         Initialize the SklearnModel.
 

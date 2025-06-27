@@ -1,9 +1,10 @@
 import functools
 import os
-from typing import List, Optional, Dict, Any, Tuple
+import warnings
+from typing import Any, Dict, List, Optional, Tuple
 
 import mlflow
-import warnings
+
 from astrodata.ml.metrics._utils import get_loss_func
 from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
@@ -111,7 +112,7 @@ class MlflowBaseTracker(ModelTracker):
         ValueError
             If the experiment or suitable run is not found.
         """
-        
+
         experiment = mlflow.get_experiment_by_name(self.experiment_name)
         if experiment is None:
             raise ValueError(f"Experiment '{self.experiment_name}' not found.")
@@ -128,12 +129,14 @@ class MlflowBaseTracker(ModelTracker):
             raise ValueError(f"No runs found in experiment '{self.experiment_name}'.")
 
         best_run_id = runs_df.iloc[0].run_id
-        
+
         logged_models = mlflow.search_logged_models(experiment_ids=[experiment_id])
-        best_model_id = logged_models[logged_models["source_run_id"]==best_run_id].iloc[0]["model_id"]
-        
+        best_model_id = logged_models[
+            logged_models["source_run_id"] == best_run_id
+        ].iloc[0]["model_id"]
+
         model_uri = f"experiments:/{experiment_id}/{best_model_id}"
-        
+
         model_name = registered_model_name or self.experiment_name
 
         result = mlflow.register_model(model_uri, model_name)
@@ -198,7 +201,7 @@ class SklearnMLflowTracker(MlflowBaseTracker):
             If True, log the fitted model as an MLflow artifact.
         tags: Dict[str, Any] default {}
             Any additional tags that should be added to the model. By default the tag "is_final" is set as equal to log_model so that
-            any logged model is considered as a candidate for production (for register_best_model) unless specified otherwise 
+            any logged model is considered as a candidate for production (for register_best_model) unless specified otherwise
             (e.g. in the model selectors for intermediate steps)
 
         Returns
@@ -247,7 +250,9 @@ class SklearnMLflowTracker(MlflowBaseTracker):
                 # Optionally log model
                 if log_model:
                     try:
-                        mlflow.sklearn.log_model(self, name="model", input_example=X[:5])
+                        mlflow.sklearn.log_model(
+                            self, name="model", input_example=X[:5]
+                        )
                     except Exception as e:
                         logger.error(f"Could not log model: {e}")
 

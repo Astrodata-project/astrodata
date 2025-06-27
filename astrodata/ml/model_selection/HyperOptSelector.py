@@ -1,5 +1,5 @@
-from typing import Any, Dict, Optional
 import random
+from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
@@ -112,8 +112,6 @@ class HyperOptSelector(BaseMlModelSelector):
                 )
             else:
                 X_train, y_train = X, y
-                
-            
 
             m, metrics, score = fit_model_score(
                 model,
@@ -159,10 +157,10 @@ class HyperOptSelector(BaseMlModelSelector):
 
         # Train best model on all data
         self._best_metrics, self._best_params = _getBestMetricsParamsfromTrials(trials)
-        
-        if self.tracker:            
+
+        if self.tracker:
             best_params_t = self._best_params.copy()
-            
+
             self._best_model, _, _ = fit_model_score(
                 model=best_params_t.pop("model"),
                 params=best_params_t,
@@ -174,12 +172,20 @@ class HyperOptSelector(BaseMlModelSelector):
                 metrics=self.metrics,
                 tracker=self.tracker,
                 log_model=True,
-                tags={"stage": "training", "is_final": True, "params": self._best_params},
-                manual_metrics = (self._best_metrics, "val")
+                tags={
+                    "stage": "training",
+                    "is_final": True,
+                    "params": self._best_params,
+                },
+                manual_metrics=(self._best_metrics, "val"),
             )
 
+        else:
+            self._best_model = self.model.clone()
+            self._best_model.set_params(**self._best_params)
+            self._best_model = self._best_model.fit(X_full, y_full)
+
         return self
-        
 
     def get_best_model(self) -> Optional[BaseMlModel]:
         """

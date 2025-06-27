@@ -20,7 +20,7 @@ from astrodata.ml.models.XGBoostModel import XGBoostModel
 def classification_data():
     data = load_breast_cancer()
     X = pd.DataFrame(data.data, columns=data.feature_names)
-    y = pd.Series(data.target)
+    y = pd.DataFrame(data.target)
     le = LabelEncoder()
     y = le.fit_transform(y)
     return train_test_split(X, y, test_size=0.25, random_state=42)
@@ -66,6 +66,12 @@ def test_classification_model_selection(
     classification_data, metrics, param_grids, selector_cls, model_key
 ):
     X_train, X_test, y_train, y_test = classification_data
+
+    X_train = pd.DataFrame(X_train)
+    X_test = pd.DataFrame(X_test)
+    y_train = pd.DataFrame(y_train)
+    y_test = pd.DataFrame(y_test)
+
     model = param_grids[model_key]["model"]
     param_grid = param_grids[model_key]["param_grid"]
     scorer = metrics[2]  # logloss

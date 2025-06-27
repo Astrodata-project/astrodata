@@ -1,11 +1,11 @@
 import itertools
+import random
 from typing import Any, Dict, List, Optional
 
-from tqdm import tqdm
 import numpy as np
 import pandas as pd
-import random
 from sklearn.model_selection import KFold, train_test_split
+from tqdm import tqdm
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.model_selection._utils import fit_model_score, fit_model_score_cv
@@ -109,6 +109,7 @@ class GridSearchSelector(BaseMlModelSelector):
         ValueError
             If neither validation data nor val_size is provided.
         """
+
         # If validation data not provided, split from training data
         if X_val is None or y_val is None:
             if self.val_size is None:
@@ -185,6 +186,11 @@ class GridSearchSelector(BaseMlModelSelector):
                 },
                 manual_metrics=(self._best_metrics, "val"),
             )
+
+        else:
+            self._best_model = self.model.clone()
+            self._best_model.set_params(**self._best_params)
+            self._best_model = self._best_model.fit(X_full, y_full)
 
         return self
 
@@ -386,6 +392,11 @@ class GridSearchCVSelector(BaseMlModelSelector):
                 },
                 manual_metrics=(self._best_metrics, "val"),
             )
+
+        else:
+            self._best_model = self.model.clone()
+            self._best_model.set_params(**self._best_params)
+            self._best_model = self._best_model.fit(X, y)
 
         return self
 
