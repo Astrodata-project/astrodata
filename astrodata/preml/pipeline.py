@@ -38,6 +38,8 @@ class PremlPipeline:
         )
 
         for processor in self.processors:
+            if processor.__class__.__name__ in self.config:
+                processor.kwargs = self.config[processor.__class__.__name__]
             data = processor.process(data)
             self.operations_tracker.append(
                 {f"{processor.__class__.__name__}": processor.artifact}
