@@ -79,8 +79,8 @@ if __name__ == "__main__":
 
     hos.fit(X_train, y_train, X_test=X_test, y_test=y_test)
 
-    print(f"Best parameters found: ", hos.get_best_params())
-    print(f"Best metrics: ", hos.get_best_metrics())
+    print("Best parameters found: ", hos.get_best_params())
+    print("Best metrics: ", hos.get_best_metrics())
 
     # Here we tag for production the best model found during the grid search. The experiments in mlflow
     # are organized by the specified metric and the best performing one is registered.
