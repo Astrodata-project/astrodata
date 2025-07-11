@@ -14,14 +14,10 @@ class TrainTestSplitter(PremlProcessor):
     and validation split. The output is a Premldata object containing the split datasets and metadata.
     """
 
-    def __init__(self, config: dict):
-        super().__init__()
-        try:
-            self.config = config["train_test_split"]
-        except KeyError:
-            raise ValueError("Config does not contain 'test_train_split' section.")
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-        self.artifact = self.config
+        self.artifact = kwargs
 
     def process(self, data: ProcessedData, **kwargs):
         """
@@ -37,16 +33,16 @@ class TrainTestSplitter(PremlProcessor):
         Returns:
             Premldata: The resulting Premldata object containing the split datasets.
         """
-        targets = self.config.get("targets", [data.data.columns[-1]])
+        targets = self.kwargs.get("targets", [data.data.columns[-1]])
         features_df = data.data.drop(columns=targets)
         targets_df = data.data[targets]
 
-        test_size = self.config.get("test_size", 0.2)
-        random_state = self.config.get("random_state", None)
-        validation = self.config.get("validation", {}).get("enabled", False)
+        test_size = self.kwargs.get("test_size", 0.2)
+        random_state = self.kwargs.get("random_state", None)
+        validation = self.kwargs.get("validation", {}).get("enabled", False)
 
         if validation:
-            val_size = self.config.get("validation", {}).get("size", False)
+            val_size = self.kwargs.get("validation", {}).get("size", False)
             X_temp, X_test, y_temp, y_test = train_test_split(
                 features_df, targets_df, test_size=test_size, random_state=random_state
             )
