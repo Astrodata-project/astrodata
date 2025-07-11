@@ -1,5 +1,4 @@
 from astrodata.data.schemas import ProcessedData
-from astrodata.preml.processors import TrainTestSplitter
 from astrodata.preml.processors.base import PremlProcessor
 from astrodata.preml.schemas import Premldata
 from astrodata.utils.utils import instantiate_processors, read_config
@@ -32,7 +31,7 @@ class PremlPipeline:
         self.config = config.get("preml", {}) if config else {}
         self.processors = []
         processors = processors or []
-        config_processors = instantiate_processors(self.config) if self.config else []
+        config_processors = instantiate_processors(self.config) if self.config else {}
 
         # Add TrainTestSplitter as the first processor if not already present
         for p in processors:
@@ -49,7 +48,10 @@ class PremlPipeline:
         for p in processors:
             self.processors.append(p)
         for p in config_processors.values():
-            self.processors.append(p)
+            if p.__class__.__name__ not in [
+                processor.__class__.__name__ for processor in self.processors
+            ]:
+                self.processors.append(p)
 
         self.operations_tracker = []
 

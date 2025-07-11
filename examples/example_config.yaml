@@ -1,6 +1,6 @@
 
 preml:
-  train_test_split:
+  TrainTestSplitter:
     targets:
       - "duration"
     test_size: 0.2
