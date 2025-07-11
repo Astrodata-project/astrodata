@@ -8,6 +8,10 @@ from astrodata.preml.schemas import Premldata
 class TrainTestSplitter(PremlProcessor):
     """
     Processor to convert ProcessedData to Premldata.
+
+    This processor splits the input ProcessedData into training, testing, and optionally validation sets
+    according to the configuration provided. It supports specifying target columns, test size, random state,
+    and validation split. The output is a Premldata object containing the split datasets and metadata.
     """
 
     def __init__(self, config: dict):
@@ -19,9 +23,19 @@ class TrainTestSplitter(PremlProcessor):
 
         self.artifact = self.config
 
-    def process(self, data: ProcessedData, artifact: str = None, **kwargs):
+    def process(self, data: ProcessedData, **kwargs):
         """
         Converts a ProcessedData object to a Premldata object.
+
+        This method splits the input ProcessedData into training, testing, and optionally validation sets
+        using scikit-learn's train_test_split. The configuration determines the target columns, test size,
+        random state, and validation split. The resulting Premldata object contains the split features,
+        targets, and metadata.
+
+        Args:
+            data (ProcessedData): The input processed data to be split.
+        Returns:
+            Premldata: The resulting Premldata object containing the split datasets.
         """
         targets = self.config.get("targets", [data.data.columns[-1]])
         features_df = data.data.drop(columns=targets)

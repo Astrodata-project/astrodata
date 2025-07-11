@@ -21,16 +21,20 @@ class PremlPipeline:
     """
 
     def __init__(self, processors: list[PremlProcessor], config_path: str):
+        if not processors or not isinstance(processors[0], TrainTestSplitter):
+            raise ValueError("First processor must be a TrainTestSplitter.")
+        config = read_config(config_path)
+        if "preml" not in config:
+            raise ValueError("Config file must contain a 'preml' field.")
         self.processors = processors
         self.operations_tracker = []
-        self.config = read_config(config_path).get("preml", {})
+        self.config = config["preml"]
 
     def run(self, processeddata: ProcessedData) -> Premldata:
         """
         Executes the data pipeline.
         """
-        # TODO: TrainTestSplitter -> TrainTestSplitter, esporlo e renderlo obbligatorio come primo step
-        converter = TrainTestSplitter(self.config)
+        converter = self.processors[0]
         data = converter.process(processeddata)
         self.operations_tracker.append(
             {f"{converter.__class__.__name__}": converter.artifact}
