@@ -55,13 +55,13 @@ ohe_processor = OHE(
     save_path="./testdata/ohe.pkl",
 )
 
-missing_imputator = MissingImputator(
+MissingImputator = MissingImputator(
     categorical_columns=["PULocationID"],
     numerical_columns=["trip_distance"],
     save_path="./testdata/imputer.pkl",
 )
 
-preml_pipeline = PremlPipeline([missing_imputator, ohe_processor], config_path)
+preml_pipeline = PremlPipeline([MissingImputator, ohe_processor], config_path)
 
 preml_data = preml_pipeline.run(processed)
 

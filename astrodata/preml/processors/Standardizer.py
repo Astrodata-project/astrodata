@@ -55,7 +55,6 @@ class Standardizer(PremlProcessor):
         Returns:
             Premldata: The processed data with standardized numerical features.
         """
-        # TODO: aggiungere ohe al validation dataset, se esiste
         if artifact:
             self.load_artifact(artifact)
             scaler = self.artifact
@@ -63,6 +62,10 @@ class Standardizer(PremlProcessor):
             preml.test_features[self.kwargs["numerical_columns"]] = scaler.transform(
                 preml.test_features[self.kwargs["numerical_columns"]]
             )
+            if hasattr(preml, "val_features") and preml.val_features is not None:
+                preml.val_features[self.kwargs["numerical_columns"]] = scaler.transform(
+                    preml.val_features[self.kwargs["numerical_columns"]]
+                )
         else:
             # Standardize numerical columns
             scaler = StandardScaler()
@@ -78,5 +81,8 @@ class Standardizer(PremlProcessor):
             preml.test_features[self.kwargs["numerical_columns"]] = scaler.transform(
                 preml.test_features[self.kwargs["numerical_columns"]]
             )
-
+            if hasattr(preml, "val_features") and preml.val_features is not None:
+                preml.val_features[self.kwargs["numerical_columns"]] = scaler.transform(
+                    preml.val_features[self.kwargs["numerical_columns"]]
+                )
         return preml

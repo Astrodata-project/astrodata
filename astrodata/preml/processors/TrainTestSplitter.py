@@ -5,7 +5,7 @@ from astrodata.preml.processors.base import PremlProcessor
 from astrodata.preml.schemas import Premldata
 
 
-class ConvertToPremlData(PremlProcessor):
+class TrainTestSplitter(PremlProcessor):
     """
     Processor to convert ProcessedData to Premldata.
     """

@@ -59,7 +59,6 @@ class MissingImputator(PremlProcessor):
         Returns:
             Premldata: The processed data with imputed values.
         """
-        # TODO: aggiungere ohe al validation dataset, se esiste
         if artifact:
             self.load_artifact(artifact)
             num_imputer, cat_imputer = self.artifact
@@ -74,6 +73,17 @@ class MissingImputator(PremlProcessor):
                     preml.test_features[self.kwargs["categorical_columns"]]
                 )
             )
+            if hasattr(preml, "val_features") and preml.val_features is not None:
+                preml.val_features[self.kwargs["numerical_columns"]] = (
+                    num_imputer.transform(
+                        preml.val_features[self.kwargs["numerical_columns"]]
+                    )
+                )
+                preml.val_features[self.kwargs["categorical_columns"]] = (
+                    cat_imputer.transform(
+                        preml.val_features[self.kwargs["categorical_columns"]]
+                    )
+                )
         else:
             # Impute numerical columns with mean
             num_imputer = SimpleImputer(strategy="mean")
@@ -107,5 +117,16 @@ class MissingImputator(PremlProcessor):
                     preml.test_features[self.kwargs["categorical_columns"]]
                 )
             )
+            if hasattr(preml, "val_features") and preml.val_features is not None:
+                preml.val_features[self.kwargs["numerical_columns"]] = (
+                    num_imputer.transform(
+                        preml.val_features[self.kwargs["numerical_columns"]]
+                    )
+                )
+                preml.val_features[self.kwargs["categorical_columns"]] = (
+                    cat_imputer.transform(
+                        preml.val_features[self.kwargs["categorical_columns"]]
+                    )
+                )
 
         return preml

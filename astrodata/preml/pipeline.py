@@ -1,5 +1,5 @@
 from astrodata.data.schemas import ProcessedData
-from astrodata.preml.processors import ConvertToPremlData
+from astrodata.preml.processors import TrainTestSplitter
 from astrodata.preml.processors.base import PremlProcessor
 from astrodata.preml.schemas import Premldata
 from astrodata.utils.utils import read_config
@@ -29,8 +29,8 @@ class PremlPipeline:
         """
         Executes the data pipeline.
         """
-        # TODO: ConvertToPremlData -> TrainTestSplitter, esporlo e renderlo obbligatorio come primo step
-        converter = ConvertToPremlData(self.config)
+        # TODO: TrainTestSplitter -> TrainTestSplitter, esporlo e renderlo obbligatorio come primo step
+        converter = TrainTestSplitter(self.config)
         data = converter.process(processeddata)
         self.operations_tracker.append(
             {f"{converter.__class__.__name__}": converter.artifact}
