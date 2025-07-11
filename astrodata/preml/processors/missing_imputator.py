@@ -4,10 +4,10 @@ from sklearn.impute import SimpleImputer
 
 from astrodata.preml.schemas import Premldata
 
-from .base import AbstractProcessor
+from .base import PremlProcessor
 
 
-class MissingImputator(AbstractProcessor):
+class MissingImputator(PremlProcessor):
     """
     Missing value imputator for handling missing data in datasets.
 
@@ -59,6 +59,7 @@ class MissingImputator(AbstractProcessor):
         Returns:
             Premldata: The processed data with imputed values.
         """
+        # TODO: aggiungere ohe al validation dataset, se esiste
         if artifact:
             self.load_artifact(artifact)
             num_imputer, cat_imputer = self.artifact

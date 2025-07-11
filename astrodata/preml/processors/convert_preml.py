@@ -1,11 +1,11 @@
 from sklearn.model_selection import train_test_split
 
 from astrodata.data.schemas import ProcessedData
-from astrodata.preml.processors.base import AbstractProcessor
+from astrodata.preml.processors.base import PremlProcessor
 from astrodata.preml.schemas import Premldata
 
 
-class ConvertToPremlData(AbstractProcessor):
+class ConvertToPremlData(PremlProcessor):
     """
     Processor to convert ProcessedData to Premldata.
     """

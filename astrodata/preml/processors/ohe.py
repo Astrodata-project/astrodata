@@ -5,10 +5,10 @@ from sklearn.preprocessing import OneHotEncoder
 
 from astrodata.preml.schemas import Premldata
 
-from .base import AbstractProcessor
+from .base import PremlProcessor
 
 
-class OHE(AbstractProcessor):
+class OHE(PremlProcessor):
     """
     OneHotEncoder (OHE) processor for encoding categorical features.
 
@@ -57,6 +57,7 @@ class OHE(AbstractProcessor):
         Returns:
             Premldata: The processed data with one-hot encoded features.
         """
+        # TODO: aggiungere ohe al validation dataset, se esiste
         if self.artifact:
             cat_ohe = self.artifact.transform(
                 preml.test_features[self.kwargs["categorical_columns"]]

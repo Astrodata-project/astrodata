@@ -4,10 +4,10 @@ from sklearn.preprocessing import StandardScaler
 
 from astrodata.preml.schemas import Premldata
 
-from .base import AbstractProcessor
+from .base import PremlProcessor
 
 
-class Standardizer(AbstractProcessor):
+class Standardizer(PremlProcessor):
     """
     Standardizer for scaling numerical features.
 
@@ -55,6 +55,7 @@ class Standardizer(AbstractProcessor):
         Returns:
             Premldata: The processed data with standardized numerical features.
         """
+        # TODO: aggiungere ohe al validation dataset, se esiste
         if artifact:
             self.load_artifact(artifact)
             scaler = self.artifact

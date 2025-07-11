@@ -45,9 +45,12 @@ if __name__ == "__main__":
     # Let's run the pipeline with the dummy processed data
     preml_data = preml_pipeline.run(processed_data)
 
+    # TODO: mostrare output della prima run
+
     # We will now try to define processors' parameters in the config file.
     # blocks should be named after the processor class names.
     config_path = "example_config_params.yaml"
+    # TODO: spiegare la sintassi del file di configurazione
     ohe_processor = OHE()
     missing_imputator = MissingImputator()
 
@@ -56,8 +59,8 @@ if __name__ == "__main__":
     preml_data = preml_pipeline.run(processed_data)
 
     print("Preml Pipeline ran successfully!")
-    print(f"Preml data shape:{preml_data.train_features.shape}")
-    print(f"Preml data shape:{preml_data.train_targets.shape}")
+    print(f"Preml training features shape:{preml_data.train_features.shape}")
+    print(f"Preml training targets shape:{preml_data.train_targets.shape}")
 
     # You can dump the preml data into supervised ML format, which will return train and test features and targets.
     X_train, X_test, y_train, y_test = preml_data.dump_supervised_ML_format()
