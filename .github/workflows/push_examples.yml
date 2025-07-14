@@ -1,0 +1,48 @@
+name: Push examples folder to astrodata_examples
+
+on:
+  push:
+    branches:
+      - main  # Change if your default branch is different
+      - dev
+
+jobs:
+  sync-examples-contents:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+
+      - name: Prepare examples contents
+        run: |
+          mkdir temp-sync
+          cp -r examples/. temp-sync/   # <--- copies contents, not the folder
+
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+        with:
+          repository: Astrodata-project/astrodata_examples
+          token: ${{ secrets.API_TOKEN_GITHUB }}
+          path: target-repo
+
+      - name: Clean target repo
+        run: |
+          shopt -s extglob
+          cd target-repo
+          rm -rf !(.git)
+          cd ..
+
+      - name: Copy contents to target repo root
+        run: |
+          cp -r temp-sync/. target-repo/   # <--- copies contents to root
+
+      - name: Commit and push if changed
+        run: |
+          cd target-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Sync examples folder contents from source repo" || echo "No changes to commit"
+          git push
+
