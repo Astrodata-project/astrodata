@@ -4,6 +4,23 @@ AstroData is a modular Python toolkit for data processing, machine learning, and
 
 It provides robust pipelines for data ingestion, preprocessing, model training, evaluation, and experiment tracking with integrated support for Git and DVC.
 
+
+## Table of Contents
+- [AstroData ML Toolkit](#astrodata-ml-toolkit)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Installation](#installation)
+  - [Project Structure](#project-structure)
+  - [Usage](#usage)
+    - [Data Pipeline Example](#data-pipeline-example)
+    - [Model Training Example](#model-training-example)
+    - [Experiment Tracking](#experiment-tracking)
+  - [Documentation](#documentation)
+  - [Contributing](#contributing)
+  - [License](#license)
+
+
+
 ## Features
 
 - **Data Pipelines**: Modular data loaders, processors, and schemas for handling raw and processed data.
