@@ -3,8 +3,7 @@ name: Push examples folder to astrodata_examples
 on:
   push:
     branches:
-      - main  # Change if your default branch is different
-      - dev
+      - main 
 
 jobs:
   sync-examples-contents:
@@ -17,7 +16,7 @@ jobs:
       - name: Prepare examples contents
         run: |
           mkdir temp-sync
-          cp -r examples/. temp-sync/   # <--- copies contents, not the folder
+          cp -r examples/. temp-sync/  
 
       - name: Checkout target repo
         uses: actions/checkout@v4
@@ -35,7 +34,7 @@ jobs:
 
       - name: Copy contents to target repo root
         run: |
-          cp -r temp-sync/. target-repo/   # <--- copies contents to root
+          cp -r temp-sync/. target-repo/   
 
       - name: Commit and push if changed
         run: |

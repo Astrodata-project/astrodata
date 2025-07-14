@@ -157,9 +157,10 @@ class HyperOptSelector(BaseMlModelSelector):
 
         # Train best model on all data
         self._best_metrics, self._best_params = _getBestMetricsParamsfromTrials(trials)
+        
+        best_params_t = self._best_params.copy()
 
         if self.tracker:
-            best_params_t = self._best_params.copy()
 
             self._best_model, _, _ = fit_model_score(
                 model=best_params_t.pop("model"),
@@ -181,8 +182,8 @@ class HyperOptSelector(BaseMlModelSelector):
             )
 
         else:
-            self._best_model = self.model.clone()
-            self._best_model.set_params(**self._best_params)
+            self._best_model = best_params_t.pop("model").clone()
+            self._best_model.set_params(**best_params_t)
             self._best_model = self._best_model.fit(X_full, y_full)
 
         return self

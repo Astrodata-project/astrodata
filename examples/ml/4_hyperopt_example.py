@@ -8,7 +8,7 @@ from sklearn.svm import LinearSVC
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.model_selection.HyperOptSelector import (
     HyperOptSelector,
-)  # ← Make sure the import path matches your project
+)
 from astrodata.ml.models.SklearnModel import SklearnModel
 
 if __name__ == "__main__":
@@ -52,6 +52,6 @@ if __name__ == "__main__":
 
     hos.fit(X_train, y_train, X_test=X_test, y_test=y_test)
 
-    print(f"Best parameters found:", hos.get_best_params())
-    print(f"Best metrics:", hos.get_best_metrics())
-    print(f"Best model params:", hos.get_best_model().get_params())
+    print("Best parameters found:", hos.get_best_params())
+    print("Best metrics:", hos.get_best_metrics())
+    print("Best model params:", hos.get_best_model().get_params())

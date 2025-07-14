@@ -7,7 +7,6 @@ from sklearn.svm import LinearSVC
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.model_selection.GridSearchSelector import (
     GridSearchCVSelector,
-    GridSearchSelector,
 )
 from astrodata.ml.models.SklearnModel import SklearnModel
 
