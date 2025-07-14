@@ -8,16 +8,15 @@ preml:
     validation:
       enabled: false
       size: 0.1
-  OHE:
-    categorical_columns:
-      - "feature2"
-    numerical_columns:
-      - "feature1"
-      - "feature3"
   MissingImputator:
     categorical_columns:
       - "feature2"
     numerical_columns:
       - "feature1"
       - "feature3"
-
+  OHE:
+    categorical_columns:
+      - "feature2"
+    numerical_columns:
+      - "feature1"
+      - "feature3"
