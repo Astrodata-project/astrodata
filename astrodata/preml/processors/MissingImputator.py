@@ -4,10 +4,10 @@ from sklearn.impute import SimpleImputer
 
 from astrodata.preml.schemas import Premldata
 
-from .base import AbstractProcessor
+from .base import PremlProcessor
 
 
-class MissingImputator(AbstractProcessor):
+class MissingImputator(PremlProcessor):
     """
     Missing value imputator for handling missing data in datasets.
 
@@ -73,6 +73,17 @@ class MissingImputator(AbstractProcessor):
                     preml.test_features[self.kwargs["categorical_columns"]]
                 )
             )
+            if hasattr(preml, "val_features") and preml.val_features is not None:
+                preml.val_features[self.kwargs["numerical_columns"]] = (
+                    num_imputer.transform(
+                        preml.val_features[self.kwargs["numerical_columns"]]
+                    )
+                )
+                preml.val_features[self.kwargs["categorical_columns"]] = (
+                    cat_imputer.transform(
+                        preml.val_features[self.kwargs["categorical_columns"]]
+                    )
+                )
         else:
             # Impute numerical columns with mean
             num_imputer = SimpleImputer(strategy="mean")
@@ -106,5 +117,16 @@ class MissingImputator(AbstractProcessor):
                     preml.test_features[self.kwargs["categorical_columns"]]
                 )
             )
+            if hasattr(preml, "val_features") and preml.val_features is not None:
+                preml.val_features[self.kwargs["numerical_columns"]] = (
+                    num_imputer.transform(
+                        preml.val_features[self.kwargs["numerical_columns"]]
+                    )
+                )
+                preml.val_features[self.kwargs["categorical_columns"]] = (
+                    cat_imputer.transform(
+                        preml.val_features[self.kwargs["categorical_columns"]]
+                    )
+                )
 
         return preml

@@ -56,5 +56,7 @@ if __name__ == "__main__":
     processed_data = data_pipeline.run(data_path)
 
     print("Data Pipeline ran successfully!")
+    print(f"Processed data head:\n {processed_data.data.head()}")
     print(f"Processed data shape: {processed_data.data.shape}")
+    print(f"Processed data metadata: {processed_data.metadata}")
     remove_dummy_csv_file()

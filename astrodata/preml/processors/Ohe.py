@@ -5,10 +5,10 @@ from sklearn.preprocessing import OneHotEncoder
 
 from astrodata.preml.schemas import Premldata
 
-from .base import AbstractProcessor
+from .base import PremlProcessor
 
 
-class OHE(AbstractProcessor):
+class OHE(PremlProcessor):
     """
     OneHotEncoder (OHE) processor for encoding categorical features.
 
@@ -57,48 +57,55 @@ class OHE(AbstractProcessor):
         Returns:
             Premldata: The processed data with one-hot encoded features.
         """
-        if self.artifact:
-            cat_ohe = self.artifact.transform(
-                preml.test_features[self.kwargs["categorical_columns"]]
-            )
+
+        def _transform_features(
+            features, encoder, categorical_columns, numerical_columns
+        ):
+            cat_ohe = encoder.transform(features[categorical_columns])
             ohe_df = pd.DataFrame(
                 cat_ohe,
-                columns=self.artifact.get_feature_names_out(
-                    self.kwargs["categorical_columns"]
-                ),
-                index=preml.test_features.index,
+                columns=encoder.get_feature_names_out(categorical_columns),
+                index=features.index,
             )
-            preml.test_features = pd.concat(
-                [preml.test_features[self.kwargs["numerical_columns"]], ohe_df], axis=1
+            return pd.concat([features[numerical_columns], ohe_df], axis=1)
+
+        if self.artifact:
+            preml.test_features = _transform_features(
+                preml.test_features,
+                self.artifact,
+                self.kwargs["categorical_columns"],
+                self.kwargs["numerical_columns"],
             )
+            if hasattr(preml, "val_features") and preml.val_features is not None:
+                preml.val_features = _transform_features(
+                    preml.val_features,
+                    self.artifact,
+                    self.kwargs["categorical_columns"],
+                    self.kwargs["numerical_columns"],
+                )
         else:
             ohe = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
             ohe.fit(preml.train_features[self.kwargs["categorical_columns"]])
-            cat_ohe_train = ohe.transform(
-                preml.train_features[self.kwargs["categorical_columns"]]
-            )
-            ohe_df_train = pd.DataFrame(
-                cat_ohe_train,
-                columns=ohe.get_feature_names_out(self.kwargs["categorical_columns"]),
-                index=preml.train_features.index,
-            )
-            preml.train_features = pd.concat(
-                [preml.train_features[self.kwargs["numerical_columns"]], ohe_df_train],
-                axis=1,
+            preml.train_features = _transform_features(
+                preml.train_features,
+                ohe,
+                self.kwargs["categorical_columns"],
+                self.kwargs["numerical_columns"],
             )
             if self.kwargs.get("save_path"):
                 self.save_artifact(ohe, self.kwargs["save_path"])
-            cat_ohe_test = ohe.transform(
-                preml.test_features[self.kwargs["categorical_columns"]]
+            preml.test_features = _transform_features(
+                preml.test_features,
+                ohe,
+                self.kwargs["categorical_columns"],
+                self.kwargs["numerical_columns"],
             )
-            ohe_df_test = pd.DataFrame(
-                cat_ohe_test,
-                columns=ohe.get_feature_names_out(self.kwargs["categorical_columns"]),
-                index=preml.test_features.index,
-            )
-            preml.test_features = pd.concat(
-                [preml.test_features[self.kwargs["numerical_columns"]], ohe_df_test],
-                axis=1,
-            )
+            if hasattr(preml, "val_features") and preml.val_features is not None:
+                preml.val_features = _transform_features(
+                    preml.val_features,
+                    ohe,
+                    self.kwargs["categorical_columns"],
+                    self.kwargs["numerical_columns"],
+                )
 
         return preml

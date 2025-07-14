@@ -4,10 +4,10 @@ from sklearn.preprocessing import StandardScaler
 
 from astrodata.preml.schemas import Premldata
 
-from .base import AbstractProcessor
+from .base import PremlProcessor
 
 
-class Standardizer(AbstractProcessor):
+class Standardizer(PremlProcessor):
     """
     Standardizer for scaling numerical features.
 
@@ -62,6 +62,10 @@ class Standardizer(AbstractProcessor):
             preml.test_features[self.kwargs["numerical_columns"]] = scaler.transform(
                 preml.test_features[self.kwargs["numerical_columns"]]
             )
+            if hasattr(preml, "val_features") and preml.val_features is not None:
+                preml.val_features[self.kwargs["numerical_columns"]] = scaler.transform(
+                    preml.val_features[self.kwargs["numerical_columns"]]
+                )
         else:
             # Standardize numerical columns
             scaler = StandardScaler()
@@ -77,5 +81,8 @@ class Standardizer(AbstractProcessor):
             preml.test_features[self.kwargs["numerical_columns"]] = scaler.transform(
                 preml.test_features[self.kwargs["numerical_columns"]]
             )
-
+            if hasattr(preml, "val_features") and preml.val_features is not None:
+                preml.val_features[self.kwargs["numerical_columns"]] = scaler.transform(
+                    preml.val_features[self.kwargs["numerical_columns"]]
+                )
         return preml

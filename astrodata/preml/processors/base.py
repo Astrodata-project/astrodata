@@ -5,7 +5,7 @@ from typing import Any, Optional
 from astrodata.preml.schemas import Premldata
 
 
-class AbstractProcessor(ABC):
+class PremlProcessor(ABC):
     """
     An abstract base class for preml processors.
 
