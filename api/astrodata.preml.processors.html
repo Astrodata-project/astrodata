@@ -97,8 +97,8 @@
 <section id="module-astrodata.preml.processors.base">
 <span id="astrodata-preml-processors-base-module"></span><h2>astrodata.preml.processors.base module<a class="headerlink" href="#module-astrodata.preml.processors.base" title="Link to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="astrodata.preml.processors.base.AbstractProcessor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.preml.processors.base.</span></span><span class="sig-name descname"><span class="pre">AbstractProcessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.base.AbstractProcessor" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="astrodata.preml.processors.base.PremlProcessor">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.preml.processors.base.</span></span><span class="sig-name descname"><span class="pre">PremlProcessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.base.PremlProcessor" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>An abstract base class for preml processors.</p>
 <p>Subclasses must implement the <cite>process</cite> method to define how
@@ -112,22 +112,19 @@ a new <cite>Premldata</cite> object.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="astrodata.preml.processors.base.AbstractProcessor.load_artifact">
-<span class="sig-name descname"><span class="pre">load_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.base.AbstractProcessor.load_artifact" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="astrodata.preml.processors.base.PremlProcessor.load_artifact">
+<span class="sig-name descname"><span class="pre">load_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.base.PremlProcessor.load_artifact" title="Link to this definition"></a></dt>
 <dd><p>Loads an artifact from a specified path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – The name of the artifact to load.</p></li>
-<li><p><strong>path</strong> (<em>str</em>) – The path from where the artifact should be loaded.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path from where the artifact should be loaded.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="astrodata.preml.processors.base.AbstractProcessor.process">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preml</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.base.AbstractProcessor.process" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="astrodata.preml.processors.base.PremlProcessor.process">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preml</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.base.PremlProcessor.process" title="Link to this definition"></a></dt>
 <dd><p>process the input Premldata and returns a new Premldata object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -137,15 +134,12 @@ a new <cite>Premldata</cite> object.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="astrodata.preml.processors.base.AbstractProcessor.save_artifact">
-<span class="sig-name descname"><span class="pre">save_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.base.AbstractProcessor.save_artifact" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="astrodata.preml.processors.base.PremlProcessor.save_artifact">
+<span class="sig-name descname"><span class="pre">save_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.base.PremlProcessor.save_artifact" title="Link to this definition"></a></dt>
 <dd><p>Saves an artifact to a specified path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – The name of the artifact to save.</p></li>
-<li><p><strong>path</strong> (<em>str</em>) – The path where the artifact should be saved.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>Artifact</strong> (<em>Any</em>) – The artifact to be saved, which can be any object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -153,133 +147,17 @@ a new <cite>Premldata</cite> object.</p>
 </dd></dl>
 
 </section>
-<section id="module-astrodata.preml.processors.convert_preml">
-<span id="astrodata-preml-processors-convert-preml-module"></span><h2>astrodata.preml.processors.convert_preml module<a class="headerlink" href="#module-astrodata.preml.processors.convert_preml" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="astrodata.preml.processors.convert_preml.ConvertToPremlData">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.preml.processors.convert_preml.</span></span><span class="sig-name descname"><span class="pre">ConvertToPremlData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.convert_preml.ConvertToPremlData" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#astrodata.preml.processors.base.AbstractProcessor" title="astrodata.preml.processors.base.AbstractProcessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractProcessor</span></code></a></p>
-<p>Processor to convert ProcessedData to Premldata.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.preml.processors.convert_preml.ConvertToPremlData.process">
-<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.convert_preml.ConvertToPremlData.process" title="Link to this definition"></a></dt>
-<dd><p>Converts a ProcessedData object to a Premldata object.</p>
-</dd></dl>
-
-</dd></dl>
-
+<section id="astrodata-preml-processors-convert-preml-module">
+<h2>astrodata.preml.processors.convert_preml module<a class="headerlink" href="#astrodata-preml-processors-convert-preml-module" title="Link to this heading"></a></h2>
 </section>
-<section id="module-astrodata.preml.processors.missing_imputator">
-<span id="astrodata-preml-processors-missing-imputator-module"></span><h2>astrodata.preml.processors.missing_imputator module<a class="headerlink" href="#module-astrodata.preml.processors.missing_imputator" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="astrodata.preml.processors.missing_imputator.MissingImputator">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.preml.processors.missing_imputator.</span></span><span class="sig-name descname"><span class="pre">MissingImputator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">categorical_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.missing_imputator.MissingImputator" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#astrodata.preml.processors.base.AbstractProcessor" title="astrodata.preml.processors.base.AbstractProcessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractProcessor</span></code></a></p>
-<p>Missing value imputator for handling missing data in datasets.</p>
-<p>This class provides functionality to impute missing values in numerical
-and categorical columns using specified strategies. It supports saving
-and loading imputation artifacts for reuse.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.preml.processors.missing_imputator.MissingImputator.process">
-<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preml</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.missing_imputator.MissingImputator.process" title="Link to this definition"></a></dt>
-<dd><p>Imputes missing values in the dataset.</p>
-<p>This method imputes missing values in numerical columns using the mean
-and in categorical columns using the mode. If an artifact path is provided,
-it loads the imputation artifact and applies it to the test features.
-Otherwise, it fits new imputers on the training features, transforms both
-training and test features, and saves the artifact for reuse.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>preml</strong> (<a class="reference internal" href="astrodata.preml.html#astrodata.preml.schemas.Premldata" title="astrodata.preml.schemas.Premldata"><em>Premldata</em></a>) – The data to be processed.</p></li>
-<li><p><strong>artifact</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Path to a saved imputation artifact.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The processed data with imputed values.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="astrodata.preml.html#astrodata.preml.schemas.Premldata" title="astrodata.preml.schemas.Premldata">Premldata</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="astrodata-preml-processors-missing-imputator-module">
+<h2>astrodata.preml.processors.missing_imputator module<a class="headerlink" href="#astrodata-preml-processors-missing-imputator-module" title="Link to this heading"></a></h2>
 </section>
-<section id="module-astrodata.preml.processors.ohe">
-<span id="astrodata-preml-processors-ohe-module"></span><h2>astrodata.preml.processors.ohe module<a class="headerlink" href="#module-astrodata.preml.processors.ohe" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="astrodata.preml.processors.ohe.OHE">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.preml.processors.ohe.</span></span><span class="sig-name descname"><span class="pre">OHE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">categorical_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.ohe.OHE" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#astrodata.preml.processors.base.AbstractProcessor" title="astrodata.preml.processors.base.AbstractProcessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractProcessor</span></code></a></p>
-<p>OneHotEncoder (OHE) processor for encoding categorical features.</p>
-<p>This class provides functionality to one-hot encode categorical columns
-in a dataset, while optionally retaining numerical columns. It supports
-saving and loading encoding artifacts using pickle for reuse.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.preml.processors.ohe.OHE.process">
-<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preml</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.ohe.OHE.process" title="Link to this definition"></a></dt>
-<dd><p>One-hot encodes categorical features in the data.</p>
-<p>This method encodes categorical columns in the dataset using one-hot encoding.
-If an artifact path is provided, it loads the encoding artifact and applies it
-to the test features. Otherwise, it fits a new encoder on the training features,
-transforms both training and test features, and saves the artifact for reuse.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>preml</strong> (<a class="reference internal" href="astrodata.preml.html#astrodata.preml.schemas.Premldata" title="astrodata.preml.schemas.Premldata"><em>Premldata</em></a>) – The data to be processed.</p></li>
-<li><p><strong>artifact</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Path to a saved one-hot encoding artifact.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The processed data with one-hot encoded features.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="astrodata.preml.html#astrodata.preml.schemas.Premldata" title="astrodata.preml.schemas.Premldata">Premldata</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="astrodata-preml-processors-ohe-module">
+<h2>astrodata.preml.processors.ohe module<a class="headerlink" href="#astrodata-preml-processors-ohe-module" title="Link to this heading"></a></h2>
 </section>
-<section id="module-astrodata.preml.processors.standardizer">
-<span id="astrodata-preml-processors-standardizer-module"></span><h2>astrodata.preml.processors.standardizer module<a class="headerlink" href="#module-astrodata.preml.processors.standardizer" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="astrodata.preml.processors.standardizer.Standardizer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.preml.processors.standardizer.</span></span><span class="sig-name descname"><span class="pre">Standardizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numerical_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.standardizer.Standardizer" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#astrodata.preml.processors.base.AbstractProcessor" title="astrodata.preml.processors.base.AbstractProcessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractProcessor</span></code></a></p>
-<p>Standardizer for scaling numerical features.</p>
-<p>This class provides functionality to standardize numerical columns in a dataset
-by scaling them to have a mean of 0 and a standard deviation of 1. It supports
-saving and loading scaling artifacts for reuse.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.preml.processors.standardizer.Standardizer.process">
-<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preml</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.processors.standardizer.Standardizer.process" title="Link to this definition"></a></dt>
-<dd><p>Standardizes numerical features in the dataset.</p>
-<p>This method scales numerical columns to have a mean of 0 and a standard deviation of 1.
-If an artifact path is provided, it loads the scaling artifact and applies it to the test
-features. Otherwise, it fits a new scaler on the training features, transforms both training
-and test features, and saves the artifact for reuse.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>preml</strong> (<a class="reference internal" href="astrodata.preml.html#astrodata.preml.schemas.Premldata" title="astrodata.preml.schemas.Premldata"><em>Premldata</em></a>) – The data to be processed.</p></li>
-<li><p><strong>artifact</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Path to a saved scaling artifact.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The processed data with standardized numerical features.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="astrodata.preml.html#astrodata.preml.schemas.Premldata" title="astrodata.preml.schemas.Premldata">Premldata</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="astrodata-preml-processors-standardizer-module">
+<h2>astrodata.preml.processors.standardizer module<a class="headerlink" href="#astrodata-preml-processors-standardizer-module" title="Link to this heading"></a></h2>
 </section>
 <section id="module-astrodata.preml.processors">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-astrodata.preml.processors" title="Link to this heading"></a></h2>

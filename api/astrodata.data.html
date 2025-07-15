@@ -146,7 +146,7 @@
 <span id="astrodata-data-pipeline-module"></span><h2>astrodata.data.pipeline module<a class="headerlink" href="#module-astrodata.data.pipeline" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="astrodata.data.pipeline.DataPipeline">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.data.pipeline.</span></span><span class="sig-name descname"><span class="pre">DataPipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processors</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.data.pipeline.DataPipeline" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.data.pipeline.</span></span><span class="sig-name descname"><span class="pre">DataPipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processors</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.data.pipeline.DataPipeline" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A pipeline for processing data using a loader and a series of processors.</p>
 <dl class="py attribute">
@@ -182,7 +182,7 @@ result into a ProcessedData object.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="astrodata.data.pipeline.DataPipeline.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.data.pipeline.DataPipeline.run" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dump_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.data.pipeline.DataPipeline.run" title="Link to this definition"></a></dt>
 <dd><p>Executes the data pipeline.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -244,6 +244,17 @@ result into a ProcessedData object.</p>
 <dt class="sig sig-object py" id="id0">
 <span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.data.schemas.ProcessedData.dump_parquet">
+<span class="sig-name descname"><span class="pre">dump_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.data.schemas.ProcessedData.dump_parquet" title="Link to this definition"></a></dt>
+<dd><p>Dumps the processed data to a Parquet file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em><em>, </em><em>optional</em>) – The file path to save the Parquet file. If None, uses ‘processed_data.parquet’.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id1">
@@ -325,7 +336,7 @@ result into a ProcessedData object.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code> <span class="pre">|</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
