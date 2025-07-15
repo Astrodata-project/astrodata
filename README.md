@@ -31,7 +31,7 @@ It provides robust pipelines for data ingestion, preprocessing, model training, 
 
 ## Installation
 
-Install the package directly from GitHub using any package manager such as pip, uv, and conda.
+Install the package directly from GitHub using any package manager such as pip, uv, and conda, the package requires `python >= 3.10`.
 ```sh
 pip install git+https://github.com/Astrodata-project/astrodata.git
 ```

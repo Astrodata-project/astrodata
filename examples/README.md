@@ -1,10 +1,18 @@
 # Examples README
 
-This README provides an overview of the example scripts included in the `examples` directory. These examples demonstrate how to use different components of the `astrodata` library for data preprocessing, model training, hyperparameter optimization, and experiment tracking. **Note:** Refer to the main `astrodata` documentation for a complete description of the package.
+This README provides an overview of the example scripts included in the `examples` directory. These examples demonstrate how to use different components of the `astrodata` library for data preprocessing, model training, hyperparameter optimization, and experiment tracking. **Note:** Refer to the main [astrodata](https://github.com/Astrodata-project/astrodata) documentation for a complete description of the package.
+
+## Installation
+
+Install the package directly from GitHub using any package manager such as pip, uv, and conda, the package requires `python >= 3.10`.
+```sh
+pip install git+https://github.com/Astrodata-project/astrodata.git
+```
 
 ## Table of Contents
 
 - [Examples README](#examples-readme)
+  - [Installation](#installation)
   - [Table of Contents](#table-of-contents)
   - [1. Preprocessing and PremlPipeline](#1-preprocessing-and-premlpipeline)
   - [2. Basic Model Training with SklearnModel](#2-basic-model-training-with-sklearnmodel)
