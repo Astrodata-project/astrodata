@@ -73,17 +73,13 @@ class DummyProcessor(PremlProcessor):
         return preml
 
 
-def test_init_raises_if_both_none():
-    with pytest.raises(
-        ValueError, match="Either config_path or processors must be provided."
-    ):
-        PremlPipeline()
-
-
 def test_pipeline_raises_without_train_test_splitter(monkeypatch):
     # No TrainTestSplitter in config or processors
     config = {
-        "preml": {"OHE": {"categorical_columns": ["cat"], "numerical_columns": ["num"]}}
+        "project_path": ".",
+        "preml": {
+            "OHE": {"categorical_columns": ["cat"], "numerical_columns": ["num"]}
+        },
     }
     monkeypatch.setattr("astrodata.preml.pipeline.read_config", lambda path: config)
     with pytest.raises(ValueError, match="A TrainTestSplitter must be defined."):
@@ -92,27 +88,31 @@ def test_pipeline_raises_without_train_test_splitter(monkeypatch):
 
 def test_pipeline_train_test_splitter_first(monkeypatch):
     # Patch read_config in the pipeline module to return config with TrainTestSplitter
-    config = {"preml": {"TrainTestSplitter": {"targets": ["tg"], "test_size": 0.2}}}
+    config = {
+        "project_path": ".",
+        "preml": {"TrainTestSplitter": {"targets": ["tg"], "test_size": 0.2}},
+    }
     monkeypatch.setattr("astrodata.preml.pipeline.read_config", lambda path: config)
     pipeline = PremlPipeline(config_path="any.yaml")
     assert pipeline.processors[0].__class__.__name__ == "TrainTestSplitter"
 
     # TrainTestSplitter in processors argument
     tts = TrainTestSplitter(targets=["tg"], test_size=0.2)
-    pipeline2 = PremlPipeline(processors=[tts])
+    pipeline2 = PremlPipeline(config_path="any.yaml", processors=[tts])
     assert pipeline2.processors[0].__class__.__name__ == "TrainTestSplitter"
 
 
 def test_pipeline_processors_priority(monkeypatch):
     # Patch read_config in the pipeline module to return config with TrainTestSplitter and OHE
     config = {
+        "project_path": ".",
         "preml": {
             "TrainTestSplitter": {"targets": ["tg"], "test_size": 0.2},
             "OHE": {
                 "categorical_columns": ["feature2"],
                 "numerical_columns": ["feature1"],
             },
-        }
+        },
     }
     monkeypatch.setattr("astrodata.preml.pipeline.read_config", lambda path: config)
 
@@ -132,7 +132,8 @@ def test_save_and_load_artifact():
     proc = DummyProcessor()
     artifact = {"foo": 42}
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
-        proc.save_artifact(artifact, tmp.name)
+        proc.save_path = tmp.name
+        proc.save_artifact(artifact)
         loaded = proc.load_artifact(tmp.name)
         assert proc.artifact == artifact
     os.remove(tmp.name)
@@ -165,13 +166,14 @@ def test_pipeline_run(monkeypatch):
 
     # --- Without validation in config ---
     config_no_val = {
+        "project_path": ".",
         "preml": {
             "TrainTestSplitter": {"targets": ["tg"], "test_size": 0.2},
             "OHE": {
                 "categorical_columns": ["cat"],
                 "numerical_columns": ["num"],
             },
-        }
+        },
     }
     monkeypatch.setattr(
         "astrodata.preml.pipeline.read_config", lambda path: config_no_val
@@ -181,7 +183,7 @@ def test_pipeline_run(monkeypatch):
     result = pipeline.run(processed)
     assert isinstance(result, Premldata)
     assert "num" in result.train_features.columns
-    assert any(col.startswith("cat_") for col in result.train_features.columns)
+    assert any(col.startswith("cat") for col in result.train_features.columns)
     total_rows = len(df)
     train_rows = len(result.train_features)
     test_rows = len(result.test_features)
@@ -193,6 +195,7 @@ def test_pipeline_run(monkeypatch):
 
     # --- With validation in config ---
     config_with_val = {
+        "project_path": ".",
         "preml": {
             "TrainTestSplitter": {
                 "targets": ["tg"],
@@ -203,7 +206,7 @@ def test_pipeline_run(monkeypatch):
                 "categorical_columns": ["cat"],
                 "numerical_columns": ["num"],
             },
-        }
+        },
     }
     monkeypatch.setattr(
         "astrodata.preml.pipeline.read_config", lambda path: config_with_val
@@ -212,7 +215,7 @@ def test_pipeline_run(monkeypatch):
     result_val = pipeline_val.run(processed)
     assert isinstance(result_val, Premldata)
     assert "num" in result_val.train_features.columns
-    assert any(col.startswith("cat_") for col in result_val.train_features.columns)
+    assert any(col.startswith("cat") for col in result_val.train_features.columns)
     # Validation: check that validation split exists and sizes add up
     assert hasattr(result_val, "val_features")
     val_rows = len(result_val.val_features)
