@@ -1,2 +1,4 @@
 *
 !.gitignore
+!green_tripdata_2024-01.parquet
+!green_tripdata_2024-01_config.yaml

@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional
 
 import pandas as pd
@@ -46,3 +47,20 @@ class Premldata(BaseModel):
             self.train_targets,
             self.test_targets,
         )
+
+    def dump_parquet(self, path: Path):
+        """
+        Dumps the processed data to a Parquet file.
+
+        Args:
+            path (Path): The file path to save the Parquet file.
+        """
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self.train_features.to_parquet(path / "train_features.parquet", index=False)
+        if self.val_features is not None:
+            self.val_features.to_parquet(path / "val_features.parquet", index=False)
+        self.test_features.to_parquet(path / "test_features.parquet", index=False)
+        self.train_targets.to_parquet(path / "train_targets.parquet", index=False)
+        if self.val_targets is not None:
+            self.val_targets.to_parquet(path / "val_targets.parquet", index=False)
+        self.test_targets.to_parquet(path / "test_targets.parquet", index=False)
