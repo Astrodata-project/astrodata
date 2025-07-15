@@ -20,8 +20,7 @@ class MissingImputator(PremlProcessor):
         self,
         categorical_columns: Optional[list] = None,
         numerical_columns: Optional[list] = None,
-        artifact: Optional[str] = None,
-        save_path: Optional[str] = None,
+        artifact_path: Optional[str] = None,
     ):
         """
         Initializes the MissingImputator with optional column specifications.
@@ -32,16 +31,14 @@ class MissingImputator(PremlProcessor):
             save_path (Optional[str]): Path to save the imputation artifact.
         """
         super().__init__(
-            artifact=artifact,
+            artifact_path=artifact_path,
             categorical_columns=categorical_columns,
             numerical_columns=numerical_columns,
-            save_path=save_path,
         )
 
     def process(
         self,
         preml: Premldata,
-        artifact: Optional[str] = None,
     ) -> Premldata:
         """
         Imputes missing values in the dataset.
@@ -59,8 +56,7 @@ class MissingImputator(PremlProcessor):
         Returns:
             Premldata: The processed data with imputed values.
         """
-        if artifact:
-            self.load_artifact(artifact)
+        if self.artifact:
             num_imputer, cat_imputer = self.artifact
 
             preml.test_features[self.kwargs["numerical_columns"]] = (
@@ -103,8 +99,7 @@ class MissingImputator(PremlProcessor):
                 )
             )
 
-            if self.kwargs.get("save_path"):
-                self.save_artifact((num_imputer, cat_imputer), self.kwargs["save_path"])
+            self.save_artifact((num_imputer, cat_imputer))
 
             # Apply imputers to test features
             preml.test_features[self.kwargs["numerical_columns"]] = (

@@ -1,7 +1,10 @@
+from pathlib import Path
+
 from astrodata.data.schemas import ProcessedData
 from astrodata.preml.processors.base import PremlProcessor
 from astrodata.preml.schemas import Premldata
-from astrodata.utils.utils import instantiate_processors, read_config
+from astrodata.preml.utils import instantiate_processors
+from astrodata.utils.utils import read_config
 
 
 class PremlPipeline:
@@ -22,16 +25,20 @@ class PremlPipeline:
             Executes the pipeline, applying processors in order and returning the final Premldata.
     """
 
-    def __init__(
-        self, config_path: str = None, processors: list[PremlProcessor] = None
-    ):
-        if not config_path and not processors:
-            raise ValueError("Either config_path or processors must be provided.")
-        config = read_config(config_path) if config_path else {}
-        self.config = config.get("preml", {}) if config else {}
+    def __init__(self, config_path: str, processors: list[PremlProcessor] = None):
+
+        self.config = read_config(config_path)
+        self.project_path = Path(self.config["project_path"]).resolve()
+        preml_path = self.project_path / "astrodata_files/preml"
+        preml_path.mkdir(parents=True, exist_ok=True)
+        self.preml_config = self.config.get("preml", {})
+        if not self.config and not processors:
+            raise ValueError(
+                "Either preml section of config or processors must be provided."
+            )
         self.processors = []
         processors = processors or []
-        config_processors = instantiate_processors(self.config) if self.config else {}
+        config_processors = instantiate_processors(self.preml_config)
 
         # Add TrainTestSplitter as the first processor if not already present
         for p in processors:
@@ -55,7 +62,7 @@ class PremlPipeline:
 
         self.operations_tracker = []
 
-    def run(self, processeddata: ProcessedData) -> Premldata:
+    def run(self, processeddata: ProcessedData, dump_output: bool = True) -> Premldata:
         """
         Executes the data pipeline.
         """
@@ -66,10 +73,16 @@ class PremlPipeline:
         )
 
         for processor in self.processors[1:]:
-            if processor.__class__.__name__ in self.config:
-                processor.kwargs = self.config[processor.__class__.__name__]
+            processor.save_path = (
+                self.project_path
+                / f"astrodata_files/preml/{processor.__class__.__name__}.pkl"
+            )
+            if processor.__class__.__name__ in self.preml_config:
+                processor.kwargs = self.preml_config[processor.__class__.__name__]
             data = processor.process(data)
             self.operations_tracker.append(
                 {f"{processor.__class__.__name__}": processor.artifact}
             )
+        if dump_output:
+            data.dump_parquet(self.project_path / "astrodata_files/preml/")
         return data

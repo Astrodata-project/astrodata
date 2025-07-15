@@ -96,11 +96,17 @@ class Tracker:
             return
         logger.info("Tracking data with DVC...")
         data_config = self.config.get("data", {})
+        paths = data_config.get("paths", [])
+        paths.append("astrodata_files")
         for path in data_config.get("paths", []):
             abs_path = (self.project_path / path).resolve()
             if abs_path.is_dir():
                 for file in abs_path.rglob("*"):
-                    if file.is_file() and file.suffix != ".dvc":
+                    if (
+                        file.is_file()
+                        and file.suffix != ".dvc"
+                        and file.name != ".gitignore"
+                    ):
                         logger.info(f"Tracking file: {file}")
                         self.data_tracker.add(str(file.relative_to(self.project_path)))
             else:

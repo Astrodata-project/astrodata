@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Literal, Optional
 
 import pandas as pd
@@ -14,7 +15,7 @@ class RawData(BaseModel):
         data (pd.DataFrame): The actual data as a Pandas DataFrame.
     """
 
-    source: str
+    source: Path | str
     format: Literal["fits", "hdf5", "csv", "parquet"]
     data: pd.DataFrame
 
@@ -36,3 +37,13 @@ class ProcessedData(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+    def dump_parquet(self, path: Path):
+        """
+        Dumps the processed data to a Parquet file.
+
+        Args:
+            path (Path, optional): The file path to save the Parquet file. If None, uses 'processed_data.parquet'.
+        """
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self.data.to_parquet(path, index=False)

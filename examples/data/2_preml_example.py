@@ -46,7 +46,10 @@ if __name__ == "__main__":
     )
 
     # Define the PremlPipeline with the processors and configuration path
-    preml_pipeline = PremlPipeline(processors=[tts, MissingImputator, ohe_processor])
+    preml_pipeline = PremlPipeline(
+        config_path="example_config.yml",
+        processors=[tts, MissingImputator, ohe_processor],
+    )
 
     # Let's run the pipeline with the dummy processed data
     preml_data = preml_pipeline.run(processed_data)

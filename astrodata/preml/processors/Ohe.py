@@ -21,21 +21,19 @@ class OHE(PremlProcessor):
         self,
         categorical_columns: Optional[list] = None,
         numerical_columns: Optional[list] = None,
-        artifact: Optional[str] = None,
-        save_path: Optional[str] = None,
+        artifact_path: Optional[str] = None,
     ):
         """
         Initializes the OHE processor with optional categorical columns.
         Args:
+            artifact_path (Optional[str]): Path to a saved one-hot encoding artifact.
             categorical_columns (Optional[list]): List of categorical columns to encode.
             numerical_columns (Optional[list]): List of numerical columns to retain.
-            save_path (Optional[str]): Path to save the encoding artifact.
         """
         super().__init__(
-            artifact=artifact,
+            artifact_path=artifact_path,
             categorical_columns=categorical_columns,
             numerical_columns=numerical_columns,
-            save_path=save_path,
         )
 
     def process(
@@ -92,8 +90,7 @@ class OHE(PremlProcessor):
                 self.kwargs["categorical_columns"],
                 self.kwargs["numerical_columns"],
             )
-            if self.kwargs.get("save_path"):
-                self.save_artifact(ohe, self.kwargs["save_path"])
+            self.save_artifact(ohe)
             preml.test_features = _transform_features(
                 preml.test_features,
                 ohe,

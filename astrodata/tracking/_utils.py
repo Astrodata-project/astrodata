@@ -12,6 +12,7 @@ def get_tracked_files(project_path, code_config, data_tracker=None, data_config=
         for f in filenames
     ]
     tracked_files = code_config.get("tracked_files", ["src", "pyproject.toml"])
+    tracked_files.append("astrodata_files")
     if data_tracker and data_config:
         tracked_files.extend(["/.dvc", "/.dvcignore", "/.gitignore"])
     tracked_files = [t if t.startswith("/") else "/" + t for t in tracked_files]

@@ -19,7 +19,7 @@ class Standardizer(PremlProcessor):
     def __init__(
         self,
         numerical_columns: Optional[list] = None,
-        artifact: Optional[str] = None,
+        artifact_path: Optional[str] = None,
         save_path: Optional[str] = None,
     ):
         """
@@ -30,7 +30,7 @@ class Standardizer(PremlProcessor):
             save_path (Optional[str]): Path to save the scaling artifact.
         """
         super().__init__(
-            artifact=artifact,
+            artifact_path=artifact_path,
             numerical_columns=numerical_columns,
             save_path=save_path,
         )
@@ -38,7 +38,6 @@ class Standardizer(PremlProcessor):
     def process(
         self,
         preml: Premldata,
-        artifact: Optional[str] = None,
     ) -> Premldata:
         """
         Standardizes numerical features in the dataset.
@@ -50,13 +49,11 @@ class Standardizer(PremlProcessor):
 
         Args:
             preml (Premldata): The data to be processed.
-            artifact (Optional[str]): Path to a saved scaling artifact.
 
         Returns:
             Premldata: The processed data with standardized numerical features.
         """
-        if artifact:
-            self.load_artifact(artifact)
+        if self.artifact:
             scaler = self.artifact
 
             preml.test_features[self.kwargs["numerical_columns"]] = scaler.transform(
@@ -74,8 +71,7 @@ class Standardizer(PremlProcessor):
                 preml.train_features[self.kwargs["numerical_columns"]]
             )
 
-            if self.kwargs.get("save_path"):
-                self.save_artifact(scaler, self.kwargs["save_path"])
+            self.save_artifact(scaler)
 
             # Apply scaler to test features
             preml.test_features[self.kwargs["numerical_columns"]] = scaler.transform(

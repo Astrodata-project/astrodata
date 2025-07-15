@@ -1,7 +1,10 @@
+from pathlib import Path
+
 from astrodata.data.loaders.base import BaseLoader
 from astrodata.data.processors.base import AbstractProcessor
 from astrodata.data.schemas import ProcessedData
 from astrodata.data.utils import convert_to_processed_data
+from astrodata.utils.utils import read_config
 
 
 class DataPipeline:
@@ -19,11 +22,15 @@ class DataPipeline:
             result into a ProcessedData object.
     """
 
-    def __init__(self, loader: BaseLoader, processors: list[AbstractProcessor]):
+    def __init__(
+        self, config_path: str, loader: BaseLoader, processors: list[AbstractProcessor]
+    ):
+        self.config = read_config(config_path)
+        self.project_path = Path(self.config["project_path"]).resolve()
         self.loader = loader
         self.processor = processors
 
-    def run(self, path: str) -> ProcessedData:
+    def run(self, path: str, dump_output: bool = True) -> ProcessedData:
         """
         Executes the data pipeline.
 
@@ -33,7 +40,14 @@ class DataPipeline:
         Returns:
             ProcessedData: The processed data after applying all processors.
         """
-        data = self.loader.load(path)
+        data = self.loader.load(self.project_path / path)
         for processor in self.processor:
             data = processor.process(data)
-        return convert_to_processed_data(data)
+
+        processed_data = convert_to_processed_data(data)
+        if dump_output:
+            processed_data.dump_parquet(
+                self.project_path
+                / "astrodata_files/processed_data/processed_data.parquet"
+            )
+        return processed_data
