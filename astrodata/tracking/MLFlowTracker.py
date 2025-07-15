@@ -295,7 +295,7 @@ def log_metrics_and_loss(
         scores = model.get_metrics(X=X_split, y=y_split, metrics=metrics)
         mlflow.log_metrics({f"{k}_{split_name}": v for k, v in scores.items()})
         # Loss curve
-        if hasattr(model, "get_loss_history_metrics"):
+        if model.has_loss_history:
             curves = model.get_loss_history_metrics(X_split, y_split, metrics=metrics)
 
             for key, value in curves.items():
@@ -307,9 +307,12 @@ def log_metrics_and_loss(
                     )
 
     # Add default loss metric if not present
-    loss_metric = SklearnMetric(get_loss_func(model.model_))
-    if loss_metric.get_name() not in [m.get_name() for m in metrics]:
-        metrics.append(loss_metric)
+    loss_func = get_loss_func(model.model_)
+    if loss_func is not None:
+        loss_metric = SklearnMetric(loss_func)
+        if loss_metric.get_name() not in [m.get_name() for m in metrics]:
+            metrics.append(loss_metric)
+
 
 
 # Helper for manual metrics

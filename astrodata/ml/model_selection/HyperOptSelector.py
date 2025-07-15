@@ -157,7 +157,7 @@ class HyperOptSelector(BaseMlModelSelector):
 
         # Train best model on all data
         self._best_metrics, self._best_params = _getBestMetricsParamsfromTrials(trials)
-        
+
         best_params_t = self._best_params.copy()
 
         if self.tracker:

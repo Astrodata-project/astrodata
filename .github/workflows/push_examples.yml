@@ -20,6 +20,7 @@ jobs:
         run: |
           mkdir temp-sync
           cp -r examples/. temp-sync/  
+          cp -r testdata temp-sync/ 
 
       - name: Checkout target repo
         uses: actions/checkout@v4
