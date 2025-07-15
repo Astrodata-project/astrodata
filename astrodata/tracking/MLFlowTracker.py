@@ -314,7 +314,6 @@ def log_metrics_and_loss(
             metrics.append(loss_metric)
 
 
-
 # Helper for manual metrics
 def log_metrics_manual(metrics: Dict[str, Any], split_name: str):
 
