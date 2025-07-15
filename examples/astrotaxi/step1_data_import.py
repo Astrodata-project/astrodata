@@ -1,7 +1,7 @@
 from astrodata.data import AbstractProcessor, DataPipeline, ParquetLoader, RawData
 
 
-def run_data_import_example():
+def run_data_import_example(config, tracker):
     # define loader
     loader = ParquetLoader()
 
@@ -21,11 +21,14 @@ def run_data_import_example():
 
     data_processors = [TargetCreator()]
 
-    data_pipeline = DataPipeline(loader, data_processors)
+    data_pipeline = DataPipeline(
+        config_path=config, loader=loader, processors=data_processors
+    )
 
     data_path = "./testdata/green_tripdata_2024-01.parquet"
 
     processed = data_pipeline.run(data_path)
+    tracker.track("Data pipeline run, processed data versioned")
 
     print("Data Pipeline ran successfully!")
     print(f"Processed data shape:{processed.data.shape}")

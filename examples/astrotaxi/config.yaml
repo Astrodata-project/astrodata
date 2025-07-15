@@ -1,0 +1,31 @@
+project_path: "."
+
+code:
+  enable: true
+  auto_commit: true
+  tracked_files: ["examples"]
+  commit_message: "Auto commit by astrodata"
+  branch: "test_branch5"
+  remote:
+    enable: true
+    name: "origin"
+    url: "changeme"
+  ssh_key_path: "your_key"
+  # token: "your_token"  # Optional
+
+data:
+  enable: true
+  paths:
+    - "testdata"
+  remote: "/home/dev/temp/testremote/" # Must be full path
+  push: true
+
+preml:
+  TrainTestSplitter:
+    targets:
+      - "duration"
+    test_size: 0.2
+    random_state: 42
+    validation:
+      enabled: false
+      size: 0.1
