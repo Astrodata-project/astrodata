@@ -37,6 +37,8 @@ class PremlProcessor(ABC):
             Artifact (Any): The artifact to be saved, which can be any object.
         """
         self.artifact = artifact
+        if self.save_path is None:
+            return
         with open(self.save_path, "wb") as f:
             pickle.dump(self.artifact, f)
 

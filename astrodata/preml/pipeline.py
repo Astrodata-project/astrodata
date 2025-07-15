@@ -29,8 +29,6 @@ class PremlPipeline:
 
         self.config = read_config(config_path)
         self.project_path = Path(self.config["project_path"]).resolve()
-        preml_path = self.project_path / "astrodata_files/preml"
-        preml_path.mkdir(parents=True, exist_ok=True)
         self.preml_config = self.config.get("preml", {})
         if not self.config and not processors:
             raise ValueError(
@@ -71,12 +69,16 @@ class PremlPipeline:
         self.operations_tracker.append(
             {f"{converter.__class__.__name__}": converter.artifact}
         )
+        if dump_output:
+            preml_path = self.project_path / "astrodata_files/preml"
+            preml_path.mkdir(parents=True, exist_ok=True)
 
         for processor in self.processors[1:]:
-            processor.save_path = (
-                self.project_path
-                / f"astrodata_files/preml/{processor.__class__.__name__}.pkl"
-            )
+            if dump_output:
+                processor.save_path = (
+                    self.project_path
+                    / f"astrodata_files/preml/{processor.__class__.__name__}.pkl"
+                )
             if processor.__class__.__name__ in self.preml_config:
                 processor.kwargs = self.preml_config[processor.__class__.__name__]
             data = processor.process(data)

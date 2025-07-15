@@ -45,7 +45,10 @@ if __name__ == "__main__":
     print("Data processors defined.")
 
     # Define the data pipeline with the loader and processors.
-    data_pipeline = DataPipeline(loader, data_processors)
+    config_path = "example_config.yaml"
+    data_pipeline = DataPipeline(
+        config_path=config_path, loader=loader, processors=data_processors
+    )
     print(
         f"DataPipeline initialized with {loader.__class__.__name__} and {[p.__class__.__name__ for p in data_processors]}."
     )
@@ -53,7 +56,7 @@ if __name__ == "__main__":
     # Run the data pipeline with the path to the dummy CSV file.
     # This will load the data, apply the processors, and return a ProcessedData object, which contains the processed data in a pandas DataFrame.
 
-    processed_data = data_pipeline.run(data_path)
+    processed_data = data_pipeline.run(data_path, dump_output=False)
 
     print("Data Pipeline ran successfully!")
     print(f"Processed data head:\n {processed_data.data.head()}")

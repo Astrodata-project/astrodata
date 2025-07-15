@@ -1,6 +1,7 @@
+project_path: "."
 
 preml:
-  train_test_split:
+  TrainTestSplitter:
     targets:
       - "target"
     test_size: 0.2

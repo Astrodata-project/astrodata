@@ -46,13 +46,14 @@ if __name__ == "__main__":
     )
 
     # Define the PremlPipeline with the processors and configuration path
+    config_path = "example_config.yaml"
     preml_pipeline = PremlPipeline(
-        config_path="example_config.yml",
+        config_path=config_path,
         processors=[tts, MissingImputator, ohe_processor],
     )
 
     # Let's run the pipeline with the dummy processed data
-    preml_data = preml_pipeline.run(processed_data)
+    preml_data = preml_pipeline.run(processed_data, dump_output=False)
 
     print("--" * 30)
     print("Preml Pipeline ran successfully!")
@@ -71,7 +72,7 @@ if __name__ == "__main__":
 
     preml_pipeline = PremlPipeline(config_path=config_path)
 
-    preml_data = preml_pipeline.run(processed_data)
+    preml_data = preml_pipeline.run(processed_data, dump_output=False)
 
     print("Preml Pipeline ran successfully!")
     print(f"Preml training features shape:{preml_data.train_features.shape}")
