@@ -18,9 +18,10 @@ A Python framework for machine learning on astronomical data
    tutorial/preml
    tutorial/ml
    tutorial/tracking
+   tutorial/extending
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Python API
 
    python_api/astrodata.data
@@ -29,7 +30,7 @@ A Python framework for machine learning on astronomical data
    python_api/astrodata.tracking
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Python Examples
    :glob:
 

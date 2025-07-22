@@ -9,7 +9,7 @@ def ensure_dir(path):
 
 for root, _, files in os.walk(EXAMPLES_DIR):
     for file in files:
-        if file.endswith(".py"):
+        if file.endswith(".py") and file != "__init__.py":
             rel_dir = os.path.relpath(root, EXAMPLES_DIR)
             output_dir = os.path.join(OUTPUT_DIR, rel_dir)
             ensure_dir(output_dir)
