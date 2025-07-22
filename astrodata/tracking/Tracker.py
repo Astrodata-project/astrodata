@@ -32,7 +32,7 @@ class Tracker:
             config_path (str): Path to the configuration file.
         """
         self.config = read_config(config_path)
-        self.project_path = Path(self.config["project_path"]).resolve()
+        self.project_path = self.config["project_path"]
 
         self.code_tracker = None
         self.data_tracker = None
