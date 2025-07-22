@@ -43,7 +43,6 @@ class ProcessedData(BaseModel):
         Dumps the processed data to a Parquet file.
 
         Args:
-            path (Path, optional): The file path to save the Parquet file. If None, uses 'processed_data.parquet'.
+            path (Path): The file path to save the Parquet file.
         """
-        path.parent.mkdir(parents=True, exist_ok=True)
         self.data.to_parquet(path, index=False)

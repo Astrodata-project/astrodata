@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from astrodata.data.schemas import ProcessedData
 from astrodata.preml.processors.base import PremlProcessor
 from astrodata.preml.schemas import Premldata
@@ -17,7 +15,7 @@ class PremlPipeline:
         - Ensures the first processor is a TrainTestSplitter.
 
     Args:
-        config_path (str, optional): Path to the pipeline configuration file.
+        config_path (str): Path to the configuration file.
         processors (list[PremlProcessor], optional): List of processor instances.
 
     Methods:
@@ -61,7 +59,14 @@ class PremlPipeline:
 
     def run(self, processeddata: ProcessedData, dump_output: bool = True) -> Premldata:
         """
-        Executes the data pipeline.
+        Executes the data pipeline by applying each processor in sequence.
+
+        Args:
+            processeddata (ProcessedData): The input processed data.
+            dump_output (bool): Whether to dump the output to disk.
+
+        Returns:
+            Premldata: The final processed data object.
         """
         converter = self.processors[0]
         data = converter.process(processeddata)
