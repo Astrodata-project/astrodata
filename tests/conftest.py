@@ -30,6 +30,17 @@ class DummyProcessor(AbstractProcessor):
 
 
 @pytest.fixture
+def dummy_config():
+    return {
+        "project_path": ".",
+        "preml": {
+            "TrainTestSplitter": {"targets": ["tg"], "test_size": 0.2},
+            "OHE": {"categorical_columns": ["cat"], "numerical_columns": ["num"]},
+        },
+    }
+
+
+@pytest.fixture
 def dummy_loader():
     return DummyLoader()
 
