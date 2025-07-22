@@ -91,4 +91,4 @@ Following is the documentation of some of the included packages:
   
 ## Contribution Guidelines
 
-Contribution is handled through GitHub pull requests, new functions that correctly extend the provided abstract classes can be accepted without too much control, refer to [extending astrodata](<project:./python_examples/tutorial/extending.md>) for further informations.
+Contribution is handled through GitHub pull requests, new functions that correctly extend the provided abstract classes can be accepted without too much control, refer to [extending astrodata](<project:./tutorial/extending.md>) for further informations.
