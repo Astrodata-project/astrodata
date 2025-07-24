@@ -1,6 +1,6 @@
 from sklearn.datasets import load_iris
 
-
+import time
 import os
 
 
@@ -54,6 +54,8 @@ print(gss)
 
 """
 
+
+
 gss = GridSearchSelector_parallel(
     model,
     param_grid={
@@ -61,7 +63,8 @@ gss = GridSearchSelector_parallel(
         "max_iter": [1000, 2000],
         "tol": [1e-3, 1e-4],
     },
-    n_jobs = max(1, os.cpu_count() - 1),
+    n_jobs = 1,
+    #n_jobs = max(1, os.cpu_count() - 1),
     scorer=accuracy,
     random_state=42,
     metrics=None,
@@ -74,12 +77,19 @@ print(gss)
 
 
 
-
+start_time = time.time()
 gss.fit(X_train, y_train)
 print(gss.get_best_params())
 print(gss.get_best_model())
 print(type(gss.get_best_model()))
 
+
+
+
+#gss.fit(X_train, y_train)
+end_time = time.time()
+
+print(f"Tempo impiegato per il training con {gss.n_jobs} core: {end_time - start_time:.2f} secondi")
 
 
 

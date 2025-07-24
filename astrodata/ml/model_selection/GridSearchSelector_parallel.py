@@ -4,16 +4,16 @@ import numpy as np
 from sklearn.model_selection import KFold, train_test_split
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
-from astrodata.ml.model_selection.BaseModelSelector import BaseModelSelector
-from astrodata.ml.models.BaseModel import BaseModel
-from astrodata.tracking.BaseTracker import BaseTracker
+from astrodata.ml.model_selection.BaseMlModelSelector import BaseMlModelSelector
+from astrodata.ml.models.BaseMlModel import BaseMlModel
+from astrodata.tracking.Tracker import Tracker
 import os
 
 
 from joblib import Parallel, delayed
 
 
-class GridSearchCVSelector_parallel(BaseModelSelector):
+class GridSearchCVSelector_parallel(BaseMlModelSelector):
     """
     Performs grid search with cross-validation.
     """
@@ -21,14 +21,14 @@ class GridSearchCVSelector_parallel(BaseModelSelector):
 
     def __init__(
         self,
-        model: BaseModel,
+        model: BaseMlModel,
         param_grid: dict,
         n_jobs=os.cpu_count() - 1,   #####
         scorer: BaseMetric = None,
         cv=5,
         random_state=42,
         metrics=None,
-        tracker: BaseTracker = None,
+        tracker: Tracker = None,
         log_all_models: bool = False,
     ):
         super().__init__()
@@ -180,21 +180,21 @@ class GridSearchCVSelector_parallel(BaseModelSelector):
 
 
 
-class GridSearchSelector_parallel(BaseModelSelector):
+class GridSearchSelector_parallel(BaseMlModelSelector):
     """
     Performs grid search using a single validation split.
     """
 
     def __init__(
         self,
-        model: BaseModel,
+        model: BaseMlModel,
         param_grid: dict,
         n_jobs: int = 1, ####
         scorer: BaseMetric = None,
         val_size=0.2,
         random_state=42,
         metrics=None,
-        tracker: BaseTracker = None,
+        tracker: Tracker = None,
         log_all_models: bool = False,
     ):
         super().__init__()
