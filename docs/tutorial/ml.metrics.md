@@ -2,20 +2,41 @@
 
 The `astrodata.ml.metrics` module provides a standardized interface for defining and using evaluation metrics for machine learning models. It features an abstract base class `BaseMetric` and an adapter for scikit-learn metrics, `SklearnMetric`.
 
-## Core Concepts
+## Abstract Class
 
-  * **`BaseMetric`**: This is an abstract base class that all custom metrics should inherit from. It defines the fundamental methods that a metric object must implement:
-      * `__init__()`: Initializes the metric.
-      * `__call__(y_true, y_pred, **kwargs)`: Computes the metric value given true and predicted labels.
-      * `get_name()`: Returns the name of the metric.
-      * `greater_is_better`: A property indicating whether a higher value of the metric is desirable.
-  * **`SklearnMetric`**: This class acts as an adapter, allowing you to use any scikit-learn-compatible metric function within the `astrodata` framework. It wraps a callable metric function (e.g., `sklearn.metrics.accuracy_score`) and exposes it through the `BaseMetric` interface.
+**`BaseMetric`** is the abstract base class that all custom metrics should inherit from. A metric must implement:
+* `__init__()`: Initializes the metric.
+* `__call__(y_true, y_pred, **kwargs)`: Computes the metric value given true and predicted labels.
+* `get_name()`: Returns the name of the metric.
+* `greater_is_better`: A property indicating whether a higher value of the metric is desirable.
 
 ## How to Use
 
+### Calling a metric
+
+A metric that has been created following the defined abstract class can be always called directly:
+
+```python
+from astrodata.ml.metrics.SklearnMetric import SklearnMetric
+from sklearn.metrics import accuracy_score
+
+accuracy_metric = SklearnMetric(accuracy_score)
+
+accuracy_computed = accuracy_metric(y_true, y_pred)
+```
+
+The result of this operation is the computed metric on the two provided arrays.
+
+```{attention}
+`y_true` and `y_pred` should always have the same length by definition.
+```
+```{tip}
+Some sk_learn metrics, especially for classification tasks, require the probability of a given class rather than the predicted label. Be sure to read the related documentation before using them!
+```
+
 ### Creating a Custom Metric (inheriting from `BaseMetric`)
 
-While not explicitly shown in the provided files, a custom metric would typically look like this:
+A custom metric would typically look like this:
 
 ```python
 from astrodata.ml.metrics.BaseMetric import BaseMetric
@@ -38,9 +59,9 @@ class MyCustomAccuracy(BaseMetric):
         return True
 ```
 
-#### Using `SklearnMetric`
+### `SklearnMetric`
 
-You can easily wrap existing scikit-learn metric functions:
+This class allows you to easily wrap existing scikit-learn metric functions:
 
 ```python
 from sklearn.metrics import accuracy_score, f1_score

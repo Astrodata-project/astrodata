@@ -23,36 +23,39 @@ Taking the data import part of the example:
 ```python
 from astrodata.data import AbstractProcessor, DataPipeline, ParquetLoader, RawData
 
+# We start by importing  and preprocessing the data
+
 loader = ParquetLoader()
 
 class TargetCreator(AbstractProcessor):
     def process(self, raw: RawData) -> RawData:
-        raw.data["duration"] = (
-            raw.data.lpep_dropoff_datetime - raw.data.lpep_pickup_datetime
-        )
-        raw.data["duration"] = raw.data["duration"].apply(
-            lambda x: x.total_seconds() / 60
-        )
-        raw.data = raw.data[
-            (raw.data["duration"] >= 1) & (raw.data["duration"] <= 60)
-        ].reset_index(drop=True)
-        raw.data = raw.data[raw.data["trip_distance"] < 50].reset_index(drop=True)
+        ...
         return raw
 
 data_processors = [TargetCreator()]
 
-data_pipeline = DataPipeline(
-    config_path=config, loader=loader, processors=data_processors
-)
+data_pipeline = DataPipeline(config_path=config, loader=loader, processors=data_processors)
 
 data_path = "./testdata/green_tripdata_2024-01.parquet"
 
 processed = data_pipeline.run(data_path)
-tracker.track("Data pipeline run, processed data versioned")
 
+ohe_processor = OHE( ... )
+
+missingImputator = MissingImputator( ... )
+
+preml_pipeline = PremlPipeline(config, [missingImputator, ohe_processor])
+preml_data = preml_pipeline.run(processed)
+X_train, X_test, y_train, y_test = preml_data.dump_supervised_ML_format()
+
+# Once we have the data we fit the model!
+
+randomforest = SklearnModel(model_class=RandomForestRegressor)
+
+randomforest.fit(X_train, X_test, y_train, y_test)
 ```
 
-You can see that we start by importing the required classes `AbstractProcessor, DataPipeline, ParquetLoader, RawData` and then by performing operations using the functions that said classes contain. The package is made so that each element can work independently but at the same time respects a "common" pipeline of data -> preml -> ml, with tracking being present along all steps in different forms.
+You can see that we start by importing the required classes `AbstractProcessor, DataPipeline, ParquetLoader, RawData, ...` and then by performing operations using the functions that said classes contain. The package is made so that each element can work independently but at the same time respects a "common" pipeline of data -> preml -> ml, with tracking being present along all steps in different forms.
 
 ## Dependencies
 

@@ -256,12 +256,12 @@ class SklearnMLflowTracker(MlflowBaseTracker):
                     except Exception as e:
                         logger.error(f"Could not log model: {e}")
 
-                log_metrics_and_loss(X, y, self, metrics, "train")
-                log_metrics_and_loss(X_test, y_test, self, metrics, "test")
-                log_metrics_and_loss(X_val, y_val, self, metrics, "val")
+                _log_metrics_and_loss(X, y, self, metrics, "train")
+                _log_metrics_and_loss(X_test, y_test, self, metrics, "test")
+                _log_metrics_and_loss(X_val, y_val, self, metrics, "val")
 
                 if manual_metrics is not None:
-                    log_metrics_manual(*manual_metrics)
+                    _log_metrics_manual(*manual_metrics)
 
                 return result
 
@@ -276,7 +276,7 @@ class SklearnMLflowTracker(MlflowBaseTracker):
 
 
 # Helper for metrics and loss
-def log_metrics_and_loss(
+def _log_metrics_and_loss(
     X_split, y_split, model: BaseMlModel, metrics: BaseMetric, split_name: str
 ):
     """
@@ -315,7 +315,7 @@ def log_metrics_and_loss(
 
 
 # Helper for manual metrics
-def log_metrics_manual(metrics: Dict[str, Any], split_name: str):
+def _log_metrics_manual(metrics: Dict[str, Any], split_name: str):
 
     for key, value in metrics.items():
         mlflow.log_metric(f"{key}_{split_name}", value)

@@ -15,7 +15,7 @@ An Abstract Base Class (ABC) in Python defines a blueprint for other classes. It
 
 Following there will be a series of examples showing how to extend some of the `astrodata` components.
 
-## 1\. Extending `astrodata.ml.metrics.BaseMetric`
+## Example 1, Extending `astrodata.ml.metrics.BaseMetric`
 
 The `BaseMetric` abstract class defines the interface for all evaluation metrics within `astrodata`. If you want to use a custom metric that isn't covered by `SklearnMetric`, you can create your own by inheriting from `BaseMetric`.
 
@@ -69,7 +69,7 @@ print(f"Metric Name: {precision_metric.get_name()}")
 print(f"Greater is better: {precision_metric.greater_is_better}")
 ```
 
-## 2\. Extending `astrodata.ml.models.BaseMlModel`
+## Example 2, Extending `astrodata.ml.models.BaseMlModel`
 
 The `BaseMlModel` abstract class defines the fundamental operations for any machine learning model in `astrodata`. This allows the `astrodata.ml.model_selection` module to work seamlessly with various model types, whether they are scikit-learn models, XGBoost models, or your own custom implementations.
 
@@ -186,7 +186,7 @@ loaded_model = MajorityClassClassifier().load("majority_classifier.joblib")
 print(f"Loaded model majority class: {loaded_model.majority_class}")
 ```
 
-## 3\. Extending `astrodata.ml.model_selection.BaseMlModelSelector`
+## Example 3, Extending `astrodata.ml.model_selection.BaseMlModelSelector`
 
 The `BaseMlModelSelector` abstract class provides the foundation for any model selection strategy (e.g., Grid Search, Hyperparameter Optimization). To create a new model selection algorithm, you would inherit from this class and implement its abstract methods.
 

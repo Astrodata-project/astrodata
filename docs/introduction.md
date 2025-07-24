@@ -1,6 +1,6 @@
 # Introduction
 
-AstroData is a modular Python toolkit for data processing, machine learning, and experiment tracking, designed for astrophysical data workflows. This project is part of Italy’s National Recovery and Resilience Plan (PNRR), coordinated by the National Institute for Astrophysics (INAF) under the Spoke 3 initiative, which focuses on advanced data analysis and artificial intelligence for astrophysics.
+[AstroData](https://github.com/Astrodata-project/astrodata) is a modular Python toolkit for data processing, machine learning, and experiment tracking, designed for astrophysical data workflows. This project is part of Italy’s National Recovery and Resilience Plan (PNRR), coordinated by the National Institute for Astrophysics (INAF) under the Spoke 3 initiative, which focuses on advanced data analysis and artificial intelligence for astrophysics.
 
 The goal of astrodata is to provide robust pipelines for data ingestion, preprocessing, model training, evaluation, and experiment tracking with integrated support for Git and DVC.
 
@@ -34,3 +34,5 @@ docs/             # Sphinx documentation
 examples/         # Example scripts and notebooks
 tests/            # Unit and integration tests
 ```
+
+Repository link: [`github.com/Astrodata-project/astrodata`](https://github.com/Astrodata-project/astrodata)

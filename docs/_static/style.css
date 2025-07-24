@@ -1,3 +1,8 @@
 p.caption > span.caption-text {
     font-weight: bold;
 }
+
+a, a:visited {
+  color: #3d94ff;
+  text-decoration: none;
+}

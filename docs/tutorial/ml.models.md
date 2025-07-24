@@ -1,97 +1,94 @@
 # models
 
-The `astrodata.ml.models` module provides a unified interface for various machine learning models, abstracting away framework-specific details. It includes a base model class and specialized wrappers for scikit-learn and XGBoost models.
+The `astrodata.ml.models` module provides a unified interface for various machine learning models, abstracting away framework-specific details. It includes a base model class and specialized wrappers for the most common model frameworks.
 
-## Core Concepts
+## Abstract Class
 
-  * **`BaseMlModel`**: This abstract base class defines the standard interface for all machine learning models within `astrodata`. Key methods include:
-      * `fit(X, y, **kwargs)`: Trains the model.
-      * `predict(X, **kwargs)`: Generates predictions.
-      * `score(X, y, **kwargs)`: Computes a default score for the model.
-      * `get_metrics(X, y, metrics, **kwargs)`: Evaluates a list of specified metrics.
-      * `get_loss_history_metrics(X, y, metrics, **kwargs)`: Retrieves metric history during training, if supported.
-      * `save(filepath, **kwargs)`: Saves the trained model.
-      * `load(filepath, **kwargs)`: Loads a model from a file.
-      * `get_params()`: Returns model hyperparameters.
-      * `set_params(**kwargs)`: Sets model hyperparameters.
-      * `clone()`: Creates a shallow copy of the model.
-  * **`SklearnModel`**: This wrapper allows standard scikit-learn models (e.g., `LogisticRegression`, `RandomForestClassifier`) to conform to the `BaseMlModel` interface. It handles initialization, fitting, prediction, and even exposes loss history for models that support it.
-  * **`XGBoostModel`**: Similar to `SklearnModel`, this wrapper provides compatibility for XGBoost models (`xgboost.XGBClassifier`, `xgboost.XGBRegressor`). It automatically sets a default `eval_metric` if none is provided and handles XGBoost-specific aspects like loss history tracking.
+**`BaseMlModel`** is the abstract base class of any model and it defines the standard interface for all machine learning models within `astrodata`. Subclasses must implement:
+  * `fit(X, y, **kwargs)`: Trains the model.
+  * `predict(X, **kwargs)`: Generates predictions.
+  * `score(X, y, **kwargs)`: Computes a default score for the model.
+  * `get_metrics(X, y, metrics, **kwargs)`: Evaluates a list of specified metrics.
+  * `get_loss_history_metrics(X, y, metrics, **kwargs)`: Retrieves metric history during training, if supported.
+  * `save(filepath, **kwargs)`: Saves the trained model.
+  * `load(filepath, **kwargs)`: Loads a model from a file.
+  * `get_params()`: Returns model hyperparameters.
+  * `set_params(**kwargs)`: Sets model hyperparameters.
+  * `clone()`: Creates a shallow copy of the model.
 
 ## How to Use
 
-### Using `SklearnModel`
+### Initializing a Model
+
+How a model is initialized depends on the framework of reference. In general, the goal should be to pass an existing model of the chosen framework and then let the class handle the generalization to the `astrodata` framework.
 
 ```python
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import LinearSVR
 from astrodata.ml.models.SklearnModel import SklearnModel
-from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from sklearn.metrics import accuracy_score
-import pandas as pd
-from sklearn.datasets import make_classification
-from sklearn.model_selection import train_test_split
 
-# Generate some synthetic data
-X, y = make_classification(n_samples=100, n_features=10, random_state=42)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Instantiate a scikit-learn model wrapped by SklearnModel
-sklearn_model = SklearnModel(model_class=RandomForestClassifier, n_estimators=100, random_state=42)
-
-# Fit the model
-sklearn_model.fit(X_train, y_train)
-
-# Make predictions
-predictions = sklearn_model.predict(X_test)
-
-# Evaluate with a metric
-accuracy = SklearnMetric(metric=accuracy_score)
-score = sklearn_model.score(X_test, y_test, scorer=accuracy)
-print(f"Model score (accuracy): {score}")
-
-# Get other metrics
-metrics_to_evaluate = [SklearnMetric(metric=accuracy_score, name="Accuracy")]
-evaluated_metrics = sklearn_model.get_metrics(X_test, y_test, metrics=metrics_to_evaluate)
-print(f"Evaluated metrics: {evaluated_metrics}")
-
-# Save and load the model
-sklearn_model.save("my_rf_model.joblib")
-loaded_model = SklearnModel(model_class=RandomForestClassifier) # Model class is needed for loading
-loaded_model.load("my_rf_model.joblib")
-print("Model loaded successfully!")
+model = SklearnModel(model_class=LinearSVR, random_state=42)
 ```
 
-### Using `XGBoostModel`
+Looking at this example which initializes a `scikit-learn` model we can see that the `model_class` is passed along with any extra class specific argument (in this case `random_state=42`) to initialize the model.
+
+```{hint}
+Model initialization is the only *framework-specific* part of a model, all other methods are framework-agnostic, examples will be shown for a generic `BaseMlModel`.
+```
+
+### Fitting a model
+
+Once a model is initialized correctly, fitting it requires an `X_train` and a `y_train` to be passed through its `fit` method. The internal logic of the model should handle the rest of the training.
 
 ```python
-from xgboost import XGBClassifier
-from astrodata.ml.models.XGBoostModel import XGBoostModel
-from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from sklearn.metrics import log_loss
-import pandas as pd
-from sklearn.datasets import make_classification
-from sklearn.model_selection import train_test_split
-
-# Generate some synthetic data
-X, y = make_classification(n_samples=100, n_features=10, random_state=42)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Instantiate an XGBoost model wrapped by XGBoostModel
-xgboost_model = XGBoostModel(model_class=XGBClassifier, n_estimators=50, use_label_encoder=False, eval_metric='logloss', random_state=42)
-
-# Fit the model
-xgboost_model.fit(X_train, y_train, eval_set=[(X_test, y_test)], early_stopping_rounds=10, verbose=False)
-
-# Make predictions
-predictions = xgboost_model.predict(X_test)
-
-# Evaluate with a metric
-logloss_metric = SklearnMetric(metric=log_loss)
-score = xgboost_model.score(X_test, y_test, scorer=logloss_metric)
-print(f"Model score (log loss): {score}")
-
-# Get loss history metrics
-if xgboost_model.has_loss_history:
-    loss_history = xgboost_model.get_loss_history_metrics(X_test, y_test, metrics=[logloss_metric])
-    print(f"Loss history: {loss_history}")
+model.fit(X_train, y_train)
 ```
+
+This will result in a set of weights to be computed for the model, which will be later used for predicting new values.
+
+
+### Predicting with a fitted model
+
+A model that has been correctly fitted can be used for predictions by invoking its `predict` method.
+
+```python
+y_pred = model.predict(x_test)
+```
+
+The output of the preidct method is an array containing the predicted lables for the given input.
+
+### Computing metrics
+
+Given an array of [`BaseMetric`](<project:./ml.metrics.md>) that has been previously created, we can compute the metrics for our model by invoking its `get_metrics` method, this will output a dictionary with the computed values for each metric.
+
+```python
+metrics = model.get_metrics(
+        X_test,
+        y_test,
+        metrics=metrics,
+    )
+```
+
+## `SklearnModel`
+
+Can be initialized using any of the models offered by the [**scikit-learn**](https://scikit-learn.org/stable/) library, refer to the library documentation for more information on available models and model-specific hyperparameters.
+
+## `XgboostModel`
+
+Can be initialized using any of the models offered by the [**xgboost**](https://xgboost.readthedocs.io/en/stable/) library, refer to the library documentation for more information on available models and model-specific hyperparameters.
+
+## `PytorchModel`
+
+```{attention}
+To be implemented in future releases.
+```
+
+## `TensorflowModel`
+
+```{attention}
+To be implemented in future releases.
+```
+
+## Examples
+
+- [Basic `SkLearnModel` usage](<project:../python_examples/ml/1_sklearn_example.rst>)
+- [Multi `SkLearnModel` model training through `for` loops](<project:../python_examples/ml/2_multimodel_example.rst>)
