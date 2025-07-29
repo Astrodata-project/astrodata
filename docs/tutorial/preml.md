@@ -3,4 +3,5 @@
 ```{toctree}
 ./preml.overview.md
 ./preml.processors.md
+./preml.pipeline.md
 ```
