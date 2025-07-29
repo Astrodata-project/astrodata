@@ -1,6 +1,6 @@
 # processors
 
-The `astrodata.data.processors` module provides a framework for transforming and cleaning data within the astrodata pipeline. It is built around a simple, extensible interface that allows users to compose complex preprocessing workflows from modular building blocks.
+The `astrodata.data.processors` module provides a framework for transforming data within the astrodata workflow. It is built around an extensible interface that allows users to compose preprocessing workflows by chaining multiple operations together. This module is designed to be flexible, enabling users to create custom processors that can be applied to their data in a modular way.
 
 ## Abstract Class
 
@@ -36,7 +36,7 @@ Example usage:
 ```python
 from astrodata.data import NormalizeAndSplit, DropDuplicates
 
-processors = [NormalizeAndSplit(), DropDuplicates()]
+processors = [NormalizeAndSplit(), DropDuplicates(), FeatureAdder()]
 ```
 
 ## Extensibility
@@ -44,5 +44,5 @@ processors = [NormalizeAndSplit(), DropDuplicates()]
 To add new preprocessing steps, simply create a new processor by subclassing `AbstractProcessor`. Processors can be combined in any order, allowing for flexible and reusable data transformations.
 
 ```{hint}
-Processors are applied in sequence by the `DataPipeline`, enabling reproducible and modular data transformations.
+Processors are applied in sequence by the `DataPipeline`, order matters! Ensure that the sequence of processors is logical for your data transformation needs.
 ```
