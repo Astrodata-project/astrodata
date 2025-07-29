@@ -8,6 +8,8 @@ The pipeline consists of:
 - **Processors**: A list of preprocessing steps (e.g., splitting, encoding, imputing) applied in order.
 - **Configuration**: Processors and their parameters can be defined in code or in a YAML config file. Code-defined processors take precedence. Refer to the [Configuration](<project:./configuration.md>) documentation for more details.
 
+One constraint of the `PremlPipeline` is that it requires a `TrainTestSplitter` processor to be included in the pipeline. This processor is essential for splitting the dataset into training and testing sets, which is a common requirement in machine learning workflows.
+
 ## Example Usage
 
 ```python
