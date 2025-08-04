@@ -207,12 +207,16 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/data.html">data</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.loaders.html">loaders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -227,6 +231,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/tracking.models.html">Model Tracking</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/config.html">Configuration Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial/extending.html">Extending astrodata</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
@@ -309,9 +314,16 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">run_data_import_example</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">tracker</span><span class="p">):</span>
-    <span class="c1"># define loader</span>
+    <span class="c1"># This step  demonstrates how to use the DataPipeline with a ParquetLoader and a custom processor.</span>
+    <span class="c1"># The DataPipeline class orchestrates the loading and processing of data through a series of defined processors.</span>
+    <span class="c1"># It should be used when you want to apply a sequence of transformations to your data, aimed to prepare it for machine learning tasks.</span>
+    <span class="c1"># We will load a Parquet file, process it with a custom processor, and track the resulting data.</span>
+
+    <span class="c1"># Define the loader that will be used to load the data, returning a RawData object.</span>
     <span class="n">loader</span> <span class="o">=</span> <span class="n">ParquetLoader</span><span class="p">()</span>
 
+    <span class="c1"># Define a custom processor to create a target variable and filter the data.</span>
+    <span class="c1"># The processor needs to inherit from AbstractProcessor and implement the process method.</span>
     <span class="k">class</span><span class="w"> </span><span class="nc">TargetCreator</span><span class="p">(</span><span class="n">AbstractProcessor</span><span class="p">):</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw</span><span class="p">:</span> <span class="n">RawData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RawData</span><span class="p">:</span>
             <span class="n">raw</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
@@ -326,15 +338,23 @@
             <span class="n">raw</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">raw</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;trip_distance&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">50</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">raw</span>
 
+    <span class="c1"># Define the list of processors to be used in the pipeline.</span>
     <span class="n">data_processors</span> <span class="o">=</span> <span class="p">[</span><span class="n">TargetCreator</span><span class="p">()]</span>
 
+    <span class="c1"># Define the data pipeline with the config file, loader and processors.</span>
     <span class="n">data_pipeline</span> <span class="o">=</span> <span class="n">DataPipeline</span><span class="p">(</span>
         <span class="n">config_path</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">loader</span><span class="o">=</span><span class="n">loader</span><span class="p">,</span> <span class="n">processors</span><span class="o">=</span><span class="n">data_processors</span>
     <span class="p">)</span>
 
+    <span class="c1"># Path to the input Parquet file</span>
     <span class="n">data_path</span> <span class="o">=</span> <span class="s2">&quot;./testdata/green_tripdata_2024-01.parquet&quot;</span>
 
+    <span class="c1"># Run the data pipeline with the path to the Parquet file.</span>
     <span class="n">processed</span> <span class="o">=</span> <span class="n">data_pipeline</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+
+    <span class="c1"># The tracker is used to version code and data with Git and DVC.</span>
+    <span class="c1"># The track method will version everything that is included in the config file, alongside with astrodat-produced files.</span>
+    <span class="c1"># Astrodata creates a folder named &quot;astrodata_files&quot; in which it stores generated data and artifacts.</span>
     <span class="n">tracker</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="s2">&quot;Data pipeline run, processed data versioned&quot;</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data Pipeline ran successfully!&quot;</span><span class="p">)</span>

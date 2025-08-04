@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="machine learning" href="ml.html" /><link rel="prev" title="pre-machine learning" href="preml.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="PremlPipeline" href="preml.pipeline.html" /><link rel="prev" title="Overview" href="preml.overview.html" />
         <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/tutorial/preml.processors.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
@@ -180,7 +180,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -207,12 +207,16 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="data.html">data</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="data.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.loaders.html">loaders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="preml.html">pre-machine learning</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preml.overview.html">Overview</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -227,6 +231,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tracking.models.html">Model Tracking</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extending.html">Extending astrodata</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
@@ -297,7 +302,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -305,6 +310,82 @@
         <article role="main" id="furo-main-content">
           <section id="processors">
 <h1>processors<a class="headerlink" href="#processors" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">astrodata.preml.processors</span></code> module provides a framework to perform advanced preprocessing and transformation steps on your data after it has been loaded and split into training, testing, and (optionally) validation sets. Similar to the <code class="docutils literal notranslate"><span class="pre">astrodata.data.processors</span></code> module, it is built around an extensible interface that allows users to compose preprocessing workflows chaining multiple operations together.</p>
+<section id="abstract-class">
+<h2>Abstract Class<a class="headerlink" href="#abstract-class" title="Link to this heading">¶</a></h2>
+<p>The core of the <code class="docutils literal notranslate"><span class="pre">astrodata.preml.processors</span></code> module is the <code class="docutils literal notranslate"><span class="pre">PremlProcessor</span></code> abstract base class, which defines the interface for all preml processors. Each processor is responsible for transforming a <code class="docutils literal notranslate"><span class="pre">Premldata</span></code> object, and can optionally save or load artifacts (such as fitted encoders or imputers) to ensure reproducibility and consistency across different runs.</p>
+</section>
+<section id="how-to-use">
+<h2>How to Use<a class="headerlink" href="#how-to-use" title="Link to this heading">¶</a></h2>
+<section id="creating-a-premlprocessor">
+<h3>Creating a Premlprocessor<a class="headerlink" href="#creating-a-premlprocessor" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.preml</span><span class="w"> </span><span class="kn">import</span> <span class="n">Premldata</span><span class="p">,</span> <span class="n">PremlProcessor</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomProcessor</span><span class="p">(</span><span class="n">PremlProcessor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preml</span><span class="p">:</span> <span class="n">Premldata</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Premldata</span><span class="p">:</span>
+        <span class="c1"># Transform the input Premldata and return the result.</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Subclasses must implement the <code class="docutils literal notranslate"><span class="pre">process</span></code> method, which takes a <code class="docutils literal notranslate"><span class="pre">Premldata</span></code> object and returns a transformed <code class="docutils literal notranslate"><span class="pre">Premldata</span></code>.</p></li>
+<li><p>Artifacts (such as fitted parameters) can be saved in the process method with <code class="docutils literal notranslate"><span class="pre">PremlProcessor.save_artifact()</span></code>, and a processor can be initialized with an existing artifact.</p></li>
+<li><p>Processors can be chained together in a pipeline for complex preprocessing workflows.</p></li>
+</ul>
+</section>
+<section id="using-built-in-processors">
+<h3>Using built-in Processors<a class="headerlink" href="#using-built-in-processors" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">astrodata.preml.processors</span></code> module provides several built-in processors for common preprocessing tasks:</p>
+<section id="traintestsplitter">
+<h4>TrainTestSplitter<a class="headerlink" href="#traintestsplitter" title="Link to this heading">¶</a></h4>
+<p>Splits your dataset into training, testing, and optionally validation sets. You can specify target columns, test size, random state, and validation split. The output is a <code class="docutils literal notranslate"><span class="pre">Premldata</span></code> object containing the split datasets and metadata.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.preml</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainTestSplitter</span>
+
+<span class="n">splitter</span> <span class="o">=</span> <span class="n">TrainTestSplitter</span><span class="p">(</span>
+    <span class="n">targets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;target_column&quot;</span><span class="p">],</span>
+    <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="n">validation</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="ohe-onehotencoder">
+<h4>OHE (OneHotEncoder)<a class="headerlink" href="#ohe-onehotencoder" title="Link to this heading">¶</a></h4>
+<p>One-hot encodes specified categorical columns, optionally retaining numerical columns. Artifacts can be saved for reproducibility.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.preml</span><span class="w"> </span><span class="kn">import</span> <span class="n">OHE</span>
+
+<span class="n">encoder</span> <span class="o">=</span> <span class="n">OHE</span><span class="p">(</span>
+    <span class="n">categorical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cat1&quot;</span><span class="p">,</span> <span class="s2">&quot;cat2&quot;</span><span class="p">],</span>
+    <span class="n">numerical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;num1&quot;</span><span class="p">,</span> <span class="s2">&quot;num2&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="missingimputator">
+<h4>MissingImputator<a class="headerlink" href="#missingimputator" title="Link to this heading">¶</a></h4>
+<p>Imputes missing values in numerical columns (using the mean) and categorical columns (using the most frequent value).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.preml</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingImputator</span>
+
+<span class="n">imputer</span> <span class="o">=</span> <span class="n">MissingImputator</span><span class="p">(</span>
+    <span class="n">numerical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;num1&quot;</span><span class="p">,</span> <span class="s2">&quot;num2&quot;</span><span class="p">],</span>
+    <span class="n">categorical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cat1&quot;</span><span class="p">,</span> <span class="s2">&quot;cat2&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="standardizer">
+<h4>Standardizer<a class="headerlink" href="#standardizer" title="Link to this heading">¶</a></h4>
+<p>Standardizes numerical columns to have zero mean and unit variance. Useful for scaling features before machine learning.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.preml</span><span class="w"> </span><span class="kn">import</span> <span class="n">Standardizer</span>
+
+<span class="n">scaler</span> <span class="o">=</span> <span class="n">Standardizer</span><span class="p">(</span>
+    <span class="n">numerical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;num1&quot;</span><span class="p">,</span> <span class="s2">&quot;num2&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
 </section>
 
         </article>
@@ -312,23 +393,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="ml.html">
+          <a class="next-page" href="preml.pipeline.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">machine learning</div>
+                <div class="title">PremlPipeline</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="preml.html">
+          <a class="prev-page" href="preml.overview.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">pre-machine learning</div>
+                <div class="title">Overview</div>
                 
               </div>
             </a>
@@ -350,8 +431,38 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">processors</a><ul>
+<li><a class="reference internal" href="#abstract-class">Abstract Class</a></li>
+<li><a class="reference internal" href="#how-to-use">How to Use</a><ul>
+<li><a class="reference internal" href="#creating-a-premlprocessor">Creating a Premlprocessor</a></li>
+<li><a class="reference internal" href="#using-built-in-processors">Using built-in Processors</a><ul>
+<li><a class="reference internal" href="#traintestsplitter">TrainTestSplitter</a></li>
+<li><a class="reference internal" href="#ohe-onehotencoder">OHE (OneHotEncoder)</a></li>
+<li><a class="reference internal" href="#missingimputator">MissingImputator</a></li>
+<li><a class="reference internal" href="#standardizer">Standardizer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

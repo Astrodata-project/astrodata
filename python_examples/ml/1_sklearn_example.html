@@ -207,12 +207,16 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/data.html">data</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.loaders.html">loaders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -227,6 +231,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/tracking.models.html">Model Tracking</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/config.html">Configuration Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial/extending.html">Extending astrodata</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
@@ -316,8 +321,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.svm</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearSVR</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics.SklearnMetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models.SklearnModel</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnModel</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
 

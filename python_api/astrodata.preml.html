@@ -207,12 +207,16 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/data.html">data</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/data.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.loaders.html">loaders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -227,6 +231,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/tracking.models.html">Model Tracking</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/config.html">Configuration Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial/extending.html">Extending astrodata</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
@@ -375,7 +380,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>config_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the pipeline configuration file.</p></li>
+<li><p><strong>config_path</strong> (<em>str</em>) – Path to the configuration file.</p></li>
 <li><p><strong>processors</strong> (<em>list</em><em>[</em><a class="reference internal" href="astrodata.preml.processors.html#astrodata.preml.processors.base.PremlProcessor" title="astrodata.preml.processors.base.PremlProcessor"><em>PremlProcessor</em></a><em>]</em><em>, </em><em>optional</em>) – List of processor instances.</p></li>
 </ul>
 </dd>
@@ -390,10 +395,19 @@ Executes the pipeline, applying processors in order and returning the final Prem
 <dl class="py method">
 <dt class="sig sig-object py" id="astrodata.preml.pipeline.PremlPipeline.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processeddata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dump_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.preml.pipeline.PremlPipeline.run" title="Link to this definition">¶</a></dt>
-<dd><p>Executes the data pipeline.</p>
+<dd><p>Executes the data pipeline by applying each processor in sequence.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>processeddata</strong> (<a class="reference internal" href="astrodata.data.html#astrodata.data.schemas.ProcessedData" title="astrodata.data.schemas.ProcessedData"><em>ProcessedData</em></a>) – The input processed data.</p></li>
+<li><p><strong>dump_output</strong> (<em>bool</em>) – Whether to dump the output to disk.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The final processed data object.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#astrodata.preml.schemas.Premldata" title="astrodata.preml.schemas.Premldata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Premldata</span></code></a></span></p>
+<dd class="field-odd"><p><a class="reference internal" href="#astrodata.preml.schemas.Premldata" title="astrodata.preml.schemas.Premldata">Premldata</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -409,12 +423,67 @@ Executes the pipeline, applying processors in order and returning the final Prem
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 <p>Represents processed data after transformations.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="astrodata.preml.schemas.Premldata.data">
-<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#astrodata.preml.schemas.Premldata.data" title="Link to this definition">¶</a></dt>
-<dd><p>The actual data as a Pandas DataFrame.</p>
+<dt class="sig sig-object py" id="astrodata.preml.schemas.Premldata.train_features">
+<span class="sig-name descname"><span class="pre">train_features</span></span><a class="headerlink" href="#astrodata.preml.schemas.Premldata.train_features" title="Link to this definition">¶</a></dt>
+<dd><p>Training features.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="astrodata.preml.schemas.Premldata.val_features">
+<span class="sig-name descname"><span class="pre">val_features</span></span><a class="headerlink" href="#astrodata.preml.schemas.Premldata.val_features" title="Link to this definition">¶</a></dt>
+<dd><p>Validation features, if available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[pd.DataFrame]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="astrodata.preml.schemas.Premldata.test_features">
+<span class="sig-name descname"><span class="pre">test_features</span></span><a class="headerlink" href="#astrodata.preml.schemas.Premldata.test_features" title="Link to this definition">¶</a></dt>
+<dd><p>Test features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="astrodata.preml.schemas.Premldata.train_targets">
+<span class="sig-name descname"><span class="pre">train_targets</span></span><a class="headerlink" href="#astrodata.preml.schemas.Premldata.train_targets" title="Link to this definition">¶</a></dt>
+<dd><p>Training targets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame | pd.Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="astrodata.preml.schemas.Premldata.val_targets">
+<span class="sig-name descname"><span class="pre">val_targets</span></span><a class="headerlink" href="#astrodata.preml.schemas.Premldata.val_targets" title="Link to this definition">¶</a></dt>
+<dd><p>Validation targets, if available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[pd.DataFrame | pd.Series]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="astrodata.preml.schemas.Premldata.test_targets">
+<span class="sig-name descname"><span class="pre">test_targets</span></span><a class="headerlink" href="#astrodata.preml.schemas.Premldata.test_targets" title="Link to this definition">¶</a></dt>
+<dd><p>Test targets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame | pd.Series</p>
 </dd>
 </dl>
 </dd></dl>
@@ -478,33 +547,33 @@ Executes the pipeline, applying processors in order and returning the final Prem
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="astrodata.preml.schemas.Premldata.test_features">
-<span class="sig-name descname"><span class="pre">test_features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></em><a class="headerlink" href="#astrodata.preml.schemas.Premldata.test_features" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">test_features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></em><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="astrodata.preml.schemas.Premldata.test_targets">
-<span class="sig-name descname"><span class="pre">test_targets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code> <span class="pre">|</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></em><a class="headerlink" href="#astrodata.preml.schemas.Premldata.test_targets" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">test_targets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code> <span class="pre">|</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></em><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="astrodata.preml.schemas.Premldata.train_features">
-<span class="sig-name descname"><span class="pre">train_features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></em><a class="headerlink" href="#astrodata.preml.schemas.Premldata.train_features" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">train_features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></em><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="astrodata.preml.schemas.Premldata.train_targets">
-<span class="sig-name descname"><span class="pre">train_targets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code> <span class="pre">|</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></em><a class="headerlink" href="#astrodata.preml.schemas.Premldata.train_targets" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">train_targets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code> <span class="pre">|</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></em><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="astrodata.preml.schemas.Premldata.val_features">
-<span class="sig-name descname"><span class="pre">val_features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code><span class="pre">]</span></em><a class="headerlink" href="#astrodata.preml.schemas.Premldata.val_features" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">val_features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code><span class="pre">]</span></em><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="astrodata.preml.schemas.Premldata.val_targets">
-<span class="sig-name descname"><span class="pre">val_targets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code><span class="pre">,</span> <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code><span class="pre">]</span></em><a class="headerlink" href="#astrodata.preml.schemas.Premldata.val_targets" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">val_targets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code><span class="pre">,</span> <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code><span class="pre">]</span></em><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -613,7 +682,12 @@ Validates processor names, catches instantiation errors, and allows for defaults
 </li>
 <li><a class="reference internal" href="#module-astrodata.preml.schemas">astrodata.preml.schemas module</a><ul>
 <li><a class="reference internal" href="#astrodata.preml.schemas.Premldata"><code class="docutils literal notranslate"><span class="pre">Premldata</span></code></a><ul>
-<li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.data"><code class="docutils literal notranslate"><span class="pre">Premldata.data</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.train_features"><code class="docutils literal notranslate"><span class="pre">Premldata.train_features</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.val_features"><code class="docutils literal notranslate"><span class="pre">Premldata.val_features</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.test_features"><code class="docutils literal notranslate"><span class="pre">Premldata.test_features</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.train_targets"><code class="docutils literal notranslate"><span class="pre">Premldata.train_targets</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.val_targets"><code class="docutils literal notranslate"><span class="pre">Premldata.val_targets</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.test_targets"><code class="docutils literal notranslate"><span class="pre">Premldata.test_targets</span></code></a></li>
 <li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.metadata"><code class="docutils literal notranslate"><span class="pre">Premldata.metadata</span></code></a></li>
 <li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.Config"><code class="docutils literal notranslate"><span class="pre">Premldata.Config</span></code></a><ul>
 <li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.Config.arbitrary_types_allowed"><code class="docutils literal notranslate"><span class="pre">Premldata.Config.arbitrary_types_allowed</span></code></a></li>
@@ -623,12 +697,12 @@ Validates processor names, catches instantiation errors, and allows for defaults
 <li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.dump_supervised_ML_format"><code class="docutils literal notranslate"><span class="pre">Premldata.dump_supervised_ML_format()</span></code></a></li>
 <li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Premldata.metadata</span></code></a></li>
 <li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.model_config"><code class="docutils literal notranslate"><span class="pre">Premldata.model_config</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.test_features"><code class="docutils literal notranslate"><span class="pre">Premldata.test_features</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.test_targets"><code class="docutils literal notranslate"><span class="pre">Premldata.test_targets</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.train_features"><code class="docutils literal notranslate"><span class="pre">Premldata.train_features</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.train_targets"><code class="docutils literal notranslate"><span class="pre">Premldata.train_targets</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.val_features"><code class="docutils literal notranslate"><span class="pre">Premldata.val_features</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.preml.schemas.Premldata.val_targets"><code class="docutils literal notranslate"><span class="pre">Premldata.val_targets</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">Premldata.test_features</span></code></a></li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">Premldata.test_targets</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">Premldata.train_features</span></code></a></li>
+<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">Premldata.train_targets</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">Premldata.val_features</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">Premldata.val_targets</span></code></a></li>
 </ul>
 </li>
 </ul>

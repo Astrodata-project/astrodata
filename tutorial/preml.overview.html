@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="tracking" href="tracking.html" /><link rel="prev" title="model selection" href="ml.model_selection.html" />
-        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/tutorial/ml.metrics.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="processors" href="preml.processors.html" /><link rel="prev" title="pre-machine learning" href="preml.html" />
+        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/tutorial/preml.overview.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
-        <title>metrics - astrodata documentation</title>
+        <title>Overview - astrodata documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=c9eb4647" />
@@ -180,7 +180,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -213,16 +213,16 @@
 <li class="toctree-l2"><a class="reference internal" href="data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="preml.overview.html">Overview</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="preml.html">pre-machine learning</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="preml.processors.html">processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="ml.html">machine learning</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="ml.models.html">models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ml.model_selection.html">model selection</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ml.metrics.html">metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tracking.html">tracking</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of tracking</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -288,7 +288,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/tutorial/ml.metrics.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/tutorial/preml.overview.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -302,94 +302,23 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="metrics">
-<h1>metrics<a class="headerlink" href="#metrics" title="Link to this heading">¶</a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">astrodata.ml.metrics</span></code> module provides a standardized interface for defining and using evaluation metrics for machine learning models. It features an abstract base class <code class="docutils literal notranslate"><span class="pre">BaseMetric</span></code> and an adapter for scikit-learn metrics, <code class="docutils literal notranslate"><span class="pre">SklearnMetric</span></code>.</p>
-<section id="abstract-class">
-<h2>Abstract Class<a class="headerlink" href="#abstract-class" title="Link to this heading">¶</a></h2>
-<p><strong><code class="docutils literal notranslate"><span class="pre">BaseMetric</span></code></strong> is the abstract base class that all custom metrics should inherit from. A metric must implement:</p>
+          <section id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">astrodata.preml</span></code> submodule is designed to perform advanced preprocessing and transformation steps on your data after it has been loaded and split into training, testing, and (optionally) validation sets. While the initial data pipeline handles loading and basic preprocessing, <code class="docutils literal notranslate"><span class="pre">preml</span></code> focuses on preparing your datasets for machine learning tasks by applying transformations such as one-hot encoding, missing value imputation, and other feature engineering steps.</p>
+<p>The core concept of <code class="docutils literal notranslate"><span class="pre">preml</span></code> is to provide a flexible and reproducible way to chain together multiple preprocessing operations using the <code class="docutils literal notranslate"><span class="pre">PremlPipeline</span></code> class. This pipeline ensures that all transformations are applied consistently across your train, test, and validation splits, maintaining data integrity.</p>
+<p>Typical usage involves:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">__init__()</span></code>: Initializes the metric.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">__call__(y_true,</span> <span class="pre">y_pred,</span> <span class="pre">**kwargs)</span></code>: Computes the metric value given true and predicted labels.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get_name()</span></code>: Returns the name of the metric.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">greater_is_better</span></code>: A property indicating whether a higher value of the metric is desirable.</p></li>
+<li><p>Defining a <code class="docutils literal notranslate"><span class="pre">TrainTestSplitter</span></code> to split your processed data.</p></li>
+<li><p>Specifying additional processors (e.g., <code class="docutils literal notranslate"><span class="pre">OHE</span></code> for categorical encoding, <code class="docutils literal notranslate"><span class="pre">MissingImputator</span></code> for handling missing values).</p></li>
+<li><p>Running the <code class="docutils literal notranslate"><span class="pre">PremlPipeline</span></code> to apply these transformations in sequence.</p></li>
 </ul>
-</section>
-<section id="how-to-use">
-<h2>How to Use<a class="headerlink" href="#how-to-use" title="Link to this heading">¶</a></h2>
-<section id="calling-a-metric">
-<h3>Calling a metric<a class="headerlink" href="#calling-a-metric" title="Link to this heading">¶</a></h3>
-<p>A metric that has been created following the defined abstract class can be always called directly:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics.SklearnMetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span>
-
-<span class="n">accuracy_metric</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">)</span>
-
-<span class="n">accuracy_computed</span> <span class="o">=</span> <span class="n">accuracy_metric</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The result of this operation is the computed metric on the two provided arrays.</p>
-<div class="admonition attention">
-<p class="admonition-title">Attention</p>
-<p><code class="docutils literal notranslate"><span class="pre">y_true</span></code> and <code class="docutils literal notranslate"><span class="pre">y_pred</span></code> should always have the same length by definition.</p>
-</div>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Some sk_learn metrics, especially for classification tasks, require the probability of a given class rather than the predicted label. Be sure to read the related documentation before using them!</p>
-</div>
-</section>
-<section id="creating-a-custom-metric-inheriting-from-basemetric">
-<h3>Creating a Custom Metric (inheriting from <code class="docutils literal notranslate"><span class="pre">BaseMetric</span></code>)<a class="headerlink" href="#creating-a-custom-metric-inheriting-from-basemetric" title="Link to this heading">¶</a></h3>
-<p>A custom metric would typically look like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics.BaseMetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseMetric</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">MyCustomAccuracy</span><span class="p">(</span><span class="n">BaseMetric</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_true</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="c1"># Implement your custom accuracy calculation here</span>
-        <span class="n">correct_predictions</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">true</span><span class="p">,</span> <span class="n">pred</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span> <span class="k">if</span> <span class="n">true</span> <span class="o">==</span> <span class="n">pred</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">correct_predictions</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;MyCustomAccuracy&quot;</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">greater_is_better</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">True</span>
-</pre></div>
-</div>
-</section>
-<section id="sklearnmetric">
-<h3><code class="docutils literal notranslate"><span class="pre">SklearnMetric</span></code><a class="headerlink" href="#sklearnmetric" title="Link to this heading">¶</a></h3>
-<p>This class allows you to easily wrap existing scikit-learn metric functions:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics.SklearnMetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
-
-<span class="c1"># Wrap accuracy_score</span>
-<span class="n">accuracy</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">accuracy_score</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="c1"># Wrap f1_score with specific parameters</span>
-<span class="n">f1_macro</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">f1_score</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;f1_macro&quot;</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;macro&#39;</span><span class="p">)</span>
-
-<span class="c1"># Example usage</span>
-<span class="n">y_true</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-<span class="n">y_pred</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;F1 Macro: </span><span class="si">{</span><span class="n">f1_macro</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-</section>
+<p>This approach allows you to easily configure, extend, and track your preprocessing steps, ensuring your data is ready for downstream machine learning workflows.</p>
 </section>
 
         </article>
@@ -397,23 +326,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="tracking.html">
+          <a class="next-page" href="preml.processors.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">tracking</div>
+                <div class="title">processors</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="ml.model_selection.html">
+          <a class="prev-page" href="preml.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">model selection</div>
+                <div class="title">pre-machine learning</div>
                 
               </div>
             </a>
@@ -435,33 +364,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">metrics</a><ul>
-<li><a class="reference internal" href="#abstract-class">Abstract Class</a></li>
-<li><a class="reference internal" href="#how-to-use">How to Use</a><ul>
-<li><a class="reference internal" href="#calling-a-metric">Calling a metric</a></li>
-<li><a class="reference internal" href="#creating-a-custom-metric-inheriting-from-basemetric">Creating a Custom Metric (inheriting from <code class="docutils literal notranslate"><span class="pre">BaseMetric</span></code>)</a></li>
-<li><a class="reference internal" href="#sklearnmetric"><code class="docutils literal notranslate"><span class="pre">SklearnMetric</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

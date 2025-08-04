@@ -207,12 +207,16 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/data.html">data</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.loaders.html">loaders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -227,6 +231,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/tracking.models.html">Model Tracking</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/config.html">Configuration Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial/extending.html">Extending astrodata</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
@@ -307,20 +312,18 @@
 <h1>ml/4_hyperopt_example.py<a class="headerlink" href="#ml-4-hyperopt-example-py" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">hyperopt</span><span class="w"> </span><span class="kn">import</span> <span class="n">hp</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_breast_cancer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">log_loss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_iris</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.svm</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearSVC</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics.SklearnMetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.model_selection.HyperOptSelector</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">HyperOptSelector</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models.SklearnModel</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperOptSelector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnModel</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="c1"># Load the breast cancer dataset</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">load_breast_cancer</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
     <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">feature_names</span><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
 
@@ -329,16 +332,16 @@
     <span class="p">)</span>
 
     <span class="c1"># Instantiate the SklearnModel with LinearSVC and a metric</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">SklearnModel</span><span class="p">(</span><span class="n">model_class</span><span class="o">=</span><span class="n">LinearSVC</span><span class="p">,</span> <span class="n">penalty</span><span class="o">=</span><span class="s2">&quot;l2&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;squared_hinge&quot;</span><span class="p">)</span>
+    <span class="n">model1</span> <span class="o">=</span> <span class="n">SklearnModel</span><span class="p">(</span><span class="n">model_class</span><span class="o">=</span><span class="n">LinearSVC</span><span class="p">,</span> <span class="n">penalty</span><span class="o">=</span><span class="s2">&quot;l2&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;squared_hinge&quot;</span><span class="p">)</span>
+    <span class="n">model2</span> <span class="o">=</span> <span class="n">SklearnModel</span><span class="p">(</span><span class="n">model_class</span><span class="o">=</span><span class="n">LinearSVC</span><span class="p">,</span> <span class="n">penalty</span><span class="o">=</span><span class="s2">&quot;l1&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;squared_hinge&quot;</span><span class="p">)</span>
     <span class="n">accuracy</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">)</span>
     <span class="n">f1</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">f1_score</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;micro&quot;</span><span class="p">)</span>
-    <span class="n">logloss</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">log_loss</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">accuracy</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">logloss</span><span class="p">]</span>
+    <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">accuracy</span><span class="p">,</span> <span class="n">f1</span><span class="p">]</span>
 
     <span class="c1"># Define the hyperopt search space</span>
     <span class="n">param_space</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">model</span><span class="p">]),</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">model1</span><span class="p">,</span> <span class="n">model2</span><span class="p">]),</span>
         <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
         <span class="s2">&quot;max_iter&quot;</span><span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s2">&quot;max_iter&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">]),</span>
         <span class="s2">&quot;tol&quot;</span><span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s2">&quot;tol&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">]),</span>

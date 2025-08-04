@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="astrodata.ml.model_selection package" href="astrodata.ml.model_selection.html" /><link rel="prev" title="astrodata.ml package" href="astrodata.ml.html" />
-        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/python_api/astrodata.ml.metrics.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="machine learning" href="ml.html" /><link rel="prev" title="processors" href="preml.processors.html" />
+        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/tutorial/preml.pipeline.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
-        <title>astrodata.ml.metrics package - astrodata documentation</title>
+        <title>PremlPipeline - astrodata documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=c9eb4647" />
@@ -205,53 +205,53 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/data.html">data</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial/data.overview.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial/data.loaders.html">loaders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial/data.processors.html">processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial/data.pipeline.html">Data Pipeline</a></li>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="data.html">data</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="data.overview.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.loaders.html">loaders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.overview.html">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.processors.html">processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.pipeline.html">PremlPipeline</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="preml.html">pre-machine learning</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preml.overview.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preml.processors.html">processors</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">PremlPipeline</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial/ml.models.html">models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial/ml.model_selection.html">model selection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial/ml.metrics.html">metrics</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="ml.models.html">models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ml.model_selection.html">model selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ml.metrics.html">metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/tracking.html">tracking</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of tracking</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial/tracking.git.html">git</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial/tracking.dvc.html">DVC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial/tracking.models.html">Model Tracking</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tracking.html">tracking</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of tracking</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="tracking.git.html">git</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracking.dvc.html">DVC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracking.models.html">Model Tracking</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial/config.html">Configuration Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial/extending.html">Extending astrodata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extending.html">Extending astrodata</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
-<ul class="current">
-<li class="toctree-l1 has-children"><a class="reference internal" href="astrodata.data.html">astrodata.data package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of astrodata.data package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="astrodata.data.loaders.html">astrodata.data.loaders package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="astrodata.data.processors.html">astrodata.data.processors package</a></li>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/astrodata.data.html">astrodata.data package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of astrodata.data package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/astrodata.data.loaders.html">astrodata.data.loaders package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/astrodata.data.processors.html">astrodata.data.processors package</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="astrodata.preml.html">astrodata.preml package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of astrodata.preml package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="astrodata.preml.processors.html">astrodata.preml.processors package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/astrodata.preml.html">astrodata.preml package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of astrodata.preml package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/astrodata.preml.processors.html">astrodata.preml.processors package</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="astrodata.ml.html">astrodata.ml package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of astrodata.ml package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">astrodata.ml.metrics package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="astrodata.ml.model_selection.html">astrodata.ml.model_selection package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="astrodata.ml.models.html">astrodata.ml.models package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/astrodata.ml.html">astrodata.ml package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of astrodata.ml package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/astrodata.ml.metrics.html">astrodata.ml.metrics package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/astrodata.ml.model_selection.html">astrodata.ml.model_selection package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/astrodata.ml.models.html">astrodata.ml.models package</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="astrodata.tracking.html">astrodata.tracking package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/astrodata.tracking.html">astrodata.tracking package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python Examples</span></p>
 <ul>
@@ -288,7 +288,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/python_api/astrodata.ml.metrics.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/tutorial/preml.pipeline.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -308,93 +308,42 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="astrodata-ml-metrics-package">
-<h1>astrodata.ml.metrics package<a class="headerlink" href="#astrodata-ml-metrics-package" title="Link to this heading">¶</a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+          <section id="premlpipeline">
+<h1>PremlPipeline<a class="headerlink" href="#premlpipeline" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">PremlPipeline</span></code> class in the <code class="docutils literal notranslate"><span class="pre">astrodata.preml</span></code> module orchestrates machine learning preprocessing steps using a configurable sequence of processors. It is designed to prepare your data for supervised ML tasks by handling preconfigured operations like splitting, encoding, and imputing missing values; it also supports custom processors by subclassing the <code class="docutils literal notranslate"><span class="pre">PremlProcessor</span></code> class.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>The pipeline consists of:</p>
+<ul class="simple">
+<li><p><strong>Processors</strong>: A list of preprocessing steps (e.g., splitting, encoding, imputing) applied in order.</p></li>
+<li><p><strong>Configuration</strong>: Processors and their parameters can be defined in code or in a YAML config file. Code-defined processors take precedence. Refer to the <span class="xref myst">Configuration</span> documentation for more details.</p></li>
+</ul>
+<p>One constraint of the <code class="docutils literal notranslate"><span class="pre">PremlPipeline</span></code> is that it requires a <code class="docutils literal notranslate"><span class="pre">TrainTestSplitter</span></code> processor to be included in the pipeline. This processor is essential for splitting the dataset into training and testing sets, which is a common requirement in machine learning workflows.</p>
 </section>
-<section id="module-astrodata.ml.metrics.BaseMetric">
-<span id="astrodata-ml-metrics-basemetric-module"></span><h2>astrodata.ml.metrics.BaseMetric module<a class="headerlink" href="#module-astrodata.ml.metrics.BaseMetric" title="Link to this heading">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="astrodata.ml.metrics.BaseMetric.BaseMetric">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.metrics.BaseMetric.</span></span><span class="sig-name descname"><span class="pre">BaseMetric</span></span><a class="headerlink" href="#astrodata.ml.metrics.BaseMetric.BaseMetric" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>Abstract base class for metric objects.</p>
-<p>Subclasses must implement initialization, call, name retrieval,
-and indicate if greater values are better.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.metrics.BaseMetric.BaseMetric.get_name">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.metrics.BaseMetric.BaseMetric.get_name" title="Link to this definition">¶</a></dt>
-<dd><p>Return the name of the metric.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The metric name.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
+<section id="example-usage">
+<h2>Example Usage<a class="headerlink" href="#example-usage" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessedData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.preml</span><span class="w"> </span><span class="kn">import</span> <span class="n">OHE</span><span class="p">,</span> <span class="n">MissingImputator</span><span class="p">,</span> <span class="n">PremlPipeline</span><span class="p">,</span> <span class="n">TrainTestSplitter</span>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="astrodata.ml.metrics.BaseMetric.BaseMetric.greater_is_better">
-<em class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">greater_is_better</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#astrodata.ml.metrics.BaseMetric.BaseMetric.greater_is_better" title="Link to this definition">¶</a></dt>
-<dd><p>Whether higher metric values are better.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if greater values are better, False otherwise.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
+<span class="c1"># Previous steps of the pipeline...</span>
+<span class="n">processed_data</span> <span class="o">=</span> <span class="n">ProcessedData</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 
-</dd></dl>
+<span class="c1"># Define processors</span>
+<span class="n">tts</span> <span class="o">=</span> <span class="n">TrainTestSplitter</span><span class="p">(</span><span class="n">targets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">],</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">ohe</span> <span class="o">=</span> <span class="n">OHE</span><span class="p">(</span><span class="n">categorical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;feature2&quot;</span><span class="p">],</span> <span class="n">numerical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;feature1&quot;</span><span class="p">,</span> <span class="s2">&quot;feature3&quot;</span><span class="p">])</span>
+<span class="n">imputer</span> <span class="o">=</span> <span class="n">MissingImputator</span><span class="p">(</span><span class="n">categorical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;feature2&quot;</span><span class="p">],</span> <span class="n">numerical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;feature1&quot;</span><span class="p">,</span> <span class="s2">&quot;feature3&quot;</span><span class="p">])</span>
 
-</section>
-<section id="module-astrodata.ml.metrics.SklearnMetric">
-<span id="astrodata-ml-metrics-sklearnmetric-module"></span><h2>astrodata.ml.metrics.SklearnMetric module<a class="headerlink" href="#module-astrodata.ml.metrics.SklearnMetric" title="Link to this heading">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="astrodata.ml.metrics.SklearnMetric.SklearnMetric">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.metrics.SklearnMetric.</span></span><span class="sig-name descname"><span class="pre">SklearnMetric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">greater_is_better</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.metrics.SklearnMetric.SklearnMetric" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMetric</span></code></a></p>
-<p>Adapter class for scikit-learn-style metrics.</p>
-<p>Allows metric functions (such as those from sklearn.metrics) to be used
-as objects compatible with the BaseMetric interface.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.metrics.SklearnMetric.SklearnMetric.get_name">
-<span class="sig-name descname"><span class="pre">get_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.metrics.SklearnMetric.SklearnMetric.get_name" title="Link to this definition">¶</a></dt>
-<dd><p>Return the name of the metric.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The metric name.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
+<span class="c1"># Create the pipeline</span>
+<span class="n">preml_pipeline</span> <span class="o">=</span> <span class="n">PremlPipeline</span><span class="p">(</span>
+    <span class="n">config_path</span><span class="o">=</span><span class="s2">&quot;example_config.yaml&quot;</span><span class="p">,</span>
+    <span class="n">processors</span><span class="o">=</span><span class="p">[</span><span class="n">tts</span><span class="p">,</span> <span class="n">imputer</span><span class="p">,</span> <span class="n">ohe</span><span class="p">],</span>
+<span class="p">)</span>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="astrodata.ml.metrics.SklearnMetric.SklearnMetric.greater_is_better">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">greater_is_better</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#astrodata.ml.metrics.SklearnMetric.SklearnMetric.greater_is_better" title="Link to this definition">¶</a></dt>
-<dd><p>Whether a higher metric value is better.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if higher values are better; False otherwise.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-<section id="module-astrodata.ml.metrics">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-astrodata.ml.metrics" title="Link to this heading">¶</a></h2>
+<span class="c1"># Run the pipeline</span>
+<span class="n">preml_data</span> <span class="o">=</span> <span class="n">preml_pipeline</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">processed_data</span><span class="p">,</span> <span class="n">dump_output</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">preml_data</span><span class="o">.</span><span class="n">train_features</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -403,23 +352,23 @@ as objects compatible with the BaseMetric interface.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="astrodata.ml.model_selection.html">
+          <a class="next-page" href="ml.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">astrodata.ml.model_selection package</div>
+                <div class="title">machine learning</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="astrodata.ml.html">
+          <a class="prev-page" href="preml.processors.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">astrodata.ml package</div>
+                <div class="title">processors</div>
                 
               </div>
             </a>
@@ -453,25 +402,9 @@ as objects compatible with the BaseMetric interface.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">astrodata.ml.metrics package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-astrodata.ml.metrics.BaseMetric">astrodata.ml.metrics.BaseMetric module</a><ul>
-<li><a class="reference internal" href="#astrodata.ml.metrics.BaseMetric.BaseMetric"><code class="docutils literal notranslate"><span class="pre">BaseMetric</span></code></a><ul>
-<li><a class="reference internal" href="#astrodata.ml.metrics.BaseMetric.BaseMetric.get_name"><code class="docutils literal notranslate"><span class="pre">BaseMetric.get_name()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.metrics.BaseMetric.BaseMetric.greater_is_better"><code class="docutils literal notranslate"><span class="pre">BaseMetric.greater_is_better</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-astrodata.ml.metrics.SklearnMetric">astrodata.ml.metrics.SklearnMetric module</a><ul>
-<li><a class="reference internal" href="#astrodata.ml.metrics.SklearnMetric.SklearnMetric"><code class="docutils literal notranslate"><span class="pre">SklearnMetric</span></code></a><ul>
-<li><a class="reference internal" href="#astrodata.ml.metrics.SklearnMetric.SklearnMetric.get_name"><code class="docutils literal notranslate"><span class="pre">SklearnMetric.get_name()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.metrics.SklearnMetric.SklearnMetric.greater_is_better"><code class="docutils literal notranslate"><span class="pre">SklearnMetric.greater_is_better</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-astrodata.ml.metrics">Module contents</a></li>
+<li><a class="reference internal" href="#">PremlPipeline</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#example-usage">Example Usage</a></li>
 </ul>
 </li>
 </ul>

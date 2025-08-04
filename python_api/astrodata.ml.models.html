@@ -207,12 +207,16 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/data.html">data</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/data.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.loaders.html">loaders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -227,6 +231,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/tracking.models.html">Model Tracking</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/config.html">Configuration Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial/extending.html">Extending astrodata</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
@@ -505,7 +510,7 @@ Defines the standard interface expected from all models.</p>
 <span id="astrodata-ml-models-sklearnmodel-module"></span><h2>astrodata.ml.models.SklearnModel module<a class="headerlink" href="#module-astrodata.ml.models.SklearnModel" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="astrodata.ml.models.SklearnModel.SklearnModel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.SklearnModel.</span></span><span class="sig-name descname"><span class="pre">SklearnModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2797006278</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">model_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.SklearnModel.SklearnModel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.SklearnModel.</span></span><span class="sig-name descname"><span class="pre">SklearnModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1083751421</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">model_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.SklearnModel.SklearnModel" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlModel</span></code></a></p>
 <p>A wrapper class for scikit-learn models to standardize the interface and add extended functionality.</p>
 <dl class="py method">
@@ -774,7 +779,7 @@ Defines the standard interface expected from all models.</p>
 <span id="astrodata-ml-models-xgboostmodel-module"></span><h2>astrodata.ml.models.XGBoostModel module<a class="headerlink" href="#module-astrodata.ml.models.XGBoostModel" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="astrodata.ml.models.XGBoostModel.XGBoostModel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.XGBoostModel.</span></span><span class="sig-name descname"><span class="pre">XGBoostModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2683922655</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">model_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.XGBoostModel.XGBoostModel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.XGBoostModel.</span></span><span class="sig-name descname"><span class="pre">XGBoostModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1871972853</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">model_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.XGBoostModel.XGBoostModel" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlModel</span></code></a></p>
 <p>Wrapper for XGBoost models, providing a standardized interface and additional utilities.</p>
 <dl class="py method">

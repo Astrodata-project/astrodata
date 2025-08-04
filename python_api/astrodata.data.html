@@ -207,12 +207,16 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/data.html">data</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/data.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.loaders.html">loaders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -227,6 +231,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/tracking.models.html">Model Tracking</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/config.html">Configuration Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial/extending.html">Extending astrodata</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
@@ -372,6 +377,17 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A pipeline for processing data using a loader and a series of processors.</p>
 <dl class="py attribute">
+<dt class="sig sig-object py" id="astrodata.data.pipeline.DataPipeline.config">
+<span class="sig-name descname"><span class="pre">config</span></span><a class="headerlink" href="#astrodata.data.pipeline.DataPipeline.config" title="Link to this definition">¶</a></dt>
+<dd><p>Path to the configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="astrodata.data.pipeline.DataPipeline.loader">
 <span class="sig-name descname"><span class="pre">loader</span></span><a class="headerlink" href="#astrodata.data.pipeline.DataPipeline.loader" title="Link to this definition">¶</a></dt>
 <dd><p>The data loader responsible for loading raw data.</p>
@@ -408,7 +424,10 @@ result into a ProcessedData object.</p>
 <dd><p>Executes the data pipeline.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The file path to load the raw data from.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – The file path to load the raw data from, relative to the project path.</p></li>
+<li><p><strong>dump_output</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to dump the processed data to a Parquet file. Defaults to True.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The processed data after applying all processors.</p>
@@ -473,7 +492,7 @@ result into a ProcessedData object.</p>
 <dd><p>Dumps the processed data to a Parquet file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>Path</em><em>, </em><em>optional</em>) – The file path to save the Parquet file. If None, uses ‘processed_data.parquet’.</p>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – The file path to save the Parquet file.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -653,6 +672,7 @@ result into a ProcessedData object.</p>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-astrodata.data.pipeline">astrodata.data.pipeline module</a><ul>
 <li><a class="reference internal" href="#astrodata.data.pipeline.DataPipeline"><code class="docutils literal notranslate"><span class="pre">DataPipeline</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.data.pipeline.DataPipeline.config"><code class="docutils literal notranslate"><span class="pre">DataPipeline.config</span></code></a></li>
 <li><a class="reference internal" href="#astrodata.data.pipeline.DataPipeline.loader"><code class="docutils literal notranslate"><span class="pre">DataPipeline.loader</span></code></a></li>
 <li><a class="reference internal" href="#astrodata.data.pipeline.DataPipeline.processors"><code class="docutils literal notranslate"><span class="pre">DataPipeline.processors</span></code></a></li>
 <li><a class="reference internal" href="#astrodata.data.pipeline.DataPipeline.run"><code class="docutils literal notranslate"><span class="pre">DataPipeline.run()</span></code></a></li>

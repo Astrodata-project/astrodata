@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="processors" href="data.processors.html" /><link rel="prev" title="data" href="data.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="processors" href="data.processors.html" /><link rel="prev" title="Overview" href="data.overview.html" />
         <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/tutorial/data.loaders.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
@@ -180,7 +180,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -207,12 +207,16 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="data.html">data</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.overview.html">Overview</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">loaders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="preml.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="preml.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -227,6 +231,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tracking.models.html">Model Tracking</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extending.html">Extending astrodata</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
@@ -297,7 +302,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -305,6 +310,46 @@
         <article role="main" id="furo-main-content">
           <section id="loaders">
 <h1>loaders<a class="headerlink" href="#loaders" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">astrodata.data.loaders</span></code> submodule provides a flexible and extensible framework for loading data from various file formats into the astrodata pipeline. It includes a base loader class and specialized loaders for the most common data formats in data science and astrophysics.</p>
+<section id="abstract-class">
+<h2>Abstract Class<a class="headerlink" href="#abstract-class" title="Link to this heading">¶</a></h2>
+<p><strong><code class="docutils literal notranslate"><span class="pre">BaseLoader</span></code></strong> is the abstract base class for all data loaders. Subclasses must implement:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">load(path)</span></code>: Loads data from the specified path and returns a <code class="docutils literal notranslate"><span class="pre">RawData</span></code> object.</p></li>
+</ul>
+<p>This standard interface ensures that all loaders can be used interchangeably within the astrodata pipeline.</p>
+</section>
+<section id="how-to-use">
+<h2>How to Use<a class="headerlink" href="#how-to-use" title="Link to this heading">¶</a></h2>
+<section id="initializing-a-loader">
+<h3>Initializing a Loader<a class="headerlink" href="#initializing-a-loader" title="Link to this heading">¶</a></h3>
+<p>To load data, initialize the loader corresponding to your file format. For example, to load a CSV file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">CsvLoader</span>
+
+<span class="n">loader</span> <span class="o">=</span> <span class="n">CsvLoader</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="loading-data">
+<h3>Loading Data<a class="headerlink" href="#loading-data" title="Link to this heading">¶</a></h3>
+<p>Once initialized, use the loader’s <code class="docutils literal notranslate"><span class="pre">load</span></code> method to read data from disk:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">raw_data</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;data.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The returned <code class="docutils literal notranslate"><span class="pre">RawData</span></code> object wraps the loaded data (typically within a pandas DataFrame) and is ready for further processing.</p>
+</section>
+</section>
+<section id="available-loaders">
+<h2>Available Loaders<a class="headerlink" href="#available-loaders" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">CsvLoader</span></code></strong>: Loads data from CSV files.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">ParquetLoader</span></code></strong>: Loads data from Parquet files.</p></li>
+</ul>
+</section>
+<section id="extensibility">
+<h2>Extensibility<a class="headerlink" href="#extensibility" title="Link to this heading">¶</a></h2>
+<p>The loaders module is designed for easy extension. To add support for a new format (e.g., HDF5, FITS), subclass <code class="docutils literal notranslate"><span class="pre">BaseLoader</span></code> and implement the <code class="docutils literal notranslate"><span class="pre">load</span></code> method for your format. Planned future releases will include loaders for standard astrophysics formats.</p>
+</section>
 </section>
 
         </article>
@@ -321,14 +366,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="data.html">
+          <a class="prev-page" href="data.overview.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">data</div>
+                <div class="title">Overview</div>
                 
               </div>
             </a>
@@ -350,8 +395,34 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">loaders</a><ul>
+<li><a class="reference internal" href="#abstract-class">Abstract Class</a></li>
+<li><a class="reference internal" href="#how-to-use">How to Use</a><ul>
+<li><a class="reference internal" href="#initializing-a-loader">Initializing a Loader</a></li>
+<li><a class="reference internal" href="#loading-data">Loading Data</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#available-loaders">Available Loaders</a></li>
+<li><a class="reference internal" href="#extensibility">Extensibility</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

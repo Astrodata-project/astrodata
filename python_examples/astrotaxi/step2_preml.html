@@ -207,12 +207,16 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/data.html">data</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.loaders.html">loaders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.processors.html">processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -227,6 +231,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/tracking.models.html">Model Tracking</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/config.html">Configuration Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial/extending.html">Extending astrodata</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
@@ -309,26 +314,38 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">run_preml_example</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">processed</span><span class="p">,</span> <span class="n">tracker</span><span class="p">):</span>
+    <span class="c1"># This step demonstrates how to use the PremlPipeline to perform additional preprocessing steps</span>
+    <span class="c1"># for machine learning tasks, such as handling missing values and encoding categorical features.</span>
+    <span class="c1"># The PremlPipeline class orchestrates these steps, similar to the DataPipeline, but is focused</span>
+    <span class="c1"># on preparing data for supervised ML tasks. You define a sequence of processors to apply to the data.</span>
+    <span class="c1"># Here, we use a MissingImputator to handle missing values and an OHE (One Hot Encoder) to encode categorical features.</span>
 
+    <span class="c1"># Define the OHE processor for categorical and numerical columns</span>
     <span class="n">ohe_processor</span> <span class="o">=</span> <span class="n">OHE</span><span class="p">(</span>
         <span class="n">categorical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PULocationID&quot;</span><span class="p">],</span>
         <span class="n">numerical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;trip_distance&quot;</span><span class="p">],</span>
     <span class="p">)</span>
 
+    <span class="c1"># Define the MissingImputator processor for categorical and numerical columns</span>
     <span class="n">missingImputator</span> <span class="o">=</span> <span class="n">MissingImputator</span><span class="p">(</span>
         <span class="n">categorical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PULocationID&quot;</span><span class="p">],</span>
         <span class="n">numerical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;trip_distance&quot;</span><span class="p">],</span>
     <span class="p">)</span>
 
+    <span class="c1"># Define the PremlPipeline with the processors and configuration</span>
     <span class="n">preml_pipeline</span> <span class="o">=</span> <span class="n">PremlPipeline</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="p">[</span><span class="n">missingImputator</span><span class="p">,</span> <span class="n">ohe_processor</span><span class="p">])</span>
 
+    <span class="c1"># Run the pipeline with the processed data</span>
     <span class="n">preml_data</span> <span class="o">=</span> <span class="n">preml_pipeline</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">processed</span><span class="p">)</span>
+
+    <span class="c1"># Again, we track the processed dataset and the (optional) artifacts</span>
     <span class="n">tracker</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="s2">&quot;Preml pipeline run, preml data versioned&quot;</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Preml Pipeline ran successfully!&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Preml data shape:</span><span class="si">{</span><span class="n">preml_data</span><span class="o">.</span><span class="n">train_features</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Preml data shape:</span><span class="si">{</span><span class="n">preml_data</span><span class="o">.</span><span class="n">train_targets</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+    <span class="c1"># Dump the preml data into supervised ML format (train/test features and targets)</span>
     <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">preml_data</span><span class="o">.</span><span class="n">dump_supervised_ML_format</span><span class="p">()</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;X_train shape: </span><span class="si">{</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

@@ -18,6 +18,7 @@ A Python framework for machine learning on astronomical data
    tutorial/preml
    tutorial/ml
    tutorial/tracking
+   tutorial/config
    tutorial/extending
 
 .. toctree::
