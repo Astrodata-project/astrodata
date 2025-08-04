@@ -4,11 +4,9 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 
-from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.model_selection.GridSearchSelector import (
-    GridSearchCVSelector,
-)
-from astrodata.ml.models.SklearnModel import SklearnModel
+from astrodata.ml.metrics import SklearnMetric
+from astrodata.ml.model_selection import GridSearchCVSelector
+from astrodata.ml.models import SklearnModel
 
 if __name__ == "__main__":
     # This example shows how to use the GridSearchCVSelector with a SklearnModel.

@@ -6,9 +6,8 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import LinearSVC
 from xgboost import XGBClassifier
 
-from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.models.SklearnModel import SklearnModel
-from astrodata.ml.models.XGBoostModel import XGBoostModel
+from astrodata.ml.metrics import SklearnMetric
+from astrodata.ml.models import SklearnModel, XGBoostModel
 
 # This example shows how to use different models from the astrodata.ml.models package in the same for loop.
 

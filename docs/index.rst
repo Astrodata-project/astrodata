@@ -1,21 +1,42 @@
-.. astrodata documentation master file, created by
-   sphinx-quickstart on Fri Jun 20 11:28:04 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to astrodata's documentation!
+astrodata
 =====================================
+A Python framework for machine learning on astronomical data
+-------------------------------------
 
 .. toctree::
-   :maxdepth: 5
-   :caption: API Reference
+   :maxdepth: 1
+   :caption: Getting Started
 
-   api/modules
+   introduction
+   getting_started
 
-.. automodule:: astrodata
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 2
+   :caption: Tutorial
+
+   tutorial/data
+   tutorial/preml
+   tutorial/ml
+   tutorial/tracking
+   tutorial/config
+   tutorial/extending
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Python API
+
+   python_api/astrodata.data
+   python_api/astrodata.preml
+   python_api/astrodata.ml
+   python_api/astrodata.tracking
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Python Examples
+   :glob:
+
+   python_examples/**
+
 
 Indices and tables
 ==================

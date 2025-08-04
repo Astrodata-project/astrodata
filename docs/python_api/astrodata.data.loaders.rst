@@ -12,6 +12,14 @@ astrodata.data.loaders.base module
    :undoc-members:
    :show-inheritance:
 
+astrodata.data.loaders.csv\_loader module
+-----------------------------------------
+
+.. automodule:: astrodata.data.loaders.csv_loader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 astrodata.data.loaders.parquet\_loader module
 ---------------------------------------------
 
