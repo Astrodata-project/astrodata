@@ -22,8 +22,8 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
+    "myst_parser",
 ]
-
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -32,10 +32,13 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "furo"
 html_static_path = ["_static"]
 
 html_baseurl = "https://Astrodata-project.github.io/astrodata/"
-html_theme_options = {
-    "canonical_url": "https://Astrodata-project.github.io/astrodata/",
-}
+#html_theme_options = {
+#    "canonical_url": "https://Astrodata-project.github.io/astrodata/",
+#}
+
+def setup(app):
+    app.add_css_file('style.css')

@@ -5,8 +5,8 @@ from sklearn.metrics import accuracy_score, f1_score, log_loss
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
-from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.models.SklearnModel import SklearnModel
+from astrodata.ml.metrics import SklearnMetric
+from astrodata.ml.models import SklearnModel
 from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
 
 # This example demonstrates how to use the tracking capabilities of astrodata.ml with a simple model.
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     tracked_gradientboost.fit(X_train, y_train)
 
     print(
-        f"Metrics on test set:",
+        "Metrics on test set:",
         tracked_gradientboost.get_metrics(
             X_test,
             y_test,

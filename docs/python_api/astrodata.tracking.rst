@@ -4,18 +4,18 @@ astrodata.tracking package
 Submodules
 ----------
 
-astrodata.tracking.CodeTracking module
---------------------------------------
+astrodata.tracking.CodeTracker module
+-------------------------------------
 
-.. automodule:: astrodata.tracking.CodeTracking
+.. automodule:: astrodata.tracking.CodeTracker
    :members:
    :undoc-members:
    :show-inheritance:
 
-astrodata.tracking.DataTracking module
---------------------------------------
+astrodata.tracking.DataTracker module
+-------------------------------------
 
-.. automodule:: astrodata.tracking.DataTracking
+.. automodule:: astrodata.tracking.DataTracker
    :members:
    :undoc-members:
    :show-inheritance:
