@@ -1,5 +1,5 @@
 import itertools
-from typing import List, Dict, Any, Tuple
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd

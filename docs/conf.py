@@ -36,9 +36,10 @@ html_theme = "furo"
 html_static_path = ["_static"]
 
 html_baseurl = "https://Astrodata-project.github.io/astrodata/"
-#html_theme_options = {
+# html_theme_options = {
 #    "canonical_url": "https://Astrodata-project.github.io/astrodata/",
-#}
+# }
+
 
 def setup(app):
-    app.add_css_file('style.css')
+    app.add_css_file("style.css")

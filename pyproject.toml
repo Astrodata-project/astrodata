@@ -47,6 +47,8 @@ packages = { find = { where = ["."], include = ["astrodata", "astrodata.*"] } }
 tensorflow = [
     "tensorflow>=2.0.0"
 ]
-pytorch = [
-    "torch>=2.0.0"
+torch = [
+    "torch>=2.0.1",
+    "torchaudio>=2.7.1",
+    "torchvision>=0.22.1",
 ]
