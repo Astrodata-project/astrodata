@@ -1,75 +1,59 @@
-import torch
 import torch.nn.functional as F
-import torchvision.transforms as transforms
+from sklearn.datasets import load_breast_cancer
+from sklearn.metrics import accuracy_score, f1_score, log_loss
+from sklearn.model_selection import train_test_split
 from torch import nn, optim
-from torchvision import datasets
 
+from astrodata.ml.metrics import SklearnMetric
 from astrodata.ml.models import PytorchModel
 
 if __name__ == "__main__":
-    transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))]
-    )
+    X, y = load_breast_cancer(return_X_y=True)
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
 
-    # Create datasets for training & validation, download if necessary
-    training_set = datasets.FashionMNIST(
-        "./testdata", train=True, transform=transform, download=True
-    )
-    validation_set = datasets.FashionMNIST(
-        "./testdata", train=False, transform=transform, download=True
-    )
-
-    print("Training set has {} instances".format(len(training_set)))
-
-    class GarmentClassifier(nn.Module):
-        def __init__(self):
-            super(GarmentClassifier, self).__init__()
-            self.conv1 = nn.Conv2d(1, 6, 5)
-            self.pool = nn.MaxPool2d(2, 2)
-            self.conv2 = nn.Conv2d(6, 16, 5)
-            self.fc1 = nn.Linear(16 * 4 * 4, 120)
-            self.fc2 = nn.Linear(120, 84)
-            self.fc3 = nn.Linear(84, 10)
+    class SimpleClassifier(nn.Module):
+        def __init__(self, input_layers, output_layers):
+            super(SimpleClassifier, self).__init__()
+            self.fc1 = nn.Linear(input_layers, 64)
+            self.bn1 = nn.BatchNorm1d(64)
+            self.fc2 = nn.Linear(64, output_layers)
 
         def forward(self, x):
-            x = self.pool(F.relu(self.conv1(x)))
-            x = self.pool(F.relu(self.conv2(x)))
-            x = x.view(x.size(0), -1)
-            x = F.relu(self.fc1(x))
-            x = F.relu(self.fc2(x))
-            x = self.fc3(x)
+            x = self.fc1(x)
+            x = self.bn1(x)
+            x = F.relu(x)
+            x = self.fc2(x)
             return x
 
-    torch_model = GarmentClassifier()
-    optimizer = optim.SGD(torch_model.parameters(), lr=0.01, momentum=0.9)
+    torch_model = SimpleClassifier(X_train.shape[1], max(y_train) + 1)
+    optimizer = optim.AdamW(torch_model.parameters(), lr=1e-3)
     loss_function = nn.CrossEntropyLoss()
 
     model = PytorchModel(
         torch_model=torch_model,
         loss_fn=loss_function,
         optimizer=optimizer,
+        device="cpu",
     )
 
     print(model)
-    X = training_set.data.float()
-    y = training_set.targets.long()
-
-    X_val = validation_set.data.float().unsqueeze(1)
-    X = X.unsqueeze(1)
 
     model.fit(
-        X=X,
-        y=y,
-        epochs=5,
-        batch_size=64,
+        X=X_train,
+        y=y_train,
+        epochs=10,
+        batch_size=32,
     )
 
     y_pred = model.predict(
-        X=X_val,
-        validation_set=validation_set.data.float().to("cuda"),
-        batch_size=64,
+        X=X_test,
+        batch_size=32,
     )
 
-    y_val = validation_set.targets.long()
+    accuracy = SklearnMetric(accuracy_score, greater_is_better=True)
+    f1 = SklearnMetric(f1_score, average="micro")
+    logloss = SklearnMetric(log_loss)
 
-    print(sum(y_val == y_pred) / len(y_pred))
+    metrics = [accuracy, f1, logloss]
+
+    print(model.get_metrics(X_test, y_test, metrics))

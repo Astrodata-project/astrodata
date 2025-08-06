@@ -1,7 +1,8 @@
 import random
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import torch
+import torch.nn.functional as F
 from torch.nn import Module
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader, TensorDataset
@@ -71,13 +72,13 @@ class PytorchModel(BaseMlModel):
             raise ValueError("Number of epochs must be greater than 0.")
         if batch_size <= 0:
             raise ValueError("Batch size must be greater than 0.")
-        if device is None:
-            device = "cuda" if torch.cuda.is_available() else "cpu"
 
         if not isinstance(X, torch.Tensor):
             X = torch.tensor(X, dtype=torch.float32)
         if not isinstance(y, torch.Tensor):
             y = torch.tensor(y, dtype=torch.long)
+        if device is None:
+            device = self.device
 
         dataset = TensorDataset(X.to(device), y.to(device))
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
@@ -101,17 +102,9 @@ class PytorchModel(BaseMlModel):
     def predict(
         self, X, batch_size: int, device: Optional[str] = None, **kwargs
     ) -> Any:
-        """
-        Predict using the trained model.
+        if self.model_ is None:
+            raise RuntimeError("Model is not fitted yet.")
 
-        Args:
-            X: Input features.
-            batch_size (int): Mini-batch size.
-            device (str or None): Device to use.
-
-        Returns:
-            Predictions as a numpy array.
-        """
         if device is None:
             device = self.device
 
@@ -136,6 +129,41 @@ class PytorchModel(BaseMlModel):
         else:
             return outputs.argmax(dim=1).numpy()
 
+    def predict_proba(
+        self, X, batch_size: int, device: Optional[str] = None, **kwargs
+    ) -> Any:
+        if self.model_ is None:
+            raise RuntimeError("Model is not fitted yet.")
+
+        if device is None:
+            device = self.device
+
+        self.model_.eval()
+
+        if not isinstance(X, torch.Tensor):
+            X = torch.tensor(X, dtype=torch.float32)
+
+        dataloader = DataLoader(X, batch_size=batch_size, shuffle=False)
+        outputs = []
+
+        with torch.no_grad():
+            for batch_X in dataloader:
+                batch_X = batch_X.to(device)
+                out = self.model_(batch_X)
+                outputs.append(out.cpu())
+
+        outputs = torch.cat(outputs, dim=0)
+
+        if outputs.shape[-1] == 1:
+            # Binary classification with single output: use sigmoid and stack probabilities
+            probs = torch.sigmoid(outputs)
+            probs = torch.cat([1 - probs, probs], dim=1)  # shape: [N, 2]
+            return probs.numpy()
+        else:
+            # Multi-class: use softmax
+            probs = F.softmax(outputs, dim=1)
+            return probs.numpy()
+
     def score(self):
         pass
 
@@ -143,12 +171,6 @@ class PytorchModel(BaseMlModel):
         pass
 
     def save(self, filepath: str, **kwargs) -> None:
-        """
-        Save the model and optimizer state.
-
-        Args:
-            filepath (str): Path to save the model.
-        """
         torch.save(
             {
                 "model_state_dict": self.torch_model.state_dict(),
@@ -176,8 +198,30 @@ class PytorchModel(BaseMlModel):
         self.model_ = self.torch_model
         return self
 
-    def get_metrics(self):
-        pass
+    def get_metrics(
+        self,
+        X,
+        y,
+        metrics: List[BaseMetric] = None,
+        batch_size: int = 32,
+        device: Optional[str] = None,
+    ) -> Dict[str, Any]:
+
+        y_pred = self.predict(X, batch_size, device)
+        try:
+            y_pred_proba = self.predict_proba(X, batch_size, device)
+        except ValueError:
+            y_pred_proba = None
+
+        results = {}
+
+        for metric in metrics:
+            try:
+                score = metric(y, y_pred_proba)
+            except ValueError:
+                score = metric(y, y_pred)
+            results[metric.get_name()] = score
+        return results
 
     def get_params(self, **kwargs) -> Dict[str, Any]:
         """
