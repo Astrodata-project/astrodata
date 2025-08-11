@@ -316,6 +316,5 @@ def _log_metrics_and_loss(
 
 # Helper for manual metrics
 def _log_metrics_manual(metrics: Dict[str, Any], split_name: str):
-
     for key, value in metrics.items():
         mlflow.log_metric(f"{key}_{split_name}", value)

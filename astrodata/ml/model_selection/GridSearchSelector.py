@@ -164,8 +164,12 @@ class GridSearchSelector(BaseMlModelSelector):
         self._best_metrics = best_metrics
 
         # Refit best model on full data (train + val)
-        X_full = pd.concat([self._X_train, self._X_val])
-        y_full = pd.concat([self._y_train, self._y_val])
+        try:
+            X_full = pd.concat([self._X_train, self._X_val])
+            y_full = pd.concat([self._y_train, self._y_val])
+        except TypeError:
+            X_full = np.concatenate([self._X_train, self._X_val])
+            y_full = np.concatenate([self._y_train, self._y_val])
 
         if self.tracker:
             self._best_model, _, _ = fit_model_score(

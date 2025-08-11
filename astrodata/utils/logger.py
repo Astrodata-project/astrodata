@@ -11,7 +11,8 @@ def setup_logger(name: str = "astrodata", level: int = logging.INFO) -> logging.
     if not logger.handlers:
         handler = logging.StreamHandler(sys.stdout)
         formatter = logging.Formatter(
-            "[%(asctime)s] %(levelname)s %(name)s: %(message)s", "%Y-%m-%d %H:%M:%S"
+            "[%(asctime)s] %(levelname)s %(name)s: %(message)s",
+            "%Y-%m-%d %H:%M:%S",
         )
         handler.setFormatter(formatter)
         logger.addHandler(handler)

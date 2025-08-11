@@ -16,7 +16,6 @@ from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
 # and navigating to http://localhost:5000 in your web browser.
 
 if __name__ == "__main__":
-
     # Load the breast cancer dataset
 
     data = load_breast_cancer()
@@ -56,7 +55,11 @@ if __name__ == "__main__":
     # methods that the wrapped model had before (fit, predict, get_metrics, ...).
 
     tracked_gradientboost = tracker.wrap_fit(
-        gradientboost, X_test=X_test, y_test=y_test, metrics=metrics, log_model=True
+        gradientboost,
+        X_test=X_test,
+        y_test=y_test,
+        metrics=metrics,
+        log_model=True,
     )
 
     tracked_gradientboost.fit(X_train, y_train)

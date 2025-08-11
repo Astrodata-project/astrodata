@@ -13,61 +13,49 @@ from astrodata.ml.models.BaseMlModel import BaseMlModel
 
 
 class PytorchModel(BaseMlModel):
-    """
-    A scikit-learn-like wrapper for PyTorch models.
-    """
-
     def __init__(
         self,
-        torch_model: Module,
-        loss_fn,
-        optimizer: Optimizer,
+        model_class: Module,
+        loss_fn: Optional[Any] = None,
+        optimizer: Optional[Optimizer] = None,
+        model_params: Optional[Dict] = None,
+        optimizer_params: Optional[Dict] = None,
         device: Optional[str] = None,
+        epochs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         random_state: int = random.randint(0, 2**32),
     ):
-        """
-        Initialize the PytorchModel.
-
-        Args:
-            torch_model (Module): PyTorch neural network model.
-            loss_fn: Loss function for optimization.
-            optimizer (Optimizer): Optimizer instance.
-            device (str or None): Device to use ('cuda' or 'cpu').
-            random_state (int): Random seed.
-        """
+        super().__init__()
         self.random_state = random_state
-        self.torch_model = torch_model
+        self.model_class = model_class 
+        self.model_params = model_params
         self.loss_fn = loss_fn
         self.optimizer = optimizer
+        self.optimizer_params = optimizer_params
+        self.epochs = epochs
+        self.batch_size = batch_size
         self.device = (
             device if device else "cuda" if torch.cuda.is_available() else "cpu"
         )
-        self.model_params = torch_model.parameters()
-        self.model_ = None  # For scikit-learn compatibility
-        super().__init__()
+        
+        self.model_ = None
+        self.optimizer_ = None
+        self.loss_fn_ = None
+        
 
     def fit(
         self,
         X,
         y,
-        epochs: int,
-        batch_size: int,
+        epochs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         device: Optional[str] = None,
         **kwargs,
     ) -> "PytorchModel":
-        """
-        Fit the PyTorch model on the data.
-
-        Args:
-            X: Input features.
-            y: Target labels.
-            epochs (int): Number of epochs.
-            batch_size (int): Mini-batch size.
-            device (str or None): Device to use.
-
-        Returns:
-            self
-        """
+        
+        epochs = epochs if epochs is not None else self.epochs
+        batch_size = batch_size if batch_size is not None else self.batch_size
+        
         if epochs <= 0:
             raise ValueError("Number of epochs must be greater than 0.")
         if batch_size <= 0:
@@ -83,17 +71,19 @@ class PytorchModel(BaseMlModel):
         dataset = TensorDataset(X.to(device), y.to(device))
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-        self.model_ = self.torch_model
-        self.model_.to(self.device)
+        self.model_ = self._get_model().to(self.device)
+        self.optimizer_ = self._get_optimizer(self.model_)
+        self.loss_fn_ = self.loss_fn()
+        
         self.model_.train()
 
-        with trange(epochs, desc="Epochs") as t:
+        with trange(epochs, desc="Epochs", position= 2) as t:
             for epoch in t:
                 last_loss = self._train_one_epoch(
                     epoch_index=epoch,
-                    optimizer=self.optimizer,
+                    optimizer=self.optimizer_,
                     model=self.model_,
-                    loss_fn=self.loss_fn,
+                    loss_fn=self.loss_fn_,
                     training_loader=dataloader,
                 )
                 t.set_postfix({"last_loss": f"{last_loss:.4f}"})
@@ -173,7 +163,7 @@ class PytorchModel(BaseMlModel):
     def save(self, filepath: str, **kwargs) -> None:
         torch.save(
             {
-                "model_state_dict": self.torch_model.state_dict(),
+                "model_state_dict": self.model_class.state_dict(),
                 "optimizer_state_dict": self.optimizer.state_dict(),
                 "model_params": self.model_params,
                 # Add any extra info as needed
@@ -182,20 +172,11 @@ class PytorchModel(BaseMlModel):
         )
 
     def load(self, filepath: str, **kwargs) -> "PytorchModel":
-        """
-        Load the model and optimizer state.
-
-        Args:
-            filepath (str): Path to the saved model.
-
-        Returns:
-            self
-        """
         checkpoint = torch.load(filepath)
-        self.torch_model.load_state_dict(checkpoint["model_state_dict"])
+        self.model_class.load_state_dict(checkpoint["model_state_dict"])
         self.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
         self.model_params = checkpoint.get("model_params", {})
-        self.model_ = self.torch_model
+        self.model_ = self.model_class
         return self
 
     def get_metrics(
@@ -206,7 +187,6 @@ class PytorchModel(BaseMlModel):
         batch_size: int = 32,
         device: Optional[str] = None,
     ) -> Dict[str, Any]:
-
         y_pred = self.predict(X, batch_size, device)
         try:
             y_pred_proba = self.predict_proba(X, batch_size, device)
@@ -224,46 +204,33 @@ class PytorchModel(BaseMlModel):
         return results
 
     def get_params(self, **kwargs) -> Dict[str, Any]:
-        """
-        Get model parameters.
-
-        Returns:
-            dict: Model parameters.
-        """
-        params = {"model_class": self.torch_model}
+        params = {"model_class": self.model_class}
+        params["model_params"] = self.model_params
         params["random_state"] = self.random_state
         params["loss"] = self.loss_fn
         params["optimizer"] = self.optimizer
+        params["optimizer_params"] = self.optimizer_params
+        params["epochs"] = self.epochs,
+        params["batch_size"] = self.batch_size,
         params["device"] = self.device
-        params.update(self.model_params)
 
         return params
 
     def set_params(self, **kwargs) -> None:
-        """
-        Set model parameters.
-        """
         for key, value in kwargs.items():
             setattr(self, key, value)
-        self.model_params.update(kwargs)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(torch_model={self.torch_model.__class__.__name__})"
+        return f"{self.__class__.__name__}(torch_model={self.model_class.__class__.__name__})"
 
     def _train_one_epoch(
         self,
-        epoch_index: int,
         optimizer: Optimizer,
+        epoch_index: int,
         model: Module,
         loss_fn,
         training_loader: torch.utils.data.DataLoader,
     ) -> float:
-        """
-        Train for one epoch.
-
-        Returns:
-            float: Last batch loss.
-        """
         for i, data in enumerate(training_loader):
             # Each data instance is an input + label pair
             inputs, labels = data
@@ -280,3 +247,36 @@ class PytorchModel(BaseMlModel):
             optimizer.step()
 
         return loss.item()
+
+    def _get_model(self):
+            if isinstance(self.model_class, Module):
+                return self.model_class
+            else:
+                return self.model_class(**(self.model_params or {}))
+
+    def _get_optimizer(self, model):
+        if isinstance(self.optimizer, Optimizer):
+            return self.optimizer
+        else:
+            return self.optimizer(model.parameters(), **(self.optimizer_params or {}))
+        
+    def clone(self) -> "PytorchModel":
+
+        new_instance = self.__class__(
+            model_class=self.model_class, 
+            loss_fn = self.loss_fn,
+            optimizer = self.optimizer,
+            model_params = self.model_params,
+            optimizer_params = self.optimizer_params,
+            device = self.device,
+            epochs = self.epochs,
+            batch_size = self.batch_size,
+            random_state = self.random_state,
+            )
+        
+        # Copy over any callable attributes (e.g., decorated methods)
+        for attr, value in self.__dict__.items():
+            if callable(value):
+                setattr(new_instance, attr, value)
+                
+        return new_instance

@@ -6,7 +6,6 @@ from astrodata.tracking.Tracker import Tracker
 
 
 def run_astrotaxi_example():
-
     config = "./examples/astrotaxi/config.yaml"
     tracker = Tracker(config)
 

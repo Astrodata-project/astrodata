@@ -45,7 +45,9 @@ def param_grids():
         },
         "xgb": {
             "model": XGBoostModel(
-                model_class=XGBRegressor, tree_method="hist", enable_categorical=True
+                model_class=XGBRegressor,
+                tree_method="hist",
+                enable_categorical=True,
             ),
             "param_grid": {
                 "n_estimators": [50],
@@ -69,7 +71,11 @@ def test_regression_model_selection(
 
     if selector_cls is GridSearchSelector:
         selector = selector_cls(
-            model, val_size=0.2, param_grid=param_grid, scorer=scorer, metrics=metrics
+            model,
+            val_size=0.2,
+            param_grid=param_grid,
+            scorer=scorer,
+            metrics=metrics,
         )
     else:
         selector = selector_cls(

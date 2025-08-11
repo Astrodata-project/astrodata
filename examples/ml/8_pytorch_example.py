@@ -25,24 +25,22 @@ if __name__ == "__main__":
             x = self.fc2(x)
             return x
 
-    torch_model = SimpleClassifier(X_train.shape[1], max(y_train) + 1)
-    optimizer = optim.AdamW(torch_model.parameters(), lr=1e-3)
-    loss_function = nn.CrossEntropyLoss()
-
     model = PytorchModel(
-        torch_model=torch_model,
-        loss_fn=loss_function,
-        optimizer=optimizer,
+        model_class=SimpleClassifier,
+        model_params={"input_layers": X_train.shape[1], "output_layers": max(y_train) + 1},
+        loss_fn=nn.CrossEntropyLoss,
+        optimizer=optim.AdamW,
+        optimizer_params={"lr": 1e-3},
+        epochs=10,
+        batch_size=32,
         device="cpu",
     )
 
-    print(model)
+    print(model.get_params())
 
     model.fit(
         X=X_train,
         y=y_train,
-        epochs=10,
-        batch_size=32,
     )
 
     y_pred = model.predict(

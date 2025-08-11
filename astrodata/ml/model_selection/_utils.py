@@ -32,7 +32,6 @@ def fit_model_score_cv(
     y = pd.DataFrame(y)
 
     for train_idx, val_idx in cv_splitter.split(X, y):
-
         X_train, X_val = X.iloc[train_idx], X.iloc[val_idx]
         y_train, y_val = y.iloc[train_idx], y.iloc[val_idx]
 

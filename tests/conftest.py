@@ -37,7 +37,10 @@ def dummy_config():
         "project_path": Path("/dummy/project/path").resolve(),
         "preml": {
             "TrainTestSplitter": {"targets": ["tg"], "test_size": 0.2},
-            "OHE": {"categorical_columns": ["cat"], "numerical_columns": ["num"]},
+            "OHE": {
+                "categorical_columns": ["cat"],
+                "numerical_columns": ["num"],
+            },
         },
     }
 
