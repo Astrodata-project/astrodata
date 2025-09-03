@@ -27,7 +27,7 @@ class PytorchModel(BaseMlModel):
     ):
         super().__init__()
         self.random_state = random_state
-        self.model_class = model_class 
+        self.model_class = model_class
         self.model_params = model_params
         self.loss_fn = loss_fn
         self.optimizer = optimizer
@@ -37,11 +37,11 @@ class PytorchModel(BaseMlModel):
         self.device = (
             device if device else "cuda" if torch.cuda.is_available() else "cpu"
         )
-        
+
         self.model_ = None
         self.optimizer_ = None
         self.loss_fn_ = None
-        
+        self.metrics_history_ = None
 
     def fit(
         self,
@@ -50,12 +50,14 @@ class PytorchModel(BaseMlModel):
         epochs: Optional[int] = None,
         batch_size: Optional[int] = None,
         device: Optional[str] = None,
+        metrics: Optional[List[BaseMetric]] = None,
         **kwargs,
     ) -> "PytorchModel":
-        
+
         epochs = epochs if epochs is not None else self.epochs
         batch_size = batch_size if batch_size is not None else self.batch_size
-        
+        self.metrics_history_ = []
+
         if epochs <= 0:
             raise ValueError("Number of epochs must be greater than 0.")
         if batch_size <= 0:
@@ -74,10 +76,10 @@ class PytorchModel(BaseMlModel):
         self.model_ = self._get_model().to(self.device)
         self.optimizer_ = self._get_optimizer(self.model_)
         self.loss_fn_ = self.loss_fn()
-        
+
         self.model_.train()
 
-        with trange(epochs, desc="Epochs", position= 2) as t:
+        with trange(epochs, desc="Epochs", position=2) as t:
             for epoch in t:
                 last_loss = self._train_one_epoch(
                     epoch_index=epoch,
@@ -85,6 +87,7 @@ class PytorchModel(BaseMlModel):
                     model=self.model_,
                     loss_fn=self.loss_fn_,
                     training_loader=dataloader,
+                    metrics=metrics,
                 )
                 t.set_postfix({"last_loss": f"{last_loss:.4f}"})
         return self
@@ -205,14 +208,14 @@ class PytorchModel(BaseMlModel):
 
     def get_params(self, **kwargs) -> Dict[str, Any]:
         params = {"model_class": self.model_class}
-        params["model_params"] = self.model_params
-        params["random_state"] = self.random_state
-        params["loss"] = self.loss_fn
+        params["loss_fn"] = self.loss_fn
         params["optimizer"] = self.optimizer
+        params["model_params"] = self.model_params
         params["optimizer_params"] = self.optimizer_params
-        params["epochs"] = self.epochs,
-        params["batch_size"] = self.batch_size,
         params["device"] = self.device
+        params["epochs"] = self.epochs
+        params["batch_size"] = self.batch_size
+        params["random_state"] = self.random_state
 
         return params
 
@@ -230,6 +233,7 @@ class PytorchModel(BaseMlModel):
         model: Module,
         loss_fn,
         training_loader: torch.utils.data.DataLoader,
+        metrics: Optional[List[BaseMetric]] = None,
     ) -> float:
         for i, data in enumerate(training_loader):
             # Each data instance is an input + label pair
@@ -245,38 +249,63 @@ class PytorchModel(BaseMlModel):
             loss = loss_fn(outputs, labels)
             loss.backward()
             optimizer.step()
+            
+            predictions = self.predict(inputs, batch_size=self.batch_size, device=self.device) 
+            
+            for metric in metrics:
+                self.metrics_history_.append((f"{metric.get_name()}_step", metric(labels.cpu(), predictions)))
+                self.metrics_history_.append(("loss_step", loss.item()))
 
         return loss.item()
 
     def _get_model(self):
-            if isinstance(self.model_class, Module):
-                return self.model_class
-            else:
-                return self.model_class(**(self.model_params or {}))
+        if isinstance(self.model_class, Module):
+            return self.model_class
+        else:
+            return self.model_class(**(self.model_params or {}))
 
     def _get_optimizer(self, model):
         if isinstance(self.optimizer, Optimizer):
             return self.optimizer
         else:
             return self.optimizer(model.parameters(), **(self.optimizer_params or {}))
-        
+
     def clone(self) -> "PytorchModel":
 
         new_instance = self.__class__(
-            model_class=self.model_class, 
-            loss_fn = self.loss_fn,
-            optimizer = self.optimizer,
-            model_params = self.model_params,
-            optimizer_params = self.optimizer_params,
-            device = self.device,
-            epochs = self.epochs,
-            batch_size = self.batch_size,
-            random_state = self.random_state,
-            )
-        
+            model_class=self.model_class,
+            loss_fn=self.loss_fn,
+            optimizer=self.optimizer,
+            model_params=self.model_params,
+            optimizer_params=self.optimizer_params,
+            device=self.device,
+            epochs=self.epochs,
+            batch_size=self.batch_size,
+            random_state=self.random_state,
+        )
+
         # Copy over any callable attributes (e.g., decorated methods)
         for attr, value in self.__dict__.items():
             if callable(value):
                 setattr(new_instance, attr, value)
-                
+
         return new_instance
+    
+    def get_metrics_history(self):
+        d = {}
+        for x, y in self.metrics_history_:
+            d.setdefault(x, []).append(y)
+        return d
+    
+
+    @property
+    def has_loss_history(self) -> bool:
+        """
+        Check if the underlying model supports loss history.
+
+        Returns
+        -------
+        bool
+            True if loss history is available, False otherwise.
+        """
+        return False

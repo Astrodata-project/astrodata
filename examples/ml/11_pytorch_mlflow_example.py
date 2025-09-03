@@ -6,6 +6,7 @@ from torch import nn, optim
 
 from astrodata.ml.metrics import SklearnMetric
 from astrodata.ml.models import PytorchModel
+from astrodata.tracking.MLFlowTracker import PytorchMLflowTracker
 
 if __name__ == "__main__":
     X, y = load_breast_cancer(return_X_y=True)
@@ -39,22 +40,36 @@ if __name__ == "__main__":
         device="cpu",
     )
 
-    print(model.get_params())
-
-    model.fit(
-        X=X_train,
-        y=y_train,
-    )
-
-    y_pred = model.predict(
-        X=X_test,
-        batch_size=32,
-    )
-
     accuracy = SklearnMetric(accuracy_score, greater_is_better=True)
     f1 = SklearnMetric(f1_score, average="micro")
     logloss = SklearnMetric(log_loss)
 
     metrics = [accuracy, f1, logloss]
 
-    print(model.get_metrics(X_test, y_test, metrics))
+    print(model.get_params())
+
+    tracker = PytorchMLflowTracker(
+        run_name="MlFlowSimpleRun",
+        experiment_name="11_pytorch_mlflow_example.py",
+        extra_tags={"stage": "testing"},
+    )
+
+    tracked_model = tracker.wrap_fit(
+        model,
+        X_test=X_test,
+        y_test=y_test,
+        metrics=metrics,
+        log_model=True,
+    )
+
+    tracked_model.fit(
+        X=X_train,
+        y=y_train,
+    )
+
+    y_pred = tracked_model.predict(
+        X=X_test,
+        batch_size=32,
+    )
+
+    print(tracked_model.get_metrics(X_test, y_test, metrics))
