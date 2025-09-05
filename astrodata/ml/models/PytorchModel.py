@@ -1,8 +1,11 @@
+import pickle
 import random
 from typing import Any, Dict, List, Optional
 
 import torch
 import torch.nn.functional as F
+from safetensors.torch import load_file as safetensors_load
+from safetensors.torch import save_file as safetensors_save
 from torch.nn import Module
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader, TensorDataset
@@ -15,7 +18,7 @@ from astrodata.ml.models.BaseMlModel import BaseMlModel
 class PytorchModel(BaseMlModel):
     def __init__(
         self,
-        model_class: Module,
+        model_class: Module = None,
         loss_fn: Optional[Any] = None,
         optimizer: Optional[Optimizer] = None,
         model_params: Optional[Dict] = None,
@@ -51,6 +54,7 @@ class PytorchModel(BaseMlModel):
         batch_size: Optional[int] = None,
         device: Optional[str] = None,
         metrics: Optional[List[BaseMetric]] = None,
+        fine_tune: bool = False,
         **kwargs,
     ) -> "PytorchModel":
 
@@ -73,8 +77,9 @@ class PytorchModel(BaseMlModel):
         dataset = TensorDataset(X.to(device), y.to(device))
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-        self.model_ = self._get_model().to(self.device)
-        self.optimizer_ = self._get_optimizer(self.model_)
+        if not fine_tune or self.model_ is None:
+            self.model_ = self._get_model().to(self.device)
+            self.optimizer_ = self._get_optimizer(self.model_)
         self.loss_fn_ = self.loss_fn()
 
         self.model_.train()
@@ -163,24 +168,57 @@ class PytorchModel(BaseMlModel):
     def get_scorer_metric(self):
         pass
 
-    def save(self, filepath: str, **kwargs) -> None:
-        torch.save(
-            {
-                "model_state_dict": self.model_class.state_dict(),
-                "optimizer_state_dict": self.optimizer.state_dict(),
-                "model_params": self.model_params,
-                # Add any extra info as needed
-            },
-            filepath,
-        )
+    def save(self, filepath: str, format: str = "torch", **kwargs) -> None:
+        state = {
+            "model_state_dict": self.model_.state_dict(),
+            "optimizer_state_dict": self.optimizer_.state_dict(),
+            "model_params": self.model_params,
+        }
 
-    def load(self, filepath: str, **kwargs) -> "PytorchModel":
-        checkpoint = torch.load(filepath)
-        self.model_class.load_state_dict(checkpoint["model_state_dict"])
-        self.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
-        self.model_params = checkpoint.get("model_params", {})
-        self.model_ = self.model_class
+        if format == "torch":
+            torch.save(state, filepath)
+        elif format == "pkl":
+            with open(filepath, "wb") as f:
+                pickle.dump(state, f)
+        elif format == "safetensors":
+            safetensors_save(self.model_.state_dict(), filepath)
+        else:
+            raise ValueError(f"Unknown format {format}")
+
+    def load(self, filepath: str, format: str = "torch", **kwargs) -> "PytorchModel":
+        if format == "torch":
+            checkpoint = torch.load(filepath, map_location=self.device)
+            self.model_ = self._get_model().to(self.device)
+            self.model_.load_state_dict(checkpoint["model_state_dict"])
+            self.optimizer_ = self._get_optimizer(self.model_)
+            self.optimizer_.load_state_dict(checkpoint["optimizer_state_dict"])
+            self.model_params = checkpoint.get("model_params", {})
+        elif format == "pkl":
+            with open(filepath, "rb") as f:
+                checkpoint = pickle.load(f)
+            self.model_ = self._get_model().to(self.device)
+            self.model_.load_state_dict(checkpoint["model_state_dict"])
+            self.optimizer_ = self._get_optimizer(self.model_)
+            self.optimizer_.load_state_dict(checkpoint["optimizer_state_dict"])
+            self.model_params = checkpoint.get("model_params", {})
+        elif format == "safetensors":
+            state_dict = safetensors_load(filepath)
+            self.model_ = self._get_model().to(self.device)
+            self.model_.load_state_dict(state_dict)
+            self.optimizer_ = self._get_optimizer(self.model_)
+        else:
+            raise ValueError(f"Unknown format {format}")
         return self
+
+    def freeze_layers(self, layer_names: List[str]) -> None:
+        # freeze all
+        for param in self.model_.parameters():
+            param.requires_grad = False
+        # unfreeze selected
+        for name, module in self.model_.named_modules():
+            if name in layer_names:
+                for param in module.parameters():
+                    param.requires_grad = True
 
     def get_metrics(
         self,
@@ -249,12 +287,17 @@ class PytorchModel(BaseMlModel):
             loss = loss_fn(outputs, labels)
             loss.backward()
             optimizer.step()
-            
-            predictions = self.predict(inputs, batch_size=self.batch_size, device=self.device) 
-            
-            for metric in metrics:
-                self.metrics_history_.append((f"{metric.get_name()}_step", metric(labels.cpu(), predictions)))
-                self.metrics_history_.append(("loss_step", loss.item()))
+
+            predictions = self.predict(
+                inputs, batch_size=self.batch_size, device=self.device
+            )
+
+            if metrics is not None:
+                for metric in metrics:
+                    self.metrics_history_.append(
+                        (f"{metric.get_name()}_step", metric(labels.cpu(), predictions))
+                    )
+                    self.metrics_history_.append(("loss_step", loss.item()))
 
         return loss.item()
 
@@ -290,13 +333,12 @@ class PytorchModel(BaseMlModel):
                 setattr(new_instance, attr, value)
 
         return new_instance
-    
+
     def get_metrics_history(self):
         d = {}
         for x, y in self.metrics_history_:
             d.setdefault(x, []).append(y)
         return d
-    
 
     @property
     def has_loss_history(self) -> bool:
