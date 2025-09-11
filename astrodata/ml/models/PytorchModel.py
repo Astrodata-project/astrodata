@@ -27,6 +27,7 @@ class PytorchModel(BaseMlModel):
         epochs: Optional[int] = None,
         batch_size: Optional[int] = None,
         random_state: int = random.randint(0, 2**32),
+        with_weight_init: bool = False,
     ):
         super().__init__()
         self.random_state = random_state
@@ -41,15 +42,16 @@ class PytorchModel(BaseMlModel):
             device if device else "cuda" if torch.cuda.is_available() else "cpu"
         )
 
-        self.model_ = None
+        self.model_ = None if not with_weight_init else self._get_model()
         self.optimizer_ = None
         self.loss_fn_ = None
         self.metrics_history_ = None
 
     def fit(
         self,
-        X,
-        y,
+        X: Optional[Any] = None,
+        y: Optional[Any] = None,
+        dataloader: Optional[DataLoader] = None,
         epochs: Optional[int] = None,
         batch_size: Optional[int] = None,
         device: Optional[str] = None,
@@ -66,16 +68,23 @@ class PytorchModel(BaseMlModel):
             raise ValueError("Number of epochs must be greater than 0.")
         if batch_size <= 0:
             raise ValueError("Batch size must be greater than 0.")
+        
+        if (X is None and y is None) and dataloader is None:
+            raise ValueError("Either X and y or dataloader must be provided.")
+        
+        if dataloader is not None:
+            dataloader = dataloader
 
-        if not isinstance(X, torch.Tensor):
-            X = torch.tensor(X, dtype=torch.float32)
-        if not isinstance(y, torch.Tensor):
-            y = torch.tensor(y, dtype=torch.long)
-        if device is None:
-            device = self.device
+        else:
+            if not isinstance(X, torch.Tensor):
+                X = torch.tensor(X, dtype=torch.float32)
+            if not isinstance(y, torch.Tensor):
+                y = torch.tensor(y, dtype=torch.long)
+            if device is None:
+                device = self.device
 
-        dataset = TensorDataset(X.to(device), y.to(device))
-        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+            dataset = TensorDataset(X.to(device), y.to(device))
+            dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
         if not fine_tune or self.model_ is None:
             self.model_ = self._get_model().to(self.device)
@@ -108,10 +117,10 @@ class PytorchModel(BaseMlModel):
 
         self.model_.eval()
 
-        if not isinstance(X, torch.Tensor):
+        if not isinstance(X, torch.Tensor) and not isinstance(X, DataLoader):
             X = torch.tensor(X, dtype=torch.float32)
 
-        dataloader = DataLoader(X, batch_size=batch_size, shuffle=False)
+        dataloader = DataLoader(X, batch_size=batch_size, shuffle=False) if not isinstance(X, DataLoader) else X
         outputs = []
 
         with torch.no_grad():
@@ -138,10 +147,10 @@ class PytorchModel(BaseMlModel):
 
         self.model_.eval()
 
-        if not isinstance(X, torch.Tensor):
+        if not isinstance(X, torch.Tensor) and not isinstance(X, DataLoader):
             X = torch.tensor(X, dtype=torch.float32)
 
-        dataloader = DataLoader(X, batch_size=batch_size, shuffle=False)
+        dataloader = DataLoader(X, batch_size=batch_size, shuffle=False) if not isinstance(X, DataLoader) else X
         outputs = []
 
         with torch.no_grad():
