@@ -16,6 +16,18 @@ from astrodata.ml.models.BaseMlModel import BaseMlModel
 
 
 class PytorchModel(BaseMlModel):
+    """
+    A lightweight wrapper around PyTorch models providing a unified
+    training/prediction interface and metric tracking.
+
+    Notes
+    -----
+    This class expects a callable ``loss_fn`` (e.g., ``nn.CrossEntropyLoss``)
+    and an ``optimizer`` class (e.g., ``optim.AdamW``). ``model_class`` can be
+    either an instantiated ``nn.Module`` or a class to be constructed from
+    ``model_params``.
+    """
+
     def __init__(
         self,
         model_class: Module = None,
@@ -46,6 +58,7 @@ class PytorchModel(BaseMlModel):
         self.optimizer_ = None
         self.loss_fn_ = None
         self.metrics_history_ = None
+        self._val_metrics_history_ = None
 
     def fit(
         self,
@@ -57,25 +70,58 @@ class PytorchModel(BaseMlModel):
         device: Optional[str] = None,
         metrics: Optional[List[BaseMetric]] = None,
         fine_tune: bool = False,
+        X_val: Optional[Any] = None,
+        y_val: Optional[Any] = None,
         **kwargs,
     ) -> "PytorchModel":
+        """
+        Fit the model using the provided data or dataloader.
+
+        Parameters
+        ----------
+        X : array-like or torch.Tensor, optional
+            Training features. Ignored if ``dataloader`` is provided.
+        y : array-like or torch.Tensor, optional
+            Training labels. Ignored if ``dataloader`` is provided.
+        dataloader : torch.utils.data.DataLoader, optional
+            Pre-built training dataloader yielding ``(inputs, labels)``.
+        epochs : int, optional
+            Number of training epochs. Defaults to the instance value.
+        batch_size : int, optional
+            Batch size for training/prediction. Defaults to the instance value.
+        device : str, optional
+            Device to use (e.g., ``"cuda"`` or ``"cpu"``). Defaults to instance.
+        metrics : list of BaseMetric, optional
+            Metrics to compute during training (per step) and validation (per epoch).
+        fine_tune : bool, default False
+            If True, reuse existing model weights/optimizer state when available.
+        X_val : array-like or torch.Tensor, optional
+            Validation features for epoch-wise metric tracking.
+        y_val : array-like or torch.Tensor, optional
+            Validation labels for epoch-wise metric tracking.
+
+        Returns
+        -------
+        PytorchModel
+            The fitted model instance.
+        """
 
         epochs = epochs if epochs is not None else self.epochs
         batch_size = batch_size if batch_size is not None else self.batch_size
         self.metrics_history_ = []
+        self._val_metrics_history_ = (
+            [] if X_val is not None and y_val is not None else None
+        )
 
         if epochs <= 0:
             raise ValueError("Number of epochs must be greater than 0.")
         if batch_size <= 0:
             raise ValueError("Batch size must be greater than 0.")
-        
+
         if (X is None and y is None) and dataloader is None:
             raise ValueError("Either X and y or dataloader must be provided.")
-        
-        if dataloader is not None:
-            dataloader = dataloader
 
-        else:
+        if dataloader is None:
             if not isinstance(X, torch.Tensor):
                 X = torch.tensor(X, dtype=torch.float32)
             if not isinstance(y, torch.Tensor):
@@ -85,6 +131,7 @@ class PytorchModel(BaseMlModel):
 
             dataset = TensorDataset(X.to(device), y.to(device))
             dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+        # if a dataloader was passed, we trust it yields tensors on the right device
 
         if not fine_tune or self.model_ is None:
             self.model_ = self._get_model().to(self.device)
@@ -104,11 +151,45 @@ class PytorchModel(BaseMlModel):
                     metrics=metrics,
                 )
                 t.set_postfix({"last_loss": f"{last_loss:.4f}"})
+                # Validation metrics (epoch-level)
+                if metrics is not None and self._val_metrics_history_ is not None:
+                    val_scores = self.get_metrics(
+                        X_val,
+                        y_val,
+                        metrics=metrics,
+                        batch_size=batch_size or self.batch_size or 32,
+                        device=device or self.device,
+                    )
+                    for name, value in val_scores.items():
+                        self._val_metrics_history_.append((f"{name}_val_epoch", value))
         return self
 
     def predict(
         self, X, batch_size: int, device: Optional[str] = None, **kwargs
     ) -> Any:
+        """
+        Predict outputs for input ``X``.
+
+        Parameters
+        ----------
+        X : array-like, torch.Tensor, or DataLoader
+            Features to predict. If a DataLoader is provided, it should yield
+            feature tensors only.
+        batch_size : int
+            Batch size used when ``X`` is not a DataLoader.
+        device : str, optional
+            Device to use for inference. Defaults to instance device.
+
+        Returns
+        -------
+        numpy.ndarray
+            Predicted labels for classification, or raw outputs for regression.
+
+        Raises
+        ------
+        RuntimeError
+            If the model is not fitted yet.
+        """
         if self.model_ is None:
             raise RuntimeError("Model is not fitted yet.")
 
@@ -120,7 +201,11 @@ class PytorchModel(BaseMlModel):
         if not isinstance(X, torch.Tensor) and not isinstance(X, DataLoader):
             X = torch.tensor(X, dtype=torch.float32)
 
-        dataloader = DataLoader(X, batch_size=batch_size, shuffle=False) if not isinstance(X, DataLoader) else X
+        dataloader = (
+            DataLoader(X, batch_size=batch_size, shuffle=False)
+            if not isinstance(X, DataLoader)
+            else X
+        )
         outputs = []
 
         with torch.no_grad():
@@ -139,6 +224,29 @@ class PytorchModel(BaseMlModel):
     def predict_proba(
         self, X, batch_size: int, device: Optional[str] = None, **kwargs
     ) -> Any:
+        """
+        Predict class probabilities for input ``X``.
+
+        Parameters
+        ----------
+        X : array-like, torch.Tensor, or DataLoader
+            Features to predict. If a DataLoader is provided, it should yield
+            feature tensors only.
+        batch_size : int
+            Batch size used when ``X`` is not a DataLoader.
+        device : str, optional
+            Device to use for inference. Defaults to instance device.
+
+        Returns
+        -------
+        numpy.ndarray
+            Predicted probabilities with shape ``[N, n_classes]``.
+
+        Raises
+        ------
+        RuntimeError
+            If the model is not fitted yet.
+        """
         if self.model_ is None:
             raise RuntimeError("Model is not fitted yet.")
 
@@ -150,7 +258,11 @@ class PytorchModel(BaseMlModel):
         if not isinstance(X, torch.Tensor) and not isinstance(X, DataLoader):
             X = torch.tensor(X, dtype=torch.float32)
 
-        dataloader = DataLoader(X, batch_size=batch_size, shuffle=False) if not isinstance(X, DataLoader) else X
+        dataloader = (
+            DataLoader(X, batch_size=batch_size, shuffle=False)
+            if not isinstance(X, DataLoader)
+            else X
+        )
         outputs = []
 
         with torch.no_grad():
@@ -178,6 +290,16 @@ class PytorchModel(BaseMlModel):
         pass
 
     def save(self, filepath: str, format: str = "torch", **kwargs) -> None:
+        """
+        Save the model parameters and optimizer state.
+
+        Parameters
+        ----------
+        filepath : str
+            Destination path.
+        format : {"torch", "pkl", "safetensors"}
+            Serialization format.
+        """
         state = {
             "model_state_dict": self.model_.state_dict(),
             "optimizer_state_dict": self.optimizer_.state_dict(),
@@ -195,6 +317,21 @@ class PytorchModel(BaseMlModel):
             raise ValueError(f"Unknown format {format}")
 
     def load(self, filepath: str, format: str = "torch", **kwargs) -> "PytorchModel":
+        """
+        Load model parameters and optimizer state from disk.
+
+        Parameters
+        ----------
+        filepath : str
+            Source path.
+        format : {"torch", "pkl", "safetensors"}
+            Serialization format.
+
+        Returns
+        -------
+        PytorchModel
+            The model instance with loaded weights.
+        """
         if format == "torch":
             checkpoint = torch.load(filepath, map_location=self.device)
             self.model_ = self._get_model().to(self.device)
@@ -220,6 +357,14 @@ class PytorchModel(BaseMlModel):
         return self
 
     def freeze_layers(self, layer_names: List[str]) -> None:
+        """
+        Freeze all layers except those included in ``layer_names``.
+
+        Parameters
+        ----------
+        layer_names : list of str
+            Names of modules to unfreeze.
+        """
         # freeze all
         for param in self.model_.parameters():
             param.requires_grad = False
@@ -237,6 +382,27 @@ class PytorchModel(BaseMlModel):
         batch_size: int = 32,
         device: Optional[str] = None,
     ) -> Dict[str, Any]:
+        """
+        Compute metrics for given data.
+
+        Parameters
+        ----------
+        X : array-like, torch.Tensor, or DataLoader
+            Features.
+        y : array-like or torch.Tensor
+            Labels.
+        metrics : list of BaseMetric
+            Metrics to compute.
+        batch_size : int, default 32
+            Batch size when ``X`` is not a DataLoader.
+        device : str, optional
+            Device to use for inference.
+
+        Returns
+        -------
+        dict
+            Mapping from metric names to values.
+        """
         y_pred = self.predict(X, batch_size, device)
         try:
             y_pred_proba = self.predict_proba(X, batch_size, device)
@@ -254,6 +420,14 @@ class PytorchModel(BaseMlModel):
         return results
 
     def get_params(self, **kwargs) -> Dict[str, Any]:
+        """
+        Get initialization parameters for this model.
+
+        Returns
+        -------
+        dict
+            Parameters used to construct the model.
+        """
         params = {"model_class": self.model_class}
         params["loss_fn"] = self.loss_fn
         params["optimizer"] = self.optimizer
@@ -267,10 +441,21 @@ class PytorchModel(BaseMlModel):
         return params
 
     def set_params(self, **kwargs) -> None:
+        """
+        Set initialization parameters for this model.
+
+        Parameters
+        ----------
+        **kwargs
+            Parameters to set on the instance.
+        """
         for key, value in kwargs.items():
             setattr(self, key, value)
 
     def __repr__(self) -> str:
+        """
+        String representation of the wrapper and underlying class.
+        """
         return f"{self.__class__.__name__}(torch_model={self.model_class.__class__.__name__})"
 
     def _train_one_epoch(
@@ -297,14 +482,18 @@ class PytorchModel(BaseMlModel):
             loss.backward()
             optimizer.step()
 
-            predictions = self.predict(
-                inputs, batch_size=self.batch_size, device=self.device
-            )
+            # Compute predictions for metrics without toggling eval mode
+            with torch.no_grad():
+                if outputs.dim() > 1 and outputs.shape[-1] > 1:
+                    preds = outputs.detach().argmax(dim=1).cpu().numpy()
+                else:
+                    preds = outputs.detach().cpu().squeeze().numpy()
 
             if metrics is not None:
+                y_true = labels.detach().cpu().numpy()
                 for metric in metrics:
                     self.metrics_history_.append(
-                        (f"{metric.get_name()}_step", metric(labels.cpu(), predictions))
+                        (f"{metric.get_name()}_step", metric(y_true, preds))
                     )
                     self.metrics_history_.append(("loss_step", loss.item()))
 
@@ -323,6 +512,14 @@ class PytorchModel(BaseMlModel):
             return self.optimizer(model.parameters(), **(self.optimizer_params or {}))
 
     def clone(self) -> "PytorchModel":
+        """
+        Create a shallow clone with the same initialization parameters.
+
+        Returns
+        -------
+        PytorchModel
+            New instance with copied parameters.
+        """
 
         new_instance = self.__class__(
             model_class=self.model_class,
@@ -343,9 +540,28 @@ class PytorchModel(BaseMlModel):
 
         return new_instance
 
-    def get_metrics_history(self):
+    def get_metrics_history(self, split: str = "train"):
+        """
+        Get the recorded metric history.
+
+        Parameters
+        ----------
+        split : {"train", "val"}, default "train"
+            Which split to return history for. Validation history is
+            recorded at epoch granularity.
+
+        Returns
+        -------
+        dict
+            Mapping from metric name to list of values in time order.
+        """
+        history = (
+            self.metrics_history_ if split == "train" else self._val_metrics_history_
+        )
         d = {}
-        for x, y in self.metrics_history_:
+        if history is None:
+            return d
+        for x, y in history:
             d.setdefault(x, []).append(y)
         return d
 
