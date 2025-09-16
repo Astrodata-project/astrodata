@@ -10,7 +10,14 @@ from astrodata.tracking.MLFlowTracker import PytorchMLflowTracker
 
 if __name__ == "__main__":
     X, y = load_breast_cancer(return_X_y=True)
-    X_train, X_test, y_train, y_test = train_test_split(X, y)
+    # First split: train+val vs test
+    X_train_full, X_test, y_train_full, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+    # Second split: train vs val
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_train_full, y_train_full, test_size=0.2, random_state=42
+    )
 
     class SimpleClassifier(nn.Module):
         def __init__(self, input_layers, output_layers):
@@ -49,7 +56,7 @@ if __name__ == "__main__":
     print(model.get_params())
 
     tracker = PytorchMLflowTracker(
-        run_name="MlFlowSimpleRun",
+        run_name="MlFlowWithVal",
         experiment_name="11_pytorch_mlflow_example.py",
         extra_tags={"stage": "testing"},
     )
@@ -58,6 +65,8 @@ if __name__ == "__main__":
         model,
         X_test=X_test,
         y_test=y_test,
+        X_val=X_val,
+        y_val=y_val,
         metrics=metrics,
         log_model=True,
     )
@@ -65,6 +74,8 @@ if __name__ == "__main__":
     tracked_model.fit(
         X=X_train,
         y=y_train,
+        X_val=X_val,
+        y_val=y_val,
     )
 
     y_pred = tracked_model.predict(
@@ -72,4 +83,4 @@ if __name__ == "__main__":
         batch_size=32,
     )
 
-    print(tracked_model.get_metrics(X_test, y_test, metrics))
+    print("Test metrics:", tracked_model.get_metrics(X_test, y_test, metrics))

@@ -31,6 +31,7 @@ jobs:
         run: |
           uv sync
           uv sync --group tests
+          uv sync --group torch
 # To be added uv sync --optional full
 
       - name: Run tests
