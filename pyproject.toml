@@ -29,10 +29,10 @@ dev = [
     "furo>=2025.7.19",
     "myst-parser>=4.0.1",
     "ruff>=0.12.4",
-    "pytest>=8.4.1",
+    "coverage>=7.10.6",
 ]
 tests = [
-    "pytest>=8.3.5"
+    "pytest>=8.3.5",
 ]
 
 [tool.uv]
@@ -43,6 +43,12 @@ astrodata = { workspace = true }
 
 [tool.setuptools]  # configuration specific to the `setuptools` build backend.
 packages = { find = { where = ["."], include = ["astrodata", "astrodata.*"] } }
+
+[tool.coverage.run]
+omit = [
+    # omit pytorch-generated files in /tmp
+    "/tmp/*",
+]
 
 [project.optional-dependencies]
 
