@@ -394,8 +394,8 @@ def _log_metrics_and_loss_pytorch(
         scores = model.get_metrics(X=X_split, y=y_split, metrics=metrics)
         mlflow.log_metrics({f"{k}_{split_name}": v for k, v in scores.items()})
         # Loss curve
-        if split_name == "train":
-            curves = model.get_metrics_history()
+        if split_name == "train" or split_name == "val":
+            curves = model.get_metrics_history(split=split_name)
 
             for key, value in curves.items():
                 for i, loss in enumerate(value):

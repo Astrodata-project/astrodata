@@ -79,7 +79,7 @@ if __name__ == "__main__":
             == model.get_metrics(X_test, y_test, metrics),
         )
 
-        model2.freeze_layers(["fc1"])
+        model2.freeze_layers(["fc2"])
         model2.fit(X=X_train, y=y_train, fine_tune=True)
         print("Model 2 metrics: ", model2.get_metrics(X_test, y_test, metrics))
 
