@@ -78,13 +78,13 @@ def test_pytorch_model_fit_predict_and_history(tmp_path):
 
     # Training metric history (per step) and validation metric history (per epoch)
     train_hist = m.get_metrics_history(split="train")
-    assert "accuracy_score_step" in train_hist
-    assert "loss_step" in train_hist
+    assert "accuracy_score_epoch" in train_hist
+    assert "loss_epoch" in train_hist
     val_hist = m.get_metrics_history(split="val")
     # Present when X_val/y_val were provided
     assert val_hist is not None
     # Key suffixed with _val_epoch exists for validation metric
-    assert any(k.endswith("_val_epoch") for k in val_hist)
+    assert any(k.endswith("_epoch") for k in val_hist.keys())
 
     # Save/load roundtrip (torch format)
     path = tmp_path / "model.pt"

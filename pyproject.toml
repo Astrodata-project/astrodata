@@ -8,7 +8,7 @@ dependencies = [
     "dvc>=3.59.2",
     "gitpython>=3.1.44",
     "hyperopt>=0.2.7",
-    "mlflow>=2.22.0",
+    "mlflow>=3.4.0",
     "numpy>=2.2.4",
     "pandas>=2.2.3",
     "pyarrow>=19.0.1",
@@ -29,10 +29,12 @@ dev = [
     "furo>=2025.7.19",
     "myst-parser>=4.0.1",
     "ruff>=0.12.4",
+    "coverage>=7.10.6",
+    "astropy>=6.1.7",
     "pytest>=8.4.1",
 ]
 tests = [
-    "pytest>=8.3.5"
+    "pytest>=8.3.5",
 ]
 
 [tool.uv]
@@ -43,6 +45,12 @@ astrodata = { workspace = true }
 
 [tool.setuptools]  # configuration specific to the `setuptools` build backend.
 packages = { find = { where = ["."], include = ["astrodata", "astrodata.*"] } }
+
+[tool.coverage.run]
+omit = [
+    # omit pytorch-generated files in /tmp
+    "/tmp/*",
+]
 
 [project.optional-dependencies]
 
