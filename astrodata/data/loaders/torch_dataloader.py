@@ -45,9 +45,6 @@ class TorchDataLoaderWrapper:
             TorchProcessedData object containing DataLoaders
         """
 
-        if raw_data.format != "torch_image":
-            raise ValueError("RawData must have format 'torch_image'")
-
         datasets = raw_data.data
         dataloaders = {}
 

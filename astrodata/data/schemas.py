@@ -90,7 +90,7 @@ class TorchImageDataset(Dataset):
             cls_dir.name: idx for idx, cls_dir in enumerate(class_dirs)
         }
 
-        valid_extensions = {".jpg", ".jpeg", ".png", ".fits"}
+        valid_extensions = {".jpg", ".jpeg", ".png"}
 
         for class_dir in class_dirs:
             class_idx = self.class_to_idx[class_dir.name]
@@ -132,13 +132,11 @@ class TorchRawData(BaseModel):
 
     Attributes:
         source: Root directory containing the datasets
-        format: Always "torch_image" for this schema
         data: Dictionary of PyTorch datasets (train/val/test)
         metadata: Information about classes, splits, etc.
     """
 
     source: Path | str
-    format: Literal["torch_image"]
     data: Dict[str, TorchImageDataset]  # Dictionary of TorchImageDataset objects
     metadata: Dict[str, Any]
 

@@ -1,14 +1,16 @@
-from astrodata.data.loaders import TorchDataLoaderWrapper, TorchLoader
+from astrodata.data.loaders import TorchDataLoaderWrapper, TorchImageLoader
 
 if __name__ == "__main__":
-    loader = TorchLoader()
-    print("TorchLoader initialized.")
+    loader = TorchImageLoader()
+    print("TorchImageLoader initialized.")
 
     # Load the image data from the specified directory structure.
     # The directory should contain train/val/test folders with class subdirectories.
+
     raw_data = loader.load(
         "../../testdata/torch/mnist/"
     )  # Points to folder with train/val/test
+
     print("Image data loaded from directory structure.")
     print(f"train data class_to_idx: {raw_data.get_dataset('train').class_to_idx}")
     print(f"test data class_to_idx: {raw_data.get_dataset('test').class_to_idx}")

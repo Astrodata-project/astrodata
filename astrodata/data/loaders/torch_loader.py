@@ -4,7 +4,7 @@ from astrodata.data.loaders.base import BaseLoader
 from astrodata.data.schemas import TorchImageDataset, TorchRawData
 
 
-class TorchLoader(BaseLoader):
+class TorchImageLoader(BaseLoader):
     """
     PyTorch data loader for image datasets with train/validation/test splits.
 
@@ -55,10 +55,7 @@ class TorchLoader(BaseLoader):
             datasets["val"] = TorchImageDataset(val_dir)
 
         metadata = {
-            "data_type": "torch_image_dataset",
             "root_path": str(root_path),
         }
 
-        return TorchRawData(
-            source=root_path, format="torch_image", data=datasets, metadata=metadata
-        )
+        return TorchRawData(source=root_path, data=datasets, metadata=metadata)
