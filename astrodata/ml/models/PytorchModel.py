@@ -1,5 +1,6 @@
 import pickle
 import random
+import os
 from typing import Any, Dict, List, Optional
 
 import torch
@@ -72,6 +73,9 @@ class PytorchModel(BaseMlModel):
         fine_tune: bool = False,
         X_val: Optional[Any] = None,
         y_val: Optional[Any] = None,
+        save_every_n_epochs: Optional[int] = None,
+        save_folder: Optional[str] = None,
+        save_format: str = "torch",
         **kwargs,
     ) -> "PytorchModel":
         """
@@ -99,6 +103,12 @@ class PytorchModel(BaseMlModel):
             Validation features for epoch-wise metric tracking.
         y_val : array-like or torch.Tensor, optional
             Validation labels for epoch-wise metric tracking.
+        save_every_n_epochs : int, optional
+            Save model every n epochs if provided.
+        save_folder : str, optional
+            Directory path where checkpoints will be saved.
+        save_format : {"torch","pkl","safetensors"}, default "torch"
+            Serialization format for checkpoints.
 
         Returns
         -------
@@ -155,6 +165,15 @@ class PytorchModel(BaseMlModel):
                     device=device,
                 )
                 t.set_postfix({"last_loss": f"{last_loss:.4f}"})
+                # periodic checkpoint
+                if save_every_n_epochs and save_folder and (epoch + 1) % save_every_n_epochs == 0:
+                    # map format to extension
+                    ext_map = {"torch": "pt", "pkl": "pkl", "safetensors": "safetensors"}
+                    ext = ext_map.get(save_format, save_format)
+                    fname = f"checkpoint_{epoch+1}.{ext}"
+                    os.makedirs(save_folder, exist_ok=True)
+                    path = os.path.join(save_folder, fname)
+                    self.save(path, format=save_format)
         return self
 
     def predict(
