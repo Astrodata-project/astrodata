@@ -1,10 +1,8 @@
-from pathlib import Path
-
 from astrodata.data.schemas import ProcessedData
 from astrodata.preml.processors.base import PremlProcessor
 from astrodata.preml.schemas import Premldata
 from astrodata.preml.utils import instantiate_processors
-from astrodata.utils.utils import read_config
+from astrodata.utils.utils import get_output_path, read_config
 
 
 class PremlPipeline:
@@ -17,7 +15,7 @@ class PremlPipeline:
         - Ensures the first processor is a TrainTestSplitter.
 
     Args:
-        config_path (str, optional): Path to the pipeline configuration file.
+        config_path (str): Path to the configuration file.
         processors (list[PremlProcessor], optional): List of processor instances.
 
     Methods:
@@ -26,9 +24,7 @@ class PremlPipeline:
     """
 
     def __init__(self, config_path: str, processors: list[PremlProcessor] = None):
-
         self.config = read_config(config_path)
-        self.project_path = Path(self.config["project_path"]).resolve()
         self.preml_config = self.config.get("preml", {})
         if not self.config and not processors:
             raise ValueError(
@@ -62,22 +58,28 @@ class PremlPipeline:
 
     def run(self, processeddata: ProcessedData, dump_output: bool = True) -> Premldata:
         """
-        Executes the data pipeline.
+        Executes the data pipeline by applying each processor in sequence.
+
+        Args:
+            processeddata (ProcessedData): The input processed data.
+            dump_output (bool): Whether to dump the output to disk.
+
+        Returns:
+            Premldata: The final processed data object.
         """
         converter = self.processors[0]
         data = converter.process(processeddata)
         self.operations_tracker.append(
             {f"{converter.__class__.__name__}": converter.artifact}
         )
+        output_path = None
         if dump_output:
-            preml_path = self.project_path / "astrodata_files/preml"
-            preml_path.mkdir(parents=True, exist_ok=True)
+            output_path = get_output_path(self.config["project_path"], "preml")
 
         for processor in self.processors[1:]:
             if dump_output:
                 processor.save_path = (
-                    self.project_path
-                    / f"astrodata_files/preml/{processor.__class__.__name__}.pkl"
+                    output_path / f"{processor.__class__.__name__}.pkl"
                 )
             if processor.__class__.__name__ in self.preml_config:
                 processor.kwargs = self.preml_config[processor.__class__.__name__]
@@ -86,5 +88,5 @@ class PremlPipeline:
                 {f"{processor.__class__.__name__}": processor.artifact}
             )
         if dump_output:
-            data.dump_parquet(self.project_path / "astrodata_files/preml/")
+            data.dump_parquet(output_path)
         return data

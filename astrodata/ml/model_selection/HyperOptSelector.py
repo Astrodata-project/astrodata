@@ -87,7 +87,6 @@ class HyperOptSelector(BaseMlModelSelector):
             raise TypeError(f"{model} is not a BaseMlModel instance")
 
         if self.use_cv:
-
             cv_splitter = KFold(
                 n_splits=self.cv, shuffle=True, random_state=self.random_state
             )
@@ -106,9 +105,11 @@ class HyperOptSelector(BaseMlModelSelector):
             )
         else:
             if X_val is None or y_val is None:
-
                 X_train, X_val, y_train, y_val = train_test_split(
-                    X, y, test_size=self.val_size, random_state=self.random_state
+                    X,
+                    y,
+                    test_size=self.val_size,
+                    random_state=self.random_state,
                 )
             else:
                 X_train, y_train = X, y
@@ -129,12 +130,24 @@ class HyperOptSelector(BaseMlModelSelector):
 
         greater_is_better = self.scorer.greater_is_better if self.scorer else True
         loss = -score if greater_is_better else score
-        return {"loss": loss, "status": STATUS_OK, "metrics": metrics, "params": params}
+        return {
+            "loss": loss,
+            "status": STATUS_OK,
+            "metrics": metrics,
+            "params": params,
+        }
 
     def fit(
-        self, X, y, X_val=None, y_val=None, X_test=None, y_test=None, *args, **kwargs
+        self,
+        X,
+        y,
+        X_val=None,
+        y_val=None,
+        X_test=None,
+        y_test=None,
+        *args,
+        **kwargs,
     ) -> "HyperOptSelector":
-
         trials = Trials()
         best_params = fmin(
             fn=lambda params: self._objective(params, X, y, X_val, y_val),
@@ -161,7 +174,6 @@ class HyperOptSelector(BaseMlModelSelector):
         best_params_t = self._best_params.copy()
 
         if self.tracker:
-
             self._best_model, _, _ = fit_model_score(
                 model=best_params_t.pop("model"),
                 params=best_params_t,

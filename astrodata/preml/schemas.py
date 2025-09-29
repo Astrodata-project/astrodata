@@ -10,7 +10,12 @@ class Premldata(BaseModel):
     Represents processed data after transformations.
 
     Attributes:
-        data (pd.DataFrame): The actual data as a Pandas DataFrame.
+        train_features (pd.DataFrame): Training features.
+        val_features (Optional[pd.DataFrame]): Validation features, if available.
+        test_features (pd.DataFrame): Test features.
+        train_targets (pd.DataFrame | pd.Series): Training targets.
+        val_targets (Optional[pd.DataFrame | pd.Series]): Validation targets, if available.
+        test_targets (pd.DataFrame | pd.Series): Test targets.
         metadata (Optional[dict]): Additional metadata about the processed data.
     """
 

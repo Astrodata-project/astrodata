@@ -20,9 +20,11 @@ class PremlProcessor(ABC):
 
     def __init__(self, artifact_path: Optional[str] = None, **kwargs: Any):
         """
-        Initializes the processor with an empty dictionary to store artifacts.
+        Initializes the processor with an optional artifact path and keyword arguments.
 
-        Each processor can take an arbitrary number of keyword arguments, which can be accessed within the process method.
+        Args:
+            artifact_path (Optional[str]): Path to save/load processor artifacts.
+            **kwargs: Additional keyword arguments for processor configuration.
         """
         # TODO: Short term solution to save artifacts, need to think of a better way to handle this
         self.save_path = artifact_path

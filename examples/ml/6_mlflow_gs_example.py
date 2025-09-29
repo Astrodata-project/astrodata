@@ -5,9 +5,9 @@ from sklearn.metrics import accuracy_score, f1_score, log_loss
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
-from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.model_selection.GridSearchSelector import GridSearchCVSelector
-from astrodata.ml.models.SklearnModel import SklearnModel
+from astrodata.ml.metrics import SklearnMetric
+from astrodata.ml.model_selection import GridSearchCVSelector
+from astrodata.ml.models import SklearnModel
 from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
 
 # This example demonstrates how to use the tracking capabilities of astrodata.ml with a GridSearchCVSelector.
@@ -17,7 +17,6 @@ from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
 # and navigating to http://localhost:5000 in your web browser.
 
 if __name__ == "__main__":
-
     # Load the breast cancer dataset
 
     data = load_breast_cancer()
