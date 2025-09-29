@@ -259,10 +259,12 @@
 <li class="toctree-l1"><a class="reference internal" href="python_examples/astrotaxi/step3_ml.html">astrotaxi/step3_ml.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_examples/data/1_data_example.html">data/1_data_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_examples/data/2_preml_example.html">data/2_preml_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_examples/data/3_torch_data.html">data/3_torch_data.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_examples/ml/10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_examples/ml/11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_examples/ml/13_pytorch_resnet18.html">ml/13_pytorch_resnet18.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_examples/ml/14_pytorch_save_example.html">ml/14_pytorch_save_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_examples/ml/1_sklearn_example.html">ml/1_sklearn_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_examples/ml/2_multimodel_example.html">ml/2_multimodel_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_examples/ml/3_gridsearch_example.html">ml/3_gridsearch_example.py</a></li>
@@ -309,14 +311,12 @@
           
 <section class="genindex-section">
   <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#V"><strong>V</strong></a> | <a href="#W"><strong>W</strong></a> | <a href="#X"><strong>X</strong></a></div>
+  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#W"><strong>W</strong></a> | <a href="#X"><strong>X</strong></a></div>
 </section>
 <section id="A" class="genindex-section">
   <h2>A</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.data.processors.html#astrodata.data.processors.base.AbstractProcessor">AbstractProcessor (class in astrodata.data.processors.base)</a>
-</li>
         <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.DataTracker.DataTracker.add">add() (astrodata.tracking.DataTracker.DataTracker method)</a>
 </li>
         <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.CodeTracker.CodeTracker.add_remote">add_remote() (astrodata.tracking.CodeTracker.CodeTracker method)</a>
@@ -325,96 +325,11 @@
 </li>
         <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.CodeTracker.CodeTracker.align_with_remote">align_with_remote() (astrodata.tracking.CodeTracker.CodeTracker method)</a>
 </li>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.ProcessedData.Config.arbitrary_types_allowed">arbitrary_types_allowed (astrodata.data.schemas.ProcessedData.Config attribute)</a>
-
-        <ul>
-          <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.RawData.Config.arbitrary_types_allowed">(astrodata.data.schemas.RawData.Config attribute)</a>
-</li>
-          <li><a href="python_api/astrodata.preml.html#astrodata.preml.schemas.Premldata.Config.arbitrary_types_allowed">(astrodata.preml.schemas.Premldata.Config attribute)</a>
-</li>
-        </ul></li>
         <li>
     astrodata
 
         <ul>
           <li><a href="python_api/astrodata.html#module-astrodata">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.data
-
-        <ul>
-          <li><a href="python_api/astrodata.data.html#module-astrodata.data">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.data.loaders
-
-        <ul>
-          <li><a href="python_api/astrodata.data.loaders.html#module-astrodata.data.loaders">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.data.loaders.base
-
-        <ul>
-          <li><a href="python_api/astrodata.data.loaders.html#module-astrodata.data.loaders.base">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.data.loaders.csv_loader
-
-        <ul>
-          <li><a href="python_api/astrodata.data.loaders.html#module-astrodata.data.loaders.csv_loader">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.data.loaders.parquet_loader
-
-        <ul>
-          <li><a href="python_api/astrodata.data.loaders.html#module-astrodata.data.loaders.parquet_loader">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.data.pipeline
-
-        <ul>
-          <li><a href="python_api/astrodata.data.html#module-astrodata.data.pipeline">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.data.processors
-
-        <ul>
-          <li><a href="python_api/astrodata.data.processors.html#module-astrodata.data.processors">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.data.processors.base
-
-        <ul>
-          <li><a href="python_api/astrodata.data.processors.html#module-astrodata.data.processors.base">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.data.processors.common
-
-        <ul>
-          <li><a href="python_api/astrodata.data.processors.html#module-astrodata.data.processors.common">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.data.schemas
-
-        <ul>
-          <li><a href="python_api/astrodata.data.html#module-astrodata.data.schemas">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.data.utils
-
-        <ul>
-          <li><a href="python_api/astrodata.data.html#module-astrodata.data.utils">module</a>
 </li>
         </ul></li>
         <li>
@@ -480,8 +395,6 @@
           <li><a href="python_api/astrodata.ml.models.html#module-astrodata.ml.models">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     astrodata.ml.models.BaseMlModel
 
@@ -489,6 +402,8 @@
           <li><a href="python_api/astrodata.ml.models.html#module-astrodata.ml.models.BaseMlModel">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     astrodata.ml.models.PytorchModel
 
@@ -515,76 +430,6 @@
 
         <ul>
           <li><a href="python_api/astrodata.ml.models.html#module-astrodata.ml.models.XGBoostModel">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.preml
-
-        <ul>
-          <li><a href="python_api/astrodata.preml.html#module-astrodata.preml">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.preml.pipeline
-
-        <ul>
-          <li><a href="python_api/astrodata.preml.html#module-astrodata.preml.pipeline">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.preml.processors
-
-        <ul>
-          <li><a href="python_api/astrodata.preml.processors.html#module-astrodata.preml.processors">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.preml.processors.base
-
-        <ul>
-          <li><a href="python_api/astrodata.preml.processors.html#module-astrodata.preml.processors.base">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.preml.processors.MissingImputator
-
-        <ul>
-          <li><a href="python_api/astrodata.preml.processors.html#module-astrodata.preml.processors.MissingImputator">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.preml.processors.Ohe
-
-        <ul>
-          <li><a href="python_api/astrodata.preml.processors.html#module-astrodata.preml.processors.Ohe">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.preml.processors.Standardizer
-
-        <ul>
-          <li><a href="python_api/astrodata.preml.processors.html#module-astrodata.preml.processors.Standardizer">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.preml.processors.TrainTestSplitter
-
-        <ul>
-          <li><a href="python_api/astrodata.preml.processors.html#module-astrodata.preml.processors.TrainTestSplitter">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.preml.schemas
-
-        <ul>
-          <li><a href="python_api/astrodata.preml.html#module-astrodata.preml.schemas">module</a>
-</li>
-        </ul></li>
-        <li>
-    astrodata.preml.utils
-
-        <ul>
-          <li><a href="python_api/astrodata.preml.html#module-astrodata.preml.utils">module</a>
 </li>
         </ul></li>
         <li>
@@ -658,8 +503,6 @@
   <h2>B</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.data.loaders.html#astrodata.data.loaders.base.BaseLoader">BaseLoader (class in astrodata.data.loaders.base)</a>
-</li>
         <li><a href="python_api/astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric">BaseMetric (class in astrodata.ml.metrics.BaseMetric)</a>
 </li>
     </ul></td>
@@ -680,17 +523,11 @@
 </li>
         <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel.clone">clone() (astrodata.ml.models.BaseMlModel.BaseMlModel method)</a>
 </li>
-        <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.CodeTracker.CodeTracker">CodeTracker (class in astrodata.tracking.CodeTracker)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.pipeline.DataPipeline.config">config (astrodata.data.pipeline.DataPipeline attribute)</a>
-</li>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.utils.convert_to_processed_data">convert_to_processed_data() (in module astrodata.data.utils)</a>
+        <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.CodeTracker.CodeTracker">CodeTracker (class in astrodata.tracking.CodeTracker)</a>
 </li>
         <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.CodeTracker.CodeTracker.create_commit">create_commit() (astrodata.tracking.CodeTracker.CodeTracker method)</a>
-</li>
-        <li><a href="python_api/astrodata.data.loaders.html#astrodata.data.loaders.csv_loader.CsvLoader">CsvLoader (class in astrodata.data.loaders.csv_loader)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -700,37 +537,7 @@
   <h2>D</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.ProcessedData.data">data (astrodata.data.schemas.ProcessedData attribute)</a>, <a href="python_api/astrodata.data.html#id0">[1]</a>
-
-        <ul>
-          <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.RawData.data">(astrodata.data.schemas.RawData attribute)</a>, <a href="python_api/astrodata.data.html#id2">[1]</a>
-</li>
-        </ul></li>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.pipeline.DataPipeline">DataPipeline (class in astrodata.data.pipeline)</a>
-</li>
         <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.DataTracker.DataTracker">DataTracker (class in astrodata.tracking.DataTracker)</a>
-</li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.data.processors.html#astrodata.data.processors.common.DropDuplicates">DropDuplicates (class in astrodata.data.processors.common)</a>
-</li>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.ProcessedData.dump_parquet">dump_parquet() (astrodata.data.schemas.ProcessedData method)</a>
-
-        <ul>
-          <li><a href="python_api/astrodata.preml.html#astrodata.preml.schemas.Premldata.dump_parquet">(astrodata.preml.schemas.Premldata method)</a>
-</li>
-        </ul></li>
-        <li><a href="python_api/astrodata.preml.html#astrodata.preml.schemas.Premldata.dump_supervised_ML_format">dump_supervised_ML_format() (astrodata.preml.schemas.Premldata method)</a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="E" class="genindex-section">
-  <h2>E</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.utils.extract_format">extract_format() (in module astrodata.data.utils)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -756,10 +563,6 @@
           <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.XGBoostModel.XGBoostModel.fit">(astrodata.ml.models.XGBoostModel.XGBoostModel method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.RawData.format">format (astrodata.data.schemas.RawData attribute)</a>, <a href="python_api/astrodata.data.html#id3">[1]</a>
-</li>
     </ul></td>
   </tr></table>
 </section>
@@ -886,40 +689,18 @@
   </tr></table>
 </section>
 
-<section id="I" class="genindex-section">
-  <h2>I</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.preml.html#astrodata.preml.utils.instantiate_processors">instantiate_processors() (in module astrodata.preml.utils)</a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
 <section id="L" class="genindex-section">
   <h2>L</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.data.loaders.html#astrodata.data.loaders.base.BaseLoader.load">load() (astrodata.data.loaders.base.BaseLoader method)</a>
+        <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel.load">load() (astrodata.ml.models.BaseMlModel.BaseMlModel method)</a>
 
         <ul>
-          <li><a href="python_api/astrodata.data.loaders.html#astrodata.data.loaders.csv_loader.CsvLoader.load">(astrodata.data.loaders.csv_loader.CsvLoader method)</a>
-</li>
-          <li><a href="python_api/astrodata.data.loaders.html#astrodata.data.loaders.parquet_loader.ParquetLoader.load">(astrodata.data.loaders.parquet_loader.ParquetLoader method)</a>
-</li>
-          <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel.load">(astrodata.ml.models.BaseMlModel.BaseMlModel method)</a>
-</li>
           <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.SklearnModel.SklearnModel.load">(astrodata.ml.models.SklearnModel.SklearnModel method)</a>
 </li>
           <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.XGBoostModel.XGBoostModel.load">(astrodata.ml.models.XGBoostModel.XGBoostModel method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.preml.processors.html#astrodata.preml.processors.base.PremlProcessor.load_artifact">load_artifact() (astrodata.preml.processors.base.PremlProcessor method)</a>
-</li>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.pipeline.DataPipeline.loader">loader (astrodata.data.pipeline.DataPipeline attribute)</a>
-</li>
     </ul></td>
   </tr></table>
 </section>
@@ -928,24 +709,8 @@
   <h2>M</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.ProcessedData.metadata">metadata (astrodata.data.schemas.ProcessedData attribute)</a>, <a href="python_api/astrodata.data.html#id1">[1]</a>
-
-        <ul>
-          <li><a href="python_api/astrodata.preml.html#astrodata.preml.schemas.Premldata.metadata">(astrodata.preml.schemas.Premldata attribute)</a>, <a href="python_api/astrodata.preml.html#id0">[1]</a>
-</li>
-        </ul></li>
-        <li><a href="python_api/astrodata.preml.processors.html#astrodata.preml.processors.MissingImputator.MissingImputator">MissingImputator (class in astrodata.preml.processors.MissingImputator)</a>
-</li>
         <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.MLFlowTracker.MlflowBaseTracker">MlflowBaseTracker (class in astrodata.tracking.MLFlowTracker)</a>
 </li>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.ProcessedData.model_config">model_config (astrodata.data.schemas.ProcessedData attribute)</a>
-
-        <ul>
-          <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.RawData.model_config">(astrodata.data.schemas.RawData attribute)</a>
-</li>
-          <li><a href="python_api/astrodata.preml.html#astrodata.preml.schemas.Premldata.model_config">(astrodata.preml.schemas.Premldata attribute)</a>
-</li>
-        </ul></li>
         <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.ModelTracker.ModelTracker">ModelTracker (class in astrodata.tracking.ModelTracker)</a>
 </li>
         <li>
@@ -953,28 +718,6 @@
 
         <ul>
           <li><a href="python_api/astrodata.html#module-astrodata">astrodata</a>
-</li>
-          <li><a href="python_api/astrodata.data.html#module-astrodata.data">astrodata.data</a>
-</li>
-          <li><a href="python_api/astrodata.data.loaders.html#module-astrodata.data.loaders">astrodata.data.loaders</a>
-</li>
-          <li><a href="python_api/astrodata.data.loaders.html#module-astrodata.data.loaders.base">astrodata.data.loaders.base</a>
-</li>
-          <li><a href="python_api/astrodata.data.loaders.html#module-astrodata.data.loaders.csv_loader">astrodata.data.loaders.csv_loader</a>
-</li>
-          <li><a href="python_api/astrodata.data.loaders.html#module-astrodata.data.loaders.parquet_loader">astrodata.data.loaders.parquet_loader</a>
-</li>
-          <li><a href="python_api/astrodata.data.html#module-astrodata.data.pipeline">astrodata.data.pipeline</a>
-</li>
-          <li><a href="python_api/astrodata.data.processors.html#module-astrodata.data.processors">astrodata.data.processors</a>
-</li>
-          <li><a href="python_api/astrodata.data.processors.html#module-astrodata.data.processors.base">astrodata.data.processors.base</a>
-</li>
-          <li><a href="python_api/astrodata.data.processors.html#module-astrodata.data.processors.common">astrodata.data.processors.common</a>
-</li>
-          <li><a href="python_api/astrodata.data.html#module-astrodata.data.schemas">astrodata.data.schemas</a>
-</li>
-          <li><a href="python_api/astrodata.data.html#module-astrodata.data.utils">astrodata.data.utils</a>
 </li>
           <li><a href="python_api/astrodata.ml.html#module-astrodata.ml">astrodata.ml</a>
 </li>
@@ -1004,26 +747,6 @@
 </li>
           <li><a href="python_api/astrodata.ml.models.html#module-astrodata.ml.models.XGBoostModel">astrodata.ml.models.XGBoostModel</a>
 </li>
-          <li><a href="python_api/astrodata.preml.html#module-astrodata.preml">astrodata.preml</a>
-</li>
-          <li><a href="python_api/astrodata.preml.html#module-astrodata.preml.pipeline">astrodata.preml.pipeline</a>
-</li>
-          <li><a href="python_api/astrodata.preml.processors.html#module-astrodata.preml.processors">astrodata.preml.processors</a>
-</li>
-          <li><a href="python_api/astrodata.preml.processors.html#module-astrodata.preml.processors.base">astrodata.preml.processors.base</a>
-</li>
-          <li><a href="python_api/astrodata.preml.processors.html#module-astrodata.preml.processors.MissingImputator">astrodata.preml.processors.MissingImputator</a>
-</li>
-          <li><a href="python_api/astrodata.preml.processors.html#module-astrodata.preml.processors.Ohe">astrodata.preml.processors.Ohe</a>
-</li>
-          <li><a href="python_api/astrodata.preml.processors.html#module-astrodata.preml.processors.Standardizer">astrodata.preml.processors.Standardizer</a>
-</li>
-          <li><a href="python_api/astrodata.preml.processors.html#module-astrodata.preml.processors.TrainTestSplitter">astrodata.preml.processors.TrainTestSplitter</a>
-</li>
-          <li><a href="python_api/astrodata.preml.html#module-astrodata.preml.schemas">astrodata.preml.schemas</a>
-</li>
-          <li><a href="python_api/astrodata.preml.html#module-astrodata.preml.utils">astrodata.preml.utils</a>
-</li>
           <li><a href="python_api/astrodata.tracking.html#module-astrodata.tracking">astrodata.tracking</a>
 </li>
           <li><a href="python_api/astrodata.tracking.html#module-astrodata.tracking.CodeTracker">astrodata.tracking.CodeTracker</a>
@@ -1047,32 +770,10 @@
   </tr></table>
 </section>
 
-<section id="N" class="genindex-section">
-  <h2>N</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.data.processors.html#astrodata.data.processors.common.NormalizeAndSplit">NormalizeAndSplit (class in astrodata.data.processors.common)</a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="O" class="genindex-section">
-  <h2>O</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.preml.processors.html#astrodata.preml.processors.Ohe.OHE">OHE (class in astrodata.preml.processors.Ohe)</a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
 <section id="P" class="genindex-section">
   <h2>P</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.data.loaders.html#astrodata.data.loaders.parquet_loader.ParquetLoader">ParquetLoader (class in astrodata.data.loaders.parquet_loader)</a>
-</li>
         <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel.predict">predict() (astrodata.ml.models.BaseMlModel.BaseMlModel method)</a>
 
         <ul>
@@ -1083,40 +784,8 @@
         </ul></li>
         <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.SklearnModel.SklearnModel.predict_proba">predict_proba() (astrodata.ml.models.SklearnModel.SklearnModel method)</a>
 </li>
-        <li><a href="python_api/astrodata.preml.html#astrodata.preml.schemas.Premldata">Premldata (class in astrodata.preml.schemas)</a>
-</li>
-        <li><a href="python_api/astrodata.preml.html#astrodata.preml.schemas.Premldata.Config">Premldata.Config (class in astrodata.preml.schemas)</a>
-</li>
-        <li><a href="python_api/astrodata.preml.html#astrodata.preml.pipeline.PremlPipeline">PremlPipeline (class in astrodata.preml.pipeline)</a>
-</li>
-        <li><a href="python_api/astrodata.preml.processors.html#astrodata.preml.processors.base.PremlProcessor">PremlProcessor (class in astrodata.preml.processors.base)</a>
-</li>
-        <li><a href="python_api/astrodata.data.processors.html#astrodata.data.processors.base.AbstractProcessor.process">process() (astrodata.data.processors.base.AbstractProcessor method)</a>
-
-        <ul>
-          <li><a href="python_api/astrodata.data.processors.html#astrodata.data.processors.common.DropDuplicates.process">(astrodata.data.processors.common.DropDuplicates method)</a>
-</li>
-          <li><a href="python_api/astrodata.data.processors.html#astrodata.data.processors.common.NormalizeAndSplit.process">(astrodata.data.processors.common.NormalizeAndSplit method)</a>
-</li>
-          <li><a href="python_api/astrodata.preml.processors.html#astrodata.preml.processors.base.PremlProcessor.process">(astrodata.preml.processors.base.PremlProcessor method)</a>
-</li>
-          <li><a href="python_api/astrodata.preml.processors.html#astrodata.preml.processors.MissingImputator.MissingImputator.process">(astrodata.preml.processors.MissingImputator.MissingImputator method)</a>
-</li>
-          <li><a href="python_api/astrodata.preml.processors.html#astrodata.preml.processors.Ohe.OHE.process">(astrodata.preml.processors.Ohe.OHE method)</a>
-</li>
-          <li><a href="python_api/astrodata.preml.processors.html#astrodata.preml.processors.Standardizer.Standardizer.process">(astrodata.preml.processors.Standardizer.Standardizer method)</a>
-</li>
-          <li><a href="python_api/astrodata.preml.processors.html#astrodata.preml.processors.TrainTestSplitter.TrainTestSplitter.process">(astrodata.preml.processors.TrainTestSplitter.TrainTestSplitter method)</a>
-</li>
-        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.ProcessedData">ProcessedData (class in astrodata.data.schemas)</a>
-</li>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.ProcessedData.Config">ProcessedData.Config (class in astrodata.data.schemas)</a>
-</li>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.pipeline.DataPipeline.processors">processors (astrodata.data.pipeline.DataPipeline attribute)</a>
-</li>
         <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.CodeTracker.CodeTracker.pull">pull() (astrodata.tracking.CodeTracker.CodeTracker method)</a>
 
         <ul>
@@ -1139,10 +808,6 @@
   <h2>R</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.RawData">RawData (class in astrodata.data.schemas)</a>
-</li>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.RawData.Config">RawData.Config (class in astrodata.data.schemas)</a>
-</li>
         <li><a href="python_api/astrodata.utils.html#astrodata.utils.utils.read_config">read_config() (in module astrodata.utils.utils)</a>
 </li>
     </ul></td>
@@ -1151,12 +816,6 @@
 </li>
         <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.CodeTracker.CodeTracker.remove_deleted_from_index">remove_deleted_from_index() (astrodata.tracking.CodeTracker.CodeTracker method)</a>
 </li>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.pipeline.DataPipeline.run">run() (astrodata.data.pipeline.DataPipeline method)</a>
-
-        <ul>
-          <li><a href="python_api/astrodata.preml.html#astrodata.preml.pipeline.PremlPipeline.run">(astrodata.preml.pipeline.PremlPipeline method)</a>
-</li>
-        </ul></li>
     </ul></td>
   </tr></table>
 </section>
@@ -1173,8 +832,6 @@
           <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.XGBoostModel.XGBoostModel.save">(astrodata.ml.models.XGBoostModel.XGBoostModel method)</a>
 </li>
         </ul></li>
-        <li><a href="python_api/astrodata.preml.processors.html#astrodata.preml.processors.base.PremlProcessor.save_artifact">save_artifact() (astrodata.preml.processors.base.PremlProcessor method)</a>
-</li>
         <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel.score">score() (astrodata.ml.models.BaseMlModel.BaseMlModel method)</a>
 
         <ul>
@@ -1183,6 +840,8 @@
           <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.XGBoostModel.XGBoostModel.score">(astrodata.ml.models.XGBoostModel.XGBoostModel method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel.set_params">set_params() (astrodata.ml.models.BaseMlModel.BaseMlModel method)</a>
 
         <ul>
@@ -1191,8 +850,6 @@
           <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.XGBoostModel.XGBoostModel.set_params">(astrodata.ml.models.XGBoostModel.XGBoostModel method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="python_api/astrodata.utils.html#astrodata.utils.logger.setup_logger">setup_logger() (in module astrodata.utils.logger)</a>
 </li>
         <li><a href="python_api/astrodata.ml.metrics.html#astrodata.ml.metrics.SklearnMetric.SklearnMetric">SklearnMetric (class in astrodata.ml.metrics.SklearnMetric)</a>
@@ -1200,10 +857,6 @@
         <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.MLFlowTracker.SklearnMLflowTracker">SklearnMLflowTracker (class in astrodata.tracking.MLFlowTracker)</a>
 </li>
         <li><a href="python_api/astrodata.ml.models.html#astrodata.ml.models.SklearnModel.SklearnModel">SklearnModel (class in astrodata.ml.models.SklearnModel)</a>
-</li>
-        <li><a href="python_api/astrodata.data.html#astrodata.data.schemas.RawData.source">source (astrodata.data.schemas.RawData attribute)</a>, <a href="python_api/astrodata.data.html#id4">[1]</a>
-</li>
-        <li><a href="python_api/astrodata.preml.processors.html#astrodata.preml.processors.Standardizer.Standardizer">Standardizer (class in astrodata.preml.processors.Standardizer)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1213,35 +866,11 @@
   <h2>T</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.preml.html#astrodata.preml.schemas.Premldata.test_features">test_features (astrodata.preml.schemas.Premldata attribute)</a>, <a href="python_api/astrodata.preml.html#id1">[1]</a>
-</li>
-        <li><a href="python_api/astrodata.preml.html#astrodata.preml.schemas.Premldata.test_targets">test_targets (astrodata.preml.schemas.Premldata attribute)</a>, <a href="python_api/astrodata.preml.html#id2">[1]</a>
-</li>
         <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.Tracker.Tracker.track">track() (astrodata.tracking.Tracker.Tracker method)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="python_api/astrodata.tracking.html#astrodata.tracking.Tracker.Tracker">Tracker (class in astrodata.tracking.Tracker)</a>
-</li>
-        <li><a href="python_api/astrodata.preml.html#astrodata.preml.schemas.Premldata.train_features">train_features (astrodata.preml.schemas.Premldata attribute)</a>, <a href="python_api/astrodata.preml.html#id3">[1]</a>
-</li>
-        <li><a href="python_api/astrodata.preml.html#astrodata.preml.schemas.Premldata.train_targets">train_targets (astrodata.preml.schemas.Premldata attribute)</a>, <a href="python_api/astrodata.preml.html#id4">[1]</a>
-</li>
-        <li><a href="python_api/astrodata.preml.processors.html#astrodata.preml.processors.TrainTestSplitter.TrainTestSplitter">TrainTestSplitter (class in astrodata.preml.processors.TrainTestSplitter)</a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="V" class="genindex-section">
-  <h2>V</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.preml.html#astrodata.preml.schemas.Premldata.val_features">val_features (astrodata.preml.schemas.Premldata attribute)</a>, <a href="python_api/astrodata.preml.html#id5">[1]</a>
-</li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="python_api/astrodata.preml.html#astrodata.preml.schemas.Premldata.val_targets">val_targets (astrodata.preml.schemas.Premldata attribute)</a>, <a href="python_api/astrodata.preml.html#id6">[1]</a>
 </li>
     </ul></td>
   </tr></table>
