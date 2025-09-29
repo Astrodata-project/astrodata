@@ -1,16 +1,14 @@
 import itertools
+import os
 
 import numpy as np
+from joblib import Parallel, delayed
 from sklearn.model_selection import KFold, train_test_split
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.model_selection.BaseMlModelSelector import BaseMlModelSelector
 from astrodata.ml.models.BaseMlModel import BaseMlModel
 from astrodata.tracking.Tracker import Tracker
-import os
-
-
-from joblib import Parallel, delayed
 
 
 class GridSearchCVSelector_parallel(BaseMlModelSelector):
@@ -18,12 +16,11 @@ class GridSearchCVSelector_parallel(BaseMlModelSelector):
     Performs grid search with cross-validation.
     """
 
-
     def __init__(
         self,
         model: BaseMlModel,
         param_grid: dict,
-        n_jobs=os.cpu_count() - 1,   #####
+        n_jobs=os.cpu_count() - 1,  #####
         scorer: BaseMetric = None,
         cv=5,
         random_state=42,
@@ -34,7 +31,7 @@ class GridSearchCVSelector_parallel(BaseMlModelSelector):
         super().__init__()
         self.model = model
         self.param_grid = param_grid
-        self.n_jobs = n_jobs   ######
+        self.n_jobs = n_jobs  ######
         self.scorer = scorer
         self.cv = cv
         self.random_state = random_state
@@ -61,14 +58,12 @@ class GridSearchCVSelector_parallel(BaseMlModelSelector):
         else:
             cv_splitter = self.cv
 
-
         ##### deve prima decidere tutte le combinazioni, così ne dà uin certo tot a ogni core
         param_combinations = [
             dict(zip(self.param_grid.keys(), values))
             for values in itertools.product(*self.param_grid.values())
         ]
         #######
-
 
         # qua valutiamo una sola combo alla volta
         def evaluate_params(params):
@@ -82,7 +77,6 @@ class GridSearchCVSelector_parallel(BaseMlModelSelector):
                 model = self.model.clone()
                 model.set_params(**params)
 
-
                 if self.tracker:
                     model = self.tracker.wrap_fit(
                         model,
@@ -95,26 +89,29 @@ class GridSearchCVSelector_parallel(BaseMlModelSelector):
                 model.fit(X_train, y_train)
 
                 if self.scorer:
-                    score = model.get_metrics(X_val, y_val, metrics=[self.scorer])[self.scorer.get_name()]
+                    score = model.get_metrics(X_val, y_val, metrics=[self.scorer])[
+                        self.scorer.get_name()
+                    ]
                 else:
                     score = model.score(X_val, y_val)
                 fold_scores.append(score)
 
                 if self.metrics:
-                    fold_metrics.append(model.get_metrics(X_val, y_val, metrics=self.metrics))
+                    fold_metrics.append(
+                        model.get_metrics(X_val, y_val, metrics=self.metrics)
+                    )
 
             mean_score = np.mean(fold_scores)
             return params, mean_score, fold_metrics
 
-
-        #qui prendo una combo alla volta, la passo a parallel che
+        # qui prendo una combo alla volta, la passo a parallel che
         # le valuta dandone tot ad ogni core, poi mi memo i risultati
 
         results = Parallel(n_jobs=self.n_jobs)(
             delayed(evaluate_params)(params) for params in param_combinations
         )
 
-        #cerchiamo in results la migliore combo
+        # cerchiamo in results la migliore combo
         for params, mean_score, fold_metrics in results:
             if (greater_is_better and mean_score > best_score) or (
                 not greater_is_better and mean_score < best_score
@@ -127,7 +124,8 @@ class GridSearchCVSelector_parallel(BaseMlModelSelector):
                         k: sum(d[k] for d in fold_metrics) / len(fold_metrics)
                         for k in fold_metrics[0]
                     }
-                    if self.metrics else None
+                    if self.metrics
+                    else None
                 )
 
         self._best_model = self.model.clone()
@@ -167,17 +165,8 @@ class GridSearchCVSelector_parallel(BaseMlModelSelector):
             "log_all_models": self.log_all_models,
         }
 
-#print(GridSearchCVSelector_parallel.__abstractmethods__)
 
-
-
-
-
-
-
-
-
-
+# print(GridSearchCVSelector_parallel.__abstractmethods__)
 
 
 class GridSearchSelector_parallel(BaseMlModelSelector):
@@ -189,7 +178,7 @@ class GridSearchSelector_parallel(BaseMlModelSelector):
         self,
         model: BaseMlModel,
         param_grid: dict,
-        n_jobs: int = 1, ####
+        n_jobs: int = 1,  ####
         scorer: BaseMetric = None,
         val_size=0.2,
         random_state=42,
@@ -241,11 +230,10 @@ class GridSearchSelector_parallel(BaseMlModelSelector):
         self._X_train, self._y_train = X_train, y_train
         self._X_val, self._y_val = X_val, y_val
 
-
         param_combinations = [
-                dict(zip(self.param_grid.keys(), values))
-                for values in itertools.product(*self.param_grid.values())
-            ]
+            dict(zip(self.param_grid.keys(), values))
+            for values in itertools.product(*self.param_grid.values())
+        ]
 
         def evaluate_params(params):
             model = self.model.clone()
@@ -293,7 +281,6 @@ class GridSearchSelector_parallel(BaseMlModelSelector):
                 self._best_params = params
                 self._best_metrics = metrics
 
-
         # Refit best model on full data (train + val)
         X_full = np.concatenate([X_train, X_val])
         y_full = np.concatenate([y_train, y_val])
@@ -313,8 +300,6 @@ class GridSearchSelector_parallel(BaseMlModelSelector):
         self._best_model.fit(X_full, y_full)
 
         return self
-
-
 
     def get_best_model(self):
         return self._best_model

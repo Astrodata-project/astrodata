@@ -32,7 +32,7 @@ class Tracker:
             config_path (str): Path to the configuration file.
         """
         self.config = read_config(config_path)
-        self.project_path = Path(self.config["project_path"]).resolve()
+        self.project_path = self.config["project_path"]
 
         self.code_tracker = None
         self.data_tracker = None
@@ -42,7 +42,10 @@ class Tracker:
             token = self.config.get("code", {}).get("token")
             branch = self.config.get("code", {}).get("branch", "main")
             self.code_tracker = CodeTracker(
-                self.project_path, ssh_key_path=ssh_key, token=token, branch=branch
+                self.project_path,
+                ssh_key_path=ssh_key,
+                token=token,
+                branch=branch,
             )
         if self.config.get("data", {}).get("enable", False):
             remote = self.config.get("data", {}).get("remote", "myremote")
@@ -96,11 +99,17 @@ class Tracker:
             return
         logger.info("Tracking data with DVC...")
         data_config = self.config.get("data", {})
+        paths = data_config.get("paths", [])
+        paths.append("astrodata_files")
         for path in data_config.get("paths", []):
             abs_path = (self.project_path / path).resolve()
             if abs_path.is_dir():
                 for file in abs_path.rglob("*"):
-                    if file.is_file() and file.suffix != ".dvc":
+                    if (
+                        file.is_file()
+                        and file.suffix != ".dvc"
+                        and file.name != ".gitignore"
+                    ):
                         logger.info(f"Tracking file: {file}")
                         self.data_tracker.add(str(file.relative_to(self.project_path)))
             else:

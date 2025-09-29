@@ -1,48 +1,92 @@
 from astrodata.data.schemas import ProcessedData
-from astrodata.preml.processors import ConvertToPremlData
-from astrodata.preml.processors.base import AbstractProcessor
+from astrodata.preml.processors.base import PremlProcessor
 from astrodata.preml.schemas import Premldata
-from astrodata.utils.utils import read_config
+from astrodata.preml.utils import instantiate_processors
+from astrodata.utils.utils import get_output_path, read_config
 
 
 class PremlPipeline:
     """
-    A pipeline for processing data using a loader and a series of processors.
+    Pipeline for processing data using a configurable sequence of processors.
 
-    Attributes:
-        processors (list[AbstractProcessor]): A list of processors to process the data.
-        config_path (str): The path to the configuration file.
+    Features:
+        - Requires either a config_path or a processors list (not both None).
+        - Merges processors from config and argument, with argument processors taking priority.
+        - Ensures the first processor is a TrainTestSplitter.
+
+    Args:
+        config_path (str): Path to the configuration file.
+        processors (list[PremlProcessor], optional): List of processor instances.
 
     Methods:
-        run(path: str) -> Premldata:
-            Executes the pipeline by loading a yaml from the given path,
-            applying the processors sequentially, and converting the
-            result into a Premldata object.
+        run(processeddata: ProcessedData) -> Premldata:
+            Executes the pipeline, applying processors in order and returning the final Premldata.
     """
 
-    def __init__(self, processors: list[AbstractProcessor], config_path: str):
-        self.processors = processors
-        self.operations_tracker = []
-        self.config = read_config(config_path).get("preml", {})
-        print(f"Config loaded from {config_path}")
-        print(f"Config: {self.config}")
+    def __init__(self, config_path: str, processors: list[PremlProcessor] = None):
+        self.config = read_config(config_path)
+        self.preml_config = self.config.get("preml", {})
+        if not self.config and not processors:
+            raise ValueError(
+                "Either preml section of config or processors must be provided."
+            )
+        self.processors = []
+        processors = processors or []
+        config_processors = instantiate_processors(self.preml_config)
 
-    def run(self, processeddata: ProcessedData) -> Premldata:
+        # Add TrainTestSplitter as the first processor if not already present
+        for p in processors:
+            if p.__class__.__name__ == "TrainTestSplitter":
+                self.processors.append(p)
+                processors.remove(p)
+        if "TrainTestSplitter" in config_processors and self.processors == []:
+            self.processors.append(config_processors["TrainTestSplitter"])
+            config_processors.pop("TrainTestSplitter")
+        if not self.processors:
+            raise ValueError("A TrainTestSplitter must be defined.")
+
+        # Add the remaining processors, giving priority to argument processors
+        for p in processors:
+            self.processors.append(p)
+        for p in config_processors.values():
+            if p.__class__.__name__ not in [
+                processor.__class__.__name__ for processor in self.processors
+            ]:
+                self.processors.append(p)
+
+        self.operations_tracker = []
+
+    def run(self, processeddata: ProcessedData, dump_output: bool = True) -> Premldata:
         """
-        Executes the data pipeline.
+        Executes the data pipeline by applying each processor in sequence.
+
+        Args:
+            processeddata (ProcessedData): The input processed data.
+            dump_output (bool): Whether to dump the output to disk.
+
+        Returns:
+            Premldata: The final processed data object.
         """
-        converter = ConvertToPremlData(self.config)
+        converter = self.processors[0]
         data = converter.process(processeddata)
         self.operations_tracker.append(
             {f"{converter.__class__.__name__}": converter.artifact}
         )
+        output_path = None
+        if dump_output:
+            output_path = get_output_path(self.config["project_path"], "preml")
 
-        for processor in self.processors:
-            if processor.__class__.__name__ in self.config:
-                processor.kwargs = self.config[processor.__class__.__name__]
+        for processor in self.processors[1:]:
+            if dump_output:
+                processor.save_path = (
+                    output_path / f"{processor.__class__.__name__}.pkl"
+                )
+            if processor.__class__.__name__ in self.preml_config:
+                processor.kwargs = self.preml_config[processor.__class__.__name__]
             data = processor.process(data)
             self.operations_tracker.append(
                 {f"{processor.__class__.__name__}": processor.artifact}
             )
-        print(f"Operations tracker: {self.operations_tracker}")
+        if dump_output:
+            data.dump_parquet(output_path)
         return data

@@ -1,7 +1,7 @@
 import pandas as pd
 
 from astrodata.data import ProcessedData
-from astrodata.preml import OHE, MissingImputator, Premldata, PremlPipeline
+from astrodata.preml import OHE, MissingImputator, PremlPipeline, TrainTestSplitter
 
 
 def dummy_processed_data():
@@ -23,41 +23,60 @@ if __name__ == "__main__":
     # We will create a dummy processed DataFrame, apply OHE and MissingImputator, and print the results.
     processed_data = dummy_processed_data()
 
-    # PremlPipeline needs a configuration file path, where you must define parameters for train_test_split.
-    # Optionally, you can define blocks for each processor, where you can specify parameters for each processor.
-    config_path = "example_config.yaml"
+    # PremlPipeline needs to know the configuration for each processor.
+    # Either you define the processors directly in the code,
+    # or you can define them in a configuration file. While using the latter approach,
+    # each block in the config file should be named after the processor class name.
+    # In case both methods are used, the processors defined in the code will take precedence over those defined in the config file.
 
     # Define the processors
+    # It is mandatory to define a TrainTestSplitter processor, which will split the data into training, testing, and optionally validation sets.
     # Along with the specific parameters for each processor, you can also specify the save path for the artifacts.
+
+    tts = TrainTestSplitter(targets=["target"], test_size=0.2, random_state=42)
+
     ohe_processor = OHE(
         categorical_columns=["feature2"],
         numerical_columns=["feature1", "feature3"],
     )
 
-    missing_imputator = MissingImputator(
+    MissingImputator = MissingImputator(
         categorical_columns=["feature2"],
         numerical_columns=["feature1", "feature3"],
     )
 
     # Define the PremlPipeline with the processors and configuration path
-    preml_pipeline = PremlPipeline([missing_imputator, ohe_processor], config_path)
+    config_path = "example_config.yaml"
+    preml_pipeline = PremlPipeline(
+        config_path=config_path,
+        processors=[tts, MissingImputator, ohe_processor],
+    )
 
     # Let's run the pipeline with the dummy processed data
-    preml_data = preml_pipeline.run(processed_data)
+    preml_data = preml_pipeline.run(processed_data, dump_output=False)
+
+    print("--" * 30)
+    print("Preml Pipeline ran successfully!")
+    print(f"Preml training features shape:{preml_data.train_features.shape}")
+    print(f"Preml training targets shape:{preml_data.train_targets.shape}")
+    print("--" * 30)
 
     # We will now try to define processors' parameters in the config file.
     # blocks should be named after the processor class names.
+    # Order is important, as the first processor will be the TrainTestSplitter.
+    # For example, If we put the ohe block before the missing imputator block,
+    # the OHE will be applied before the missing values are handled.
+    # parameters of the config file need to account fot this.
+
     config_path = "example_config_params.yaml"
-    ohe_processor = OHE()
-    missing_imputator = MissingImputator()
 
-    preml_pipeline = PremlPipeline([missing_imputator, ohe_processor], config_path)
+    preml_pipeline = PremlPipeline(config_path=config_path)
 
-    preml_data = preml_pipeline.run(processed_data)
+    preml_data = preml_pipeline.run(processed_data, dump_output=False)
 
     print("Preml Pipeline ran successfully!")
-    print(f"Preml data shape:{preml_data.train_features.shape}")
-    print(f"Preml data shape:{preml_data.train_targets.shape}")
+    print(f"Preml training features shape:{preml_data.train_features.shape}")
+    print(f"Preml training targets shape:{preml_data.train_targets.shape}")
 
     # You can dump the preml data into supervised ML format, which will return train and test features and targets.
     X_train, X_test, y_train, y_test = preml_data.dump_supervised_ML_format()

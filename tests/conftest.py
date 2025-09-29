@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
@@ -27,6 +29,20 @@ class DummyProcessor(AbstractProcessor):
         df = raw.data.copy()
         df["c"] = df["a"] + df["b"]
         return RawData(source=raw.source, format=raw.format, data=df)
+
+
+@pytest.fixture
+def dummy_config():
+    return {
+        "project_path": Path("/dummy/project/path").resolve(),
+        "preml": {
+            "TrainTestSplitter": {"targets": ["tg"], "test_size": 0.2},
+            "OHE": {
+                "categorical_columns": ["cat"],
+                "numerical_columns": ["num"],
+            },
+        },
+    }
 
 
 @pytest.fixture

@@ -5,8 +5,8 @@ from sklearn.metrics import accuracy_score, f1_score, log_loss
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
-from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.models.SklearnModel import SklearnModel
+from astrodata.ml.metrics import SklearnMetric
+from astrodata.ml.models import SklearnModel
 from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
 
 # This example demonstrates how to use the tracking capabilities of astrodata.ml with a simple model.
@@ -16,7 +16,6 @@ from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
 # and navigating to http://localhost:5000 in your web browser.
 
 if __name__ == "__main__":
-
     # Load the breast cancer dataset
 
     data = load_breast_cancer()
@@ -56,13 +55,17 @@ if __name__ == "__main__":
     # methods that the wrapped model had before (fit, predict, get_metrics, ...).
 
     tracked_gradientboost = tracker.wrap_fit(
-        gradientboost, X_test=X_test, y_test=y_test, metrics=metrics, log_model=True
+        gradientboost,
+        X_test=X_test,
+        y_test=y_test,
+        metrics=metrics,
+        log_model=True,
     )
 
     tracked_gradientboost.fit(X_train, y_train)
 
     print(
-        f"Metrics on test set:",
+        "Metrics on test set:",
         tracked_gradientboost.get_metrics(
             X_test,
             y_test,

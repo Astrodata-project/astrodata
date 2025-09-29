@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional
 
 import pandas as pd
@@ -9,7 +10,12 @@ class Premldata(BaseModel):
     Represents processed data after transformations.
 
     Attributes:
-        data (pd.DataFrame): The actual data as a Pandas DataFrame.
+        train_features (pd.DataFrame): Training features.
+        val_features (Optional[pd.DataFrame]): Validation features, if available.
+        test_features (pd.DataFrame): Test features.
+        train_targets (pd.DataFrame | pd.Series): Training targets.
+        val_targets (Optional[pd.DataFrame | pd.Series]): Validation targets, if available.
+        test_targets (pd.DataFrame | pd.Series): Test targets.
         metadata (Optional[dict]): Additional metadata about the processed data.
     """
 
@@ -46,3 +52,20 @@ class Premldata(BaseModel):
             self.train_targets,
             self.test_targets,
         )
+
+    def dump_parquet(self, path: Path):
+        """
+        Dumps the processed data to a Parquet file.
+
+        Args:
+            path (Path): The file path to save the Parquet file.
+        """
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self.train_features.to_parquet(path / "train_features.parquet", index=False)
+        if self.val_features is not None:
+            self.val_features.to_parquet(path / "val_features.parquet", index=False)
+        self.test_features.to_parquet(path / "test_features.parquet", index=False)
+        self.train_targets.to_parquet(path / "train_targets.parquet", index=False)
+        if self.val_targets is not None:
+            self.val_targets.to_parquet(path / "val_targets.parquet", index=False)
+        self.test_targets.to_parquet(path / "test_targets.parquet", index=False)

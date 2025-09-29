@@ -5,7 +5,7 @@ from typing import Any, Optional
 from astrodata.preml.schemas import Premldata
 
 
-class AbstractProcessor(ABC):
+class PremlProcessor(ABC):
     """
     An abstract base class for preml processors.
 
@@ -18,25 +18,30 @@ class AbstractProcessor(ABC):
             a new `Premldata` object.
     """
 
-    def __init__(self, artifact: Optional[str] = None, **kwargs: Any):
+    def __init__(self, artifact_path: Optional[str] = None, **kwargs: Any):
         """
-        Initializes the processor with an empty dictionary to store artifacts.
+        Initializes the processor with an optional artifact path and keyword arguments.
 
-        Each processor can take an arbitrary number of keyword arguments, which can be accessed within the process method.
+        Args:
+            artifact_path (Optional[str]): Path to save/load processor artifacts.
+            **kwargs: Additional keyword arguments for processor configuration.
         """
-        self.artifact = self.load_artifact(artifact)
+        # TODO: Short term solution to save artifacts, need to think of a better way to handle this
+        self.save_path = artifact_path
+        self.artifact = self.load_artifact(self.save_path)
         self.kwargs = kwargs
 
-    def save_artifact(self, artifact: Any, path: str):
+    def save_artifact(self, artifact: Any):
         """
         Saves an artifact to a specified path.
 
         Args:
-            name (str): The name of the artifact to save.
-            path (str): The path where the artifact should be saved.
+            Artifact (Any): The artifact to be saved, which can be any object.
         """
         self.artifact = artifact
-        with open(path, "wb") as f:
+        if self.save_path is None:
+            return
+        with open(self.save_path, "wb") as f:
             pickle.dump(self.artifact, f)
 
     def load_artifact(self, path: str):
@@ -44,7 +49,6 @@ class AbstractProcessor(ABC):
         Loads an artifact from a specified path.
 
         Args:
-            name (str): The name of the artifact to load.
             path (str): The path from where the artifact should be loaded.
         """
         if path is None:

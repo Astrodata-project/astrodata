@@ -1,19 +1,17 @@
 import pandas as pd
 from hyperopt import hp
-from sklearn.datasets import load_breast_cancer
-from sklearn.metrics import accuracy_score, f1_score, log_loss
+from sklearn.datasets import load_iris
+from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 
-from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.model_selection.HyperOptSelector import (
-    HyperOptSelector,
-)
-from astrodata.ml.models.SklearnModel import SklearnModel
+from astrodata.ml.metrics import SklearnMetric
+from astrodata.ml.model_selection import HyperOptSelector
+from astrodata.ml.models import SklearnModel
 
 if __name__ == "__main__":
     # Load the breast cancer dataset
-    data = load_breast_cancer()
+    data = load_iris()
     X = pd.DataFrame(data.data, columns=data.feature_names)
     y = pd.Series(data.target)
 
@@ -22,16 +20,16 @@ if __name__ == "__main__":
     )
 
     # Instantiate the SklearnModel with LinearSVC and a metric
-    model = SklearnModel(model_class=LinearSVC, penalty="l2", loss="squared_hinge")
+    model1 = SklearnModel(model_class=LinearSVC, penalty="l2", loss="squared_hinge")
+    model2 = SklearnModel(model_class=LinearSVC, penalty="l1", loss="squared_hinge")
     accuracy = SklearnMetric(accuracy_score)
     f1 = SklearnMetric(f1_score, average="micro")
-    logloss = SklearnMetric(log_loss, greater_is_better=False)
 
-    metrics = [accuracy, f1, logloss]
+    metrics = [accuracy, f1]
 
     # Define the hyperopt search space
     param_space = {
-        "model": hp.choice("model", [model]),
+        "model": hp.choice("model", [model1, model2]),
         "C": hp.choice("C", [0.1, 1, 10]),
         "max_iter": hp.choice("max_iter", [1000, 2000]),
         "tol": hp.choice("tol", [1e-3, 1e-4]),

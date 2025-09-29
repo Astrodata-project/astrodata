@@ -1,6 +1,14 @@
 name: Build Sphinx Docs
 
-on: [push]
+permissions:
+  contents: write
+  pages: write
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   build-docs:
@@ -12,14 +20,14 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'  # or your preferred version
+          python-version: '3.11'
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v6
         with:
           version: "latest"
           enable-cache: true
-      
+
       - name: Install dependencies (including dev)
         run: |
           uv sync
@@ -31,9 +39,8 @@ jobs:
           cd docs
           make html
 
-      - name: Upload documentation HTML
-        uses: actions/upload-artifact@v4
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          name: sphinx-html
-          path: docs/_build/html/
-
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/_build/html

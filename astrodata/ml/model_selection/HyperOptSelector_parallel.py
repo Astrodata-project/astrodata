@@ -1,9 +1,14 @@
+import platform
 import random
+import subprocess
+import time
+from datetime import datetime
 from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
 from hyperopt import STATUS_OK, Trials, fmin, tpe
+from hyperopt.mongoexp import MongoTrials
 from hyperopt.pyll.base import Apply
 from sklearn.model_selection import KFold, train_test_split
 
@@ -13,14 +18,6 @@ from astrodata.ml.model_selection.BaseMlModelSelector import BaseMlModelSelector
 from astrodata.ml.models.BaseMlModel import BaseMlModel
 from astrodata.tracking.ModelTracker import ModelTracker
 from astrodata.utils.logger import setup_logger
-
-
-from hyperopt.mongoexp import MongoTrials
-from datetime import datetime
-import subprocess
-import platform
-
-import time
 
 logger = setup_logger(__name__)
 
@@ -33,20 +30,14 @@ class HyperOptSelector_(BaseMlModelSelector):
     def __init__(
         self,
         n_cores: int,
-
         param_space: dict,  # hyperopt search space
-
         mongo_url: Optional[str] = None,
         exp_key: Optional[str] = None,
-
-
         show_worker_terminal: bool = True,
-
-        #model_mapping=None,
+        # model_mapping=None,
         model_mapping: Optional[dict] = None,
         model_list=None,
         ######################### fine cose aggiunte
-
         scorer: Optional[BaseMetric] = None,
         use_cv: bool = False,
         cv: Optional[int] = 2,
@@ -84,7 +75,6 @@ class HyperOptSelector_(BaseMlModelSelector):
             If True, logs all models, not just the best one.
         """
 
-
         self.n_cores = n_cores
         self.mongo_url = mongo_url
         self.show_worker_terminal = show_worker_terminal
@@ -94,17 +84,15 @@ class HyperOptSelector_(BaseMlModelSelector):
         ########fine nuove aggiunte
 
         self.param_space = param_space
-        #self.scorer = scorer
+        # self.scorer = scorer
         self.use_cv = use_cv
         self.cv = cv
         self.val_size = val_size
         self.max_evals = max_evals
         self.random_state = random_state
-        #self.metrics = metrics or []
-        #if scorer is not None and scorer not in self.metrics:
+        # self.metrics = metrics or []
+        # if scorer is not None and scorer not in self.metrics:
         #    self.metrics.append(scorer)
-
-
 
         #### new scorer
         self.scorer = scorer
@@ -113,8 +101,6 @@ class HyperOptSelector_(BaseMlModelSelector):
             self.metrics.append(self.scorer)
         ###########
 
-
-
         self.tracker = tracker
         self.log_all_models = log_all_models
 
@@ -122,15 +108,11 @@ class HyperOptSelector_(BaseMlModelSelector):
         self._best_params = None
         self._best_metrics = None
 
-
-
-
     def _objective(
         self, params: Dict[str, Any], X, y, X_val=None, y_val=None
     ) -> Dict[str, Any]:
         # hyperopt passes numpy floats, so cast where needed
         params_t = params.copy()
-
 
         """cambiare per serializzare
         model = params_t.pop("model") 
@@ -139,30 +121,19 @@ class HyperOptSelector_(BaseMlModelSelector):
             raise TypeError(f"{model} is not a BaseMlModel instance")
         """
 
-
-
-
-
         model_key = params_t.pop("model")
         model = self.model_mapping[model_key]
 
-
-
-
-        #nuovo scorer
+        # nuovo scorer
         if self.scorer is None:
             if model_key and self.model_mapping and model_key in self.model_mapping:
                 model_cls = self.model_mapping[model_key]
-                if hasattr(model_cls, "default_scorer") and callable(model_cls.default_scorer):
+                if hasattr(model_cls, "default_scorer") and callable(
+                    model_cls.default_scorer
+                ):
                     self.scorer = model_cls.default_scorer()
                     if self.scorer not in self.metrics:
                         self.metrics.append(self.scorer)
-
-
-
-
-
-
 
         if self.use_cv:
 
@@ -213,21 +184,17 @@ class HyperOptSelector_(BaseMlModelSelector):
         self, X, y, X_val=None, y_val=None, X_test=None, y_test=None, *args, **kwargs
     ) -> "HyperOptSelector":
 
-
-
-
-
         if self.n_cores == 1:
             trials = Trials()
         else:
 
-
             if self.mongo_url is None:
-                raise ValueError("Mongo URL must be provided when using multiple cores.")
+                raise ValueError(
+                    "Mongo URL must be provided when using multiple cores."
+                )
 
-
-            #start the MongoDB service
-            #TODO dà errore se non si avvia pycharm come amministratore
+            # start the MongoDB service
+            # TODO dà errore se non si avvia pycharm come amministratore
             os_name = platform.system()
             if os_name == "Windows":
                 subprocess.run("net start MongoDB", shell=True)
@@ -236,38 +203,35 @@ class HyperOptSelector_(BaseMlModelSelector):
             elif os_name == "Darwin":  # macOS
                 subprocess.run(["brew", "services", "start", "mongodb-community"])
 
-
-
             # workers url and hyperopt url are different (they need it written down in a slightly different way)
-            mongo_url = self.mongo_url #complete
-            mongo_url_worker = mongo_url.rsplit("/", 1)[0] #for workers
+            mongo_url = self.mongo_url  # complete
+            mongo_url_worker = mongo_url.rsplit("/", 1)[0]  # for workers
 
             exp_key = f"exp_linearsvc_{int(time.time())}"
 
-
-
             # Mongo workers on duty
-
-
 
             # define strategies
 
             def win_show():
-                cmd = f'hyperopt-mongo-worker --mongo={mongo_url_worker} --exp-key={exp_key}'
+                cmd = f"hyperopt-mongo-worker --mongo={mongo_url_worker} --exp-key={exp_key}"
                 subprocess.Popen(f'start cmd /k "{cmd}"', shell=True)
 
             def win_hide():
-                cmd = f'hyperopt-mongo-worker --mongo={mongo_url_worker} --exp-key={exp_key}'
-                subprocess.Popen(["cmd", "/c", cmd], creationflags=subprocess.CREATE_NO_WINDOW)
+                cmd = f"hyperopt-mongo-worker --mongo={mongo_url_worker} --exp-key={exp_key}"
+                subprocess.Popen(
+                    ["cmd", "/c", cmd], creationflags=subprocess.CREATE_NO_WINDOW
+                )
 
             def unix_show():
-                cmd = f'hyperopt-mongo-worker --mongo={mongo_url_worker} --exp-key={exp_key}'
-                subprocess.Popen(['x-terminal-emulator', '-e', cmd])
+                cmd = f"hyperopt-mongo-worker --mongo={mongo_url_worker} --exp-key={exp_key}"
+                subprocess.Popen(["x-terminal-emulator", "-e", cmd])
 
             def unix_hide():
-                cmd = f'hyperopt-mongo-worker --mongo={mongo_url_worker} --exp-key={exp_key}'
-                subprocess.Popen(cmd.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
+                cmd = f"hyperopt-mongo-worker --mongo={mongo_url_worker} --exp-key={exp_key}"
+                subprocess.Popen(
+                    cmd.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                )
 
             strategies = {
                 ("Windows", True): win_show,
@@ -278,32 +242,25 @@ class HyperOptSelector_(BaseMlModelSelector):
                 ("Darwin", False): unix_hide,
             }
 
-
             strategy = strategies.get((os_name, self.show_worker_terminal))
             if strategy is None:
-                raise NotImplementedError(f"No strategy for OS={os_name}, terminal={self.show_worker_terminal}")
+                raise NotImplementedError(
+                    f"No strategy for OS={os_name}, terminal={self.show_worker_terminal}"
+                )
 
             # start workers
             for _ in range(self.n_cores):
                 strategy()
 
+            trials = MongoTrials(mongo_url, exp_key)
 
-
-
-
-
-
-            trials = MongoTrials(mongo_url , exp_key)
-
-
-
-        #debug da cancellare
+        # debug da cancellare
         print("DEBUG param_space:", self.param_space)
-        assert all(isinstance(m, str) for m in self.model_list), f"model_names contiene non-stringhe: {self.model_names}"
+        assert all(
+            isinstance(m, str) for m in self.model_list
+        ), f"model_names contiene non-stringhe: {self.model_names}"
         print("DEBUG model_names:", self.model_list)
         print("DEBUG param_space OK")
-
-
 
         best_params = fmin(
             fn=lambda params: self._objective(params, X, y, X_val, y_val),
@@ -327,26 +284,15 @@ class HyperOptSelector_(BaseMlModelSelector):
         # Train best model on all data
         self._best_metrics, self._best_params = _getBestMetricsParamsfromTrials(trials)
 
-
-
-
-
         best_params_t = self._best_params.copy()
 
         model_key = best_params_t.pop("model")
         model = self.model_mapping[model_key]
 
-
-
-
-
-
-
         if self.tracker:
 
-
             self._best_model, _, _ = fit_model_score(
-                model=model,#best_params_t.pop("model"),
+                model=model,  # best_params_t.pop("model"),
                 params=best_params_t,
                 scorer=self.scorer,
                 X_train=X_full,
@@ -370,7 +316,6 @@ class HyperOptSelector_(BaseMlModelSelector):
                 self._best_model.set_params(**best_params_t)
                 self._best_model = self._best_model.fit(X_full, y_full)
             """
-
 
         else:
             self._best_model = model

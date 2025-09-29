@@ -5,9 +5,12 @@ from astrodata.data.schemas import ProcessedData, RawData
 
 def extract_format(path: str) -> str:
     ext = os.path.splitext(path)[-1].lower()
-    return {".fits": "fits", ".h5": "hdf5", ".csv": "csv", ".parquet": "parquet"}.get(
-        ext, "unknown"
-    )
+    return {
+        ".fits": "fits",
+        ".h5": "hdf5",
+        ".csv": "csv",
+        ".parquet": "parquet",
+    }.get(ext, "unknown")
 
 
 def convert_to_processed_data(data: RawData) -> ProcessedData:

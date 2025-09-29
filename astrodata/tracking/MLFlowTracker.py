@@ -251,17 +251,21 @@ class SklearnMLflowTracker(MlflowBaseTracker):
                 if log_model:
                     try:
                         mlflow.sklearn.log_model(
-                            self, name="model", input_example=X[:5]
+                            self,
+                            name="model",
+                            signature=mlflow.models.infer_signature(
+                                model_input=X[:5], model_output=y[:5]
+                            ),
                         )
                     except Exception as e:
                         logger.error(f"Could not log model: {e}")
 
-                log_metrics_and_loss(X, y, self, metrics, "train")
-                log_metrics_and_loss(X_test, y_test, self, metrics, "test")
-                log_metrics_and_loss(X_val, y_val, self, metrics, "val")
+                _log_metrics_and_loss_sklearn(X, y, self, metrics, "train")
+                _log_metrics_and_loss_sklearn(X_test, y_test, self, metrics, "test")
+                _log_metrics_and_loss_sklearn(X_val, y_val, self, metrics, "val")
 
                 if manual_metrics is not None:
-                    log_metrics_manual(*manual_metrics)
+                    _log_metrics_manual(*manual_metrics)
 
                 return result
 
@@ -275,8 +279,77 @@ class SklearnMLflowTracker(MlflowBaseTracker):
         return SklearnMLflowWrappedModel(**model.get_params())
 
 
-# Helper for metrics and loss
-def log_metrics_and_loss(
+class PytorchMLflowTracker(MlflowBaseTracker):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def wrap_fit(
+        self,
+        model: BaseMlModel,
+        X_test=None,
+        y_test=None,
+        X_val=None,
+        y_val=None,
+        metrics: Optional[List[BaseMetric]] = None,
+        log_model: bool = False,
+        tags: Dict[str, Any] = {},
+        manual_metrics: Tuple[Dict[str, Any], str] = None,
+    ) -> BaseMlModel:
+
+        orig_class = model.__class__
+        if "is_final" not in tags.keys():
+            tags["is_final"] = log_model
+        tracker = self
+        metrics = metrics or []
+
+        @functools.wraps(orig_class.fit)
+        def fit_with_tracking(self, X, y, *args, **kwargs):
+
+            mlflow.set_experiment(tracker.experiment_name)
+            with mlflow.start_run(run_name=tracker.run_name):
+                mlflow.set_tags({**tags, **tracker.extra_tags})
+                try:
+                    params = self.get_params()
+                    mlflow.log_params(params)
+                except Exception as e:
+                    logger.error(f"Could not log params: {e}")
+
+                result = orig_class.fit(self, X, y, metrics=metrics, *args, **kwargs)
+
+                # Optionally log model
+                if log_model:
+                    try:
+                        mlflow.pytorch.log_model(
+                            self.model_,
+                            name="model",
+                            signature=mlflow.models.infer_signature(
+                                model_input=X[:5], model_output=y[:5]
+                            ),
+                        )
+                    except Exception as e:
+                        logger.error(f"Could not log model: {e}")
+
+                _log_metrics_and_loss_pytorch(X, y, self, metrics, "train")
+                _log_metrics_and_loss_pytorch(X_test, y_test, self, metrics, "test")
+                _log_metrics_and_loss_pytorch(X_val, y_val, self, metrics, "val")
+
+                if manual_metrics is not None:
+                    _log_metrics_manual(*manual_metrics)
+
+                return result
+
+        # Dynamically subclass model to override fit
+        class PytorchMLflowWrappedModel(orig_class):
+            pass
+
+        PytorchMLflowWrappedModel.fit = fit_with_tracking
+
+        # Return a new instance with the same parameters as the original model
+        return PytorchMLflowWrappedModel(**model.get_params())
+
+
+# Helper for metrics and loss for sklearn
+def _log_metrics_and_loss_sklearn(
     X_split, y_split, model: BaseMlModel, metrics: BaseMetric, split_name: str
 ):
     """
@@ -291,11 +364,18 @@ def log_metrics_and_loss(
     split_name : str
         Name of the split ('train', 'val', 'test').
     """
+    # Add default loss metric if not present
+    loss_func = get_loss_func(model.model_)
+    if loss_func is not None:
+        loss_metric = SklearnMetric(loss_func)
+        if loss_metric.get_name() not in [m.get_name() for m in metrics]:
+            metrics.append(loss_metric)
+
     if X_split is not None and y_split is not None and hasattr(model, "get_metrics"):
         scores = model.get_metrics(X=X_split, y=y_split, metrics=metrics)
         mlflow.log_metrics({f"{k}_{split_name}": v for k, v in scores.items()})
         # Loss curve
-        if hasattr(model, "get_loss_history_metrics"):
+        if model.has_loss_history:
             curves = model.get_loss_history_metrics(X_split, y_split, metrics=metrics)
 
             for key, value in curves.items():
@@ -306,14 +386,28 @@ def log_metrics_and_loss(
                         step=i,
                     )
 
-    # Add default loss metric if not present
-    loss_metric = SklearnMetric(get_loss_func(model.model_))
-    if loss_metric.get_name() not in [m.get_name() for m in metrics]:
-        metrics.append(loss_metric)
+
+# Helper for metrics and loss for sklearn
+def _log_metrics_and_loss_pytorch(
+    X_split, y_split, model: BaseMlModel, metrics: BaseMetric, split_name: str
+):
+    if X_split is not None and y_split is not None and hasattr(model, "get_metrics"):
+        scores = model.get_metrics(X=X_split, y=y_split, metrics=metrics)
+        mlflow.log_metrics({f"{k}_{split_name}": v for k, v in scores.items()})
+        # Loss curve
+        if split_name == "train" or split_name == "val":
+            curves = model.get_metrics_history(split=split_name)
+
+            for key, value in curves.items():
+                for i, loss in enumerate(value):
+                    mlflow.log_metric(
+                        f"{key}_{split_name}",
+                        loss,
+                        step=i,
+                    )
 
 
 # Helper for manual metrics
-def log_metrics_manual(metrics: Dict[str, Any], split_name: str):
-
+def _log_metrics_manual(metrics: Dict[str, Any], split_name: str):
     for key, value in metrics.items():
         mlflow.log_metric(f"{key}_{split_name}", value)

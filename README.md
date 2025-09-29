@@ -1,8 +1,25 @@
 # AstroData ML Toolkit
 
-AstroData is a modular Python toolkit for data processing, machine learning, and experiment tracking, designed for astrophysical data workflows. It provides robust pipelines for data ingestion, preprocessing, model training, evaluation, and experiment tracking with integrated support for Git and DVC.
+AstroData is a modular Python toolkit for data processing, machine learning, and experiment tracking, designed for astrophysical data workflows. This project is part of Italy’s National Recovery and Resilience Plan (PNRR), coordinated by the National Institute for Astrophysics (INAF) under the Spoke 3 initiative, which focuses on advanced data analysis and artificial intelligence for astrophysics.
 
-> add info about the project like spoke 3 etc?
+It provides robust pipelines for data ingestion, preprocessing, model training, evaluation, and experiment tracking with integrated support for Git and DVC.
+
+
+## Table of Contents
+- [AstroData ML Toolkit](#astrodata-ml-toolkit)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Installation](#installation)
+  - [Project Structure](#project-structure)
+  - [Usage](#usage)
+    - [Data Pipeline Example](#data-pipeline-example)
+    - [Model Training Example](#model-training-example)
+    - [Experiment Tracking](#experiment-tracking)
+  - [Documentation](#documentation)
+  - [Contributing](#contributing)
+  - [License](#license)
+
+
 
 ## Features
 
@@ -14,9 +31,9 @@ AstroData is a modular Python toolkit for data processing, machine learning, and
 
 ## Installation
 
-To be updated once the package is on pypi
+Install the package directly from GitHub using any package manager such as pip, uv, and conda, the package requires `python >= 3.10`.
 ```sh
-# TODO
+pip install git+https://github.com/Astrodata-project/astrodata.git
 ```
 
 ## Project Structure
@@ -38,24 +55,72 @@ tests/            # Unit and integration tests
 ### Data Pipeline Example
 
 ```python
-# TODO
+data_path = dummy_csv_file()
+
+loader = CsvLoader()
+
+class CustomProcessor(AbstractProcessor):
+    def process(self, raw: RawData) -> RawData:
+        raw.data["feature3"] = raw.data["feature1"] + raw.data["feature2"]
+        return raw
+
+data_processors = [CustomProcessor()]
+
+data_pipeline = DataPipeline(loader, data_processors)
+
+processed_data = data_pipeline.run(data_path)
+
 ```
 
 ### Model Training Example
 
 ```python
-# TODO
+model = SklearnModel(model_class=LinearSVR, random_state=42)
+
+mae = SklearnMetric(mean_absolute_error, greater_is_better=False)
+mse = SklearnMetric(mean_squared_error)
+r2 = SklearnMetric(r2_score, greater_is_better=True)
+msle = SklearnMetric(mean_squared_log_error)
+
+metrics = [mae, mse, r2, msle]
+
+
+model.fit(X_train, y_train)
+
+metrics = model.get_metrics(
+    X_test,
+    y_test,
+    metrics=metrics,
+)
 ```
 
 ### Experiment Tracking
 
 ```python
-# TODO
+gradientboost = SklearnModel(model_class=GradientBoostingClassifier)
+
+tracker = SklearnMLflowTracker(
+    run_name="MlFlowSimpleRun",
+    experiment_name="examples_ml_5_mlflow_simple_example.py",
+    extra_tags={"stage": "testing"},
+)
+
+accuracy = SklearnMetric(accuracy_score)
+f1 = SklearnMetric(f1_score, average="micro")
+logloss = SklearnMetric(log_loss, greater_is_better=False)
+
+metrics = [accuracy, f1, logloss]
+
+tracked_gradientboost = tracker.wrap_fit(
+    gradientboost, X_test=X_test, y_test=y_test, metrics=metrics, log_model=True
+)
+
+tracked_gradientboost.fit(X_train, y_train)
 ```
 
 ## Documentation
 
-To add link to github.io page once the repo is public.
+Documentation is available in the [project's GitHub.io pages](https://astrodata-project.github.io/astrodata/).
 
 ## Contributing
 
