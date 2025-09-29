@@ -258,8 +258,7 @@ class CodeTracker:
             error_msg = str(e)
             if "would be overwritten by merge" in error_msg:
                 logger.error(
-                    f"Pull failed: Untracked files would be overwritten. "
-                    f"Please move or commit these files, then retry. Details: {error_msg}"
+                    f"Pull failed: Untracked files would be overwritten. Please move or commit these files, then retry. Details: {error_msg}"
                 )
             elif "Merge conflict" in error_msg or "CONFLICT" in error_msg:
                 logger.error(

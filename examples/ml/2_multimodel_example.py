@@ -12,7 +12,6 @@ from astrodata.ml.models import SklearnModel, XGBoostModel
 # This example shows how to use different models from the astrodata.ml.models package in the same for loop.
 
 if __name__ == "__main__":
-
     data = load_breast_cancer()
     X = pd.DataFrame(data.data, columns=data.feature_names)
     y = pd.Series(data.target)

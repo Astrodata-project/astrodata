@@ -22,7 +22,10 @@ class DataPipeline:
     """
 
     def __init__(
-        self, config_path: str, loader: BaseLoader, processors: list[AbstractProcessor]
+        self,
+        config_path: str,
+        loader: BaseLoader,
+        processors: list[AbstractProcessor],
     ):
         self.config = read_config(config_path)
         self.loader = loader
@@ -46,7 +49,9 @@ class DataPipeline:
         processed_data = convert_to_processed_data(data)
         if dump_output:
             output_path = get_output_path(
-                self.config["project_path"], "processed_data", "processed_data.parquet"
+                self.config["project_path"],
+                "processed_data",
+                "processed_data.parquet",
             )
             processed_data.dump_parquet(output_path)
         return processed_data

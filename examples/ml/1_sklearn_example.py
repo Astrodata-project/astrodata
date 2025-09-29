@@ -13,7 +13,6 @@ from astrodata.ml.metrics import SklearnMetric
 from astrodata.ml.models import SklearnModel
 
 if __name__ == "__main__":
-
     # This example demonstrates how to use SklearnModel (or any astrodata.ml.models.BaseMlModel for that matter) for bsic tasks
 
     # Here we use the diabetes dataset, which is a regression dataset, skleadn.datasets.load_diabetes takes care of loading the data

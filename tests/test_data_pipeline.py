@@ -10,7 +10,9 @@ def test_pipeline_runs_and_processes(
         "astrodata.data.pipeline.read_config", lambda path: dummy_config
     )
     pipeline = DataPipeline(
-        config_path="dummy.yaml", loader=dummy_loader, processors=[dummy_processor]
+        config_path="dummy.yaml",
+        loader=dummy_loader,
+        processors=[dummy_processor],
     )
     processed = pipeline.run("dummy_path.csv", dump_output=False)
     assert isinstance(processed, ProcessedData)
