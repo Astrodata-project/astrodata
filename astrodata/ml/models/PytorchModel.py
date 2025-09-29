@@ -1,6 +1,6 @@
+import os
 import pickle
 import random
-import os
 from typing import Any, Dict, List, Optional
 
 import torch
@@ -166,9 +166,17 @@ class PytorchModel(BaseMlModel):
                 )
                 t.set_postfix({"last_loss": f"{last_loss:.4f}"})
                 # periodic checkpoint
-                if save_every_n_epochs and save_folder and (epoch + 1) % save_every_n_epochs == 0:
+                if (
+                    save_every_n_epochs
+                    and save_folder
+                    and (epoch + 1) % save_every_n_epochs == 0
+                ):
                     # map format to extension
-                    ext_map = {"torch": "pt", "pkl": "pkl", "safetensors": "safetensors"}
+                    ext_map = {
+                        "torch": "pt",
+                        "pkl": "pkl",
+                        "safetensors": "safetensors",
+                    }
                     ext = ext_map.get(save_format, save_format)
                     fname = f"checkpoint_{epoch+1}.{ext}"
                     os.makedirs(save_folder, exist_ok=True)
@@ -462,6 +470,21 @@ class PytorchModel(BaseMlModel):
         batch_size: Optional[int] = None,
         device: Optional[str] = None,
     ) -> float:
+
+        dataloader_val = None
+
+        if X_val is not None and y_val is not None:
+
+            if not isinstance(X_val, torch.Tensor):
+                X_val = torch.tensor(X_val, dtype=torch.float32)
+            if not isinstance(y_val, torch.Tensor):
+                y_val = torch.tensor(y_val, dtype=torch.long)
+            if device is None:
+                device = self.device
+
+            dataset = TensorDataset(X_val.to(device), y_val.to(device))
+            dataloader_val = DataLoader(dataset, batch_size=len(X_val), shuffle=True)
+
         for i, data in enumerate(training_loader):
             # Each data instance is an input + label pair
             inputs, labels = data
@@ -490,9 +513,11 @@ class PytorchModel(BaseMlModel):
                     self.metrics_history_.append(
                         (f"{metric.get_name()}_epoch", metric(y_true, preds))
                     )
-                    self.metrics_history_.append(("loss_epoch", loss.item()))
+                self.metrics_history_.append(("loss_epoch", loss.item()))
+
             # Epoch-level validation metrics
-            if metrics is not None and X_val is not None and y_val is not None and self._val_metrics_history_ is not None:
+            if metrics is not None and dataloader_val is not None:
+                X_val, y_val = next(iter(dataloader_val))
                 val_scores = self.get_metrics(
                     X_val,
                     y_val,
@@ -502,6 +527,10 @@ class PytorchModel(BaseMlModel):
                 )
                 for name, value in val_scores.items():
                     self._val_metrics_history_.append((f"{name}_epoch", value))
+                self._val_metrics_history_.append(
+                    ("loss_epoch", loss_fn(model(X_val), y_val).item())
+                )
+
             return loss.item()
 
     def _get_model(self):
@@ -561,7 +590,9 @@ class PytorchModel(BaseMlModel):
             Mapping from metric name to list of values in time order.
         """
         history = (
-            self.metrics_history_ if split == "train" else self._val_metrics_history_ if split == "val" else None
+            self.metrics_history_
+            if split == "train"
+            else self._val_metrics_history_ if split == "val" else None
         )
         d = {}
         if history is None:
