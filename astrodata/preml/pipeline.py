@@ -24,7 +24,6 @@ class PremlPipeline:
     """
 
     def __init__(self, config_path: str, processors: list[PremlProcessor] = None):
-
         self.config = read_config(config_path)
         self.preml_config = self.config.get("preml", {})
         if not self.config and not processors:

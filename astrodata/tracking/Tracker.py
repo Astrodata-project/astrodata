@@ -42,7 +42,10 @@ class Tracker:
             token = self.config.get("code", {}).get("token")
             branch = self.config.get("code", {}).get("branch", "main")
             self.code_tracker = CodeTracker(
-                self.project_path, ssh_key_path=ssh_key, token=token, branch=branch
+                self.project_path,
+                ssh_key_path=ssh_key,
+                token=token,
+                branch=branch,
             )
         if self.config.get("data", {}).get("enable", False):
             remote = self.config.get("data", {}).get("remote", "myremote")
