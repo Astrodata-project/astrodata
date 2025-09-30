@@ -143,25 +143,18 @@ class PytorchModel(BaseMlModel):
         with trange(epochs, desc="Epochs", position=2) as t:
             for epoch in t:
                 last_loss = self._train_one_epoch(
-                    epoch_index=epoch,
                     optimizer=self.optimizer_,
+                    epoch_index=epoch,
                     model=self.model_,
                     loss_fn=self.loss_fn_,
                     training_loader=dataloader,
                     metrics=metrics,
+                    X_val=X_val,
+                    y_val=y_val,
+                    batch_size=batch_size,
+                    device=device,
                 )
                 t.set_postfix({"last_loss": f"{last_loss:.4f}"})
-                # Validation metrics (epoch-level)
-                if metrics is not None and self._val_metrics_history_ is not None:
-                    val_scores = self.get_metrics(
-                        X_val,
-                        y_val,
-                        metrics=metrics,
-                        batch_size=batch_size or self.batch_size or 32,
-                        device=device or self.device,
-                    )
-                    for name, value in val_scores.items():
-                        self._val_metrics_history_.append((f"{name}_val_epoch", value))
         return self
 
     def predict(
@@ -190,36 +183,7 @@ class PytorchModel(BaseMlModel):
         RuntimeError
             If the model is not fitted yet.
         """
-        if self.model_ is None:
-            raise RuntimeError("Model is not fitted yet.")
-
-        if device is None:
-            device = self.device
-
-        self.model_.eval()
-
-        if not isinstance(X, torch.Tensor) and not isinstance(X, DataLoader):
-            X = torch.tensor(X, dtype=torch.float32)
-
-        dataloader = (
-            DataLoader(X, batch_size=batch_size, shuffle=False)
-            if not isinstance(X, DataLoader)
-            else X
-        )
-        outputs = []
-
-        with torch.no_grad():
-            for batch_X in dataloader:
-                batch_X = batch_X.to(device)
-                out = self.model_(batch_X)
-                outputs.append(out.cpu())
-
-        outputs = torch.cat(outputs, dim=0)
-
-        if outputs.shape[-1] == 1:
-            return outputs.numpy().ravel()
-        else:
-            return outputs.argmax(dim=1).numpy()
+        return self._predict(X, batch_size, device, use_proba=False)
 
     def predict_proba(
         self, X, batch_size: int, device: Optional[str] = None, **kwargs
@@ -247,12 +211,15 @@ class PytorchModel(BaseMlModel):
         RuntimeError
             If the model is not fitted yet.
         """
+        return self._predict(X, batch_size, device, use_proba=True)
+
+    def _predict(
+        self, X, batch_size: int, device: Optional[str], use_proba: bool
+    ) -> Any:
         if self.model_ is None:
             raise RuntimeError("Model is not fitted yet.")
 
-        if device is None:
-            device = self.device
-
+        device = device or self.device
         self.model_.eval()
 
         if not isinstance(X, torch.Tensor) and not isinstance(X, DataLoader):
@@ -269,19 +236,24 @@ class PytorchModel(BaseMlModel):
             for batch_X in dataloader:
                 batch_X = batch_X.to(device)
                 out = self.model_(batch_X)
-                outputs.append(out.cpu())
+                try:
+                    outputs.append(out.cpu())
+                except AttributeError:
+                    outputs.append(out)
 
         outputs = torch.cat(outputs, dim=0)
 
+        if use_proba:
+            if outputs.shape[-1] == 1:
+                probs = torch.sigmoid(outputs)
+                probs = torch.cat([1 - probs, probs], dim=1)  # shape: [N, 2]
+            else:
+                probs = F.softmax(outputs, dim=1)
+            return probs.numpy()
+
         if outputs.shape[-1] == 1:
-            # Binary classification with single output: use sigmoid and stack probabilities
-            probs = torch.sigmoid(outputs)
-            probs = torch.cat([1 - probs, probs], dim=1)  # shape: [N, 2]
-            return probs.numpy()
-        else:
-            # Multi-class: use softmax
-            probs = F.softmax(outputs, dim=1)
-            return probs.numpy()
+            return outputs.numpy().ravel()
+        return outputs.argmax(dim=1).numpy()
 
     def score(self):
         pass
@@ -428,17 +400,17 @@ class PytorchModel(BaseMlModel):
         dict
             Parameters used to construct the model.
         """
-        params = {"model_class": self.model_class}
-        params["loss_fn"] = self.loss_fn
-        params["optimizer"] = self.optimizer
-        params["model_params"] = self.model_params
-        params["optimizer_params"] = self.optimizer_params
-        params["device"] = self.device
-        params["epochs"] = self.epochs
-        params["batch_size"] = self.batch_size
-        params["random_state"] = self.random_state
-
-        return params
+        return {
+            "model_class": self.model_class,
+            "loss_fn": self.loss_fn,
+            "optimizer": self.optimizer,
+            "model_params": self.model_params,
+            "optimizer_params": self.optimizer_params,
+            "device": self.device,
+            "epochs": self.epochs,
+            "batch_size": self.batch_size,
+            "random_state": self.random_state,
+        }
 
     def set_params(self, **kwargs) -> None:
         """
@@ -466,6 +438,10 @@ class PytorchModel(BaseMlModel):
         loss_fn,
         training_loader: torch.utils.data.DataLoader,
         metrics: Optional[List[BaseMetric]] = None,
+        X_val: Optional[Any] = None,
+        y_val: Optional[Any] = None,
+        batch_size: Optional[int] = None,
+        device: Optional[str] = None,
     ) -> float:
         for i, data in enumerate(training_loader):
             # Each data instance is an input + label pair
@@ -493,11 +469,21 @@ class PytorchModel(BaseMlModel):
                 y_true = labels.detach().cpu().numpy()
                 for metric in metrics:
                     self.metrics_history_.append(
-                        (f"{metric.get_name()}_step", metric(y_true, preds))
+                        (f"{metric.get_name()}_epoch", metric(y_true, preds))
                     )
-                    self.metrics_history_.append(("loss_step", loss.item()))
-
-        return loss.item()
+                    self.metrics_history_.append(("loss_epoch", loss.item()))
+            # Epoch-level validation metrics
+            if metrics is not None and X_val is not None and y_val is not None and self._val_metrics_history_ is not None:
+                val_scores = self.get_metrics(
+                    X_val,
+                    y_val,
+                    metrics=metrics,
+                    batch_size=batch_size or self.batch_size or 32,
+                    device=device or self.device,
+                )
+                for name, value in val_scores.items():
+                    self._val_metrics_history_.append((f"{name}_epoch", value))
+            return loss.item()
 
     def _get_model(self):
         if isinstance(self.model_class, Module):
@@ -540,7 +526,7 @@ class PytorchModel(BaseMlModel):
 
         return new_instance
 
-    def get_metrics_history(self, split: str = "train"):
+    def get_metrics_history(self, split: str = "train") -> Dict[str, List[Any]]:
         """
         Get the recorded metric history.
 
@@ -556,7 +542,7 @@ class PytorchModel(BaseMlModel):
             Mapping from metric name to list of values in time order.
         """
         history = (
-            self.metrics_history_ if split == "train" else self._val_metrics_history_
+            self.metrics_history_ if split == "train" else self._val_metrics_history_ if split == "val" else None
         )
         d = {}
         if history is None:

@@ -29,9 +29,7 @@ jobs:
 
       - name: Install the project
         run: |
-          uv sync
-          uv sync --group tests
-          uv sync --group torch
+          uv sync --group tests --extra torch
 # To be added uv sync --optional full
 
       - name: Run tests
