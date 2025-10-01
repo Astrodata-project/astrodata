@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="ml/8_pytorch_example.py" href="8_pytorch_example.html" /><link rel="prev" title="ml/6_mlflow_gs_example.py" href="6_mlflow_gs_example.html" />
-        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/python_examples/ml/7_mlflow_hp_example.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="ml/13_pytorch_resnet18.py" href="13_pytorch_resnet18.html" /><link rel="prev" title="ml/11_pytorch_mlflow_example.py" href="11_pytorch_mlflow_example.html" />
+        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/python_examples/ml/12_pytorch_freeze_train.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
-        <title>ml/7_mlflow_hp_example.py - astrodata documentation</title>
+        <title>ml/12_pytorch_freeze_train.py - astrodata documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=c9eb4647" />
@@ -264,7 +264,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../data/3_torch_data.html">data/3_torch_data.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">ml/12_pytorch_freeze_train.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="13_pytorch_resnet18.html">ml/13_pytorch_resnet18.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="14_pytorch_save_example.html">ml/14_pytorch_save_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="1_sklearn_example.html">ml/1_sklearn_example.py</a></li>
@@ -273,7 +273,7 @@
 <li class="toctree-l1"><a class="reference internal" href="4_hyperopt_example.html">ml/4_hyperopt_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="5_mlflow_simple_example.html">ml/5_mlflow_simple_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="6_mlflow_gs_example.html">ml/6_mlflow_gs_example.py</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">ml/7_mlflow_hp_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_mlflow_hp_example.html">ml/7_mlflow_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="8_pytorch_example.html">ml/8_pytorch_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="9_pytorch_gs_example.html">ml/9_pytorch_gs_example.py</a></li>
 </ul>
@@ -296,7 +296,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/python_examples/ml/7_mlflow_hp_example.rst.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/python_examples/ml/12_pytorch_freeze_train.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -316,101 +316,95 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="ml-7-mlflow-hp-example-py">
-<h1>ml/7_mlflow_hp_example.py<a class="headerlink" href="#ml-7-mlflow-hp-example-py" title="Link to this heading">¶</a></h1>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">hyperopt</span><span class="w"> </span><span class="kn">import</span> <span class="n">hp</span>
+          <section id="ml-12-pytorch-freeze-train-py">
+<h1>ml/12_pytorch_freeze_train.py<a class="headerlink" href="#ml-12-pytorch-freeze-train-py" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_breast_cancer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">GradientBoostingClassifier</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">log_loss</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabelEncoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span><span class="p">,</span> <span class="n">optim</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperOptSelector</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnModel</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.tracking.MLFlowTracker</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMLflowTracker</span>
-
-<span class="c1"># This example demonstrates how to use the tracking capabilities of astrodata.ml with a HyperOptSelector.</span>
-<span class="c1"># It performs hyperparameter tuning on a GradientBoostingClassifier model using cross-validation and tracks the</span>
-<span class="c1"># results using MLflow.</span>
-<span class="c1"># To check the results, you can use the MLflow UI by running `mlflow ui` in your terminal</span>
-<span class="c1"># and navigating to http://localhost:5000 in your web browser.</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">PytorchModel</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">load_breast_cancer</span><span class="p">(</span><span class="n">return_X_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-    <span class="c1"># Load the breast cancer dataset</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">SimpleClassifier</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_layers</span><span class="p">,</span> <span class="n">output_layers</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">SimpleClassifier</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">input_layers</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">output_layers</span><span class="p">)</span>
 
-    <span class="n">data</span> <span class="o">=</span> <span class="n">load_breast_cancer</span><span class="p">()</span>
-    <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">feature_names</span><span class="p">)</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
-    <span class="n">le</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">le</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">x</span>
 
-    <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
-        <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">PytorchModel</span><span class="p">(</span>
+        <span class="n">model_class</span><span class="o">=</span><span class="n">SimpleClassifier</span><span class="p">,</span>
+        <span class="n">model_params</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;input_layers&quot;</span><span class="p">:</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;output_layers&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">loss_fn</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">,</span>
+        <span class="n">optimizer_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">1e-3</span><span class="p">},</span>
+        <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="c1"># Instantiate and configure the Sklearn model</span>
-
-    <span class="n">gradientboost</span> <span class="o">=</span> <span class="n">SklearnModel</span><span class="p">(</span><span class="n">model_class</span><span class="o">=</span><span class="n">GradientBoostingClassifier</span><span class="p">)</span>
-
-    <span class="c1"># Set up the MLflow tracker with run name, experiment name, and additional tags</span>
-    <span class="c1"># the tracker will log the model training and evaluation metrics to MLflow.</span>
-    <span class="c1"># by providing a tracking_uri, tracking_username and tracking_password, you can connect to a remote MLflow server.</span>
-
-    <span class="n">tracker</span> <span class="o">=</span> <span class="n">SklearnMLflowTracker</span><span class="p">(</span>
-        <span class="n">run_name</span><span class="o">=</span><span class="s2">&quot;HyperOpt&quot;</span><span class="p">,</span>
-        <span class="n">experiment_name</span><span class="o">=</span><span class="s2">&quot;examples_ml_7_mlflow_hp_example.py&quot;</span><span class="p">,</span>
-        <span class="n">extra_tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Define the metrics to be used for evaluation</span>
-
-    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">)</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">f1</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">f1_score</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;micro&quot;</span><span class="p">)</span>
-    <span class="n">logloss</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">log_loss</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
+    <span class="n">logloss</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">log_loss</span><span class="p">)</span>
     <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">accuracy</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">logloss</span><span class="p">]</span>
 
-    <span class="c1"># Create the HyperOptSelector with the model, parameter grid, and metrics</span>
-    <span class="c1"># Refer to the following for a guide on how to define Hyperopt search space https://hyperopt.github.io/hyperopt/getting-started/search_spaces/</span>
-    <span class="c1"># (care that the model now is part of the search space rather then being hard-coded)</span>
-    <span class="c1"># This time we add a tracker to log the model training and evaluation metrics to MLflow.</span>
-    <span class="c1"># log_all_models=False means that only the best model will be uploaded to MLflow.</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model 1 metrics: &quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">metrics</span><span class="p">))</span>
 
-    <span class="n">param_space</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">gradientboost</span><span class="p">]),</span>
-        <span class="s2">&quot;n_estimators&quot;</span><span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s2">&quot;n_estimators&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">]),</span>
-        <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
-        <span class="s2">&quot;max_depth&quot;</span><span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s2">&quot;max_depth&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">]),</span>
-    <span class="p">}</span>
+    <span class="c1"># temporary safetensors file</span>
+    <span class="n">tmp_file</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.safetensors&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">tmp_path</span> <span class="o">=</span> <span class="n">tmp_file</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">tmp_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="c1"># Instantiate HyperOptSelector (using cross-validation in this example)</span>
-    <span class="n">hos</span> <span class="o">=</span> <span class="n">HyperOptSelector</span><span class="p">(</span>
-        <span class="n">param_space</span><span class="o">=</span><span class="n">param_space</span><span class="p">,</span>
-        <span class="n">scorer</span><span class="o">=</span><span class="n">accuracy</span><span class="p">,</span>
-        <span class="n">use_cv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
-        <span class="n">max_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>  <span class="c1"># You can increase this for a more thorough search</span>
-        <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">tracker</span><span class="o">=</span><span class="n">tracker</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;safetensors&quot;</span><span class="p">)</span>
 
-    <span class="n">hos</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="o">=</span><span class="n">y_test</span><span class="p">)</span>
+        <span class="n">model2</span> <span class="o">=</span> <span class="n">PytorchModel</span><span class="p">(</span>
+            <span class="n">model_class</span><span class="o">=</span><span class="n">SimpleClassifier</span><span class="p">,</span>
+            <span class="n">model_params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;input_layers&quot;</span><span class="p">:</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="s2">&quot;output_layers&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">loss_fn</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">,</span>
+            <span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">,</span>
+            <span class="n">optimizer_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">1e-3</span><span class="p">},</span>
+            <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best parameters found: &quot;</span><span class="p">,</span> <span class="n">hos</span><span class="o">.</span><span class="n">get_best_params</span><span class="p">())</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best metrics: &quot;</span><span class="p">,</span> <span class="n">hos</span><span class="o">.</span><span class="n">get_best_metrics</span><span class="p">())</span>
+        <span class="n">model2</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;safetensors&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Is the loaded model equal to the original one?&quot;</span><span class="p">,</span>
+            <span class="n">model2</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">metrics</span><span class="p">)</span>
+            <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">metrics</span><span class="p">),</span>
+        <span class="p">)</span>
 
-    <span class="c1"># Here we tag for production the best model found during the grid search. The experiments in mlflow</span>
-    <span class="c1"># are organized by the specified metric and the best performing one is registered.</span>
-    <span class="c1"># make sure to use the same metric as the one used as scorer in the GridSearchCVSelector.</span>
+        <span class="n">model2</span><span class="o">.</span><span class="n">freeze_layers</span><span class="p">([</span><span class="s2">&quot;fc2&quot;</span><span class="p">])</span>
+        <span class="n">model2</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span> <span class="n">fine_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model 2 metrics: &quot;</span><span class="p">,</span> <span class="n">model2</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">metrics</span><span class="p">))</span>
 
-    <span class="n">tracker</span><span class="o">.</span><span class="n">register_best_model</span><span class="p">(</span>
-        <span class="n">metric</span><span class="o">=</span><span class="n">logloss</span><span class="p">,</span>
-        <span class="n">split_name</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">,</span>
-        <span class="n">stage</span><span class="o">=</span><span class="s2">&quot;Production&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -420,23 +414,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="8_pytorch_example.html">
+          <a class="next-page" href="13_pytorch_resnet18.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">ml/8_pytorch_example.py</div>
+                <div class="title">ml/13_pytorch_resnet18.py</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="6_mlflow_gs_example.html">
+          <a class="prev-page" href="11_pytorch_mlflow_example.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">ml/6_mlflow_gs_example.py</div>
+                <div class="title">ml/11_pytorch_mlflow_example.py</div>
                 
               </div>
             </a>
