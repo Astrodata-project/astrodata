@@ -261,12 +261,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/astrotaxi/step3_ml.html">astrotaxi/step3_ml.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/1_data_example.html">data/1_data_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/2_preml_example.html">data/2_preml_example.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/3_torch_data.html">data/3_torch_data.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/13_pytorch_resnet18.html">ml/13_pytorch_resnet18.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/14_pytorch_save_example.html">ml/14_pytorch_save_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/1_sklearn_example.html">ml/1_sklearn_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/2_multimodel_example.html">ml/2_multimodel_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/3_gridsearch_example.html">ml/3_gridsearch_example.py</a></li>
@@ -274,8 +268,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/5_mlflow_simple_example.html">ml/5_mlflow_simple_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/6_mlflow_gs_example.html">ml/6_mlflow_gs_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/7_mlflow_hp_example.html">ml/7_mlflow_hp_example.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/8_pytorch_example.html">ml/8_pytorch_example.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/9_pytorch_gs_example.html">ml/9_pytorch_gs_example.py</a></li>
 </ul>
 
 </div>
@@ -390,104 +382,10 @@
 </section>
 <section id="pytorchmodel">
 <h2><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code><a class="headerlink" href="#pytorchmodel" title="Link to this heading">¶</a></h2>
-<p>A thin wrapper around <a class="reference external" href="https://pytorch.org/">PyTorch</a> modules that provides a unified training and evaluation interface consistent with the rest of <code class="docutils literal notranslate"><span class="pre">astrodata</span></code>. It accepts either an instantiated <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> or a class with <code class="docutils literal notranslate"><span class="pre">model_params</span></code>, and exposes convenience helpers for metric computation, basic history tracking, saving/loading, and optional validation monitoring.</p>
-<section id="initializing">
-<h3>Initializing<a class="headerlink" href="#initializing" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span><span class="p">,</span> <span class="n">optim</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">PytorchModel</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">SimpleClassifier</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_layers</span><span class="p">,</span> <span class="n">output_layers</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">input_layers</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">output_layers</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
-<span class="n">model</span> <span class="o">=</span> <span class="n">PytorchModel</span><span class="p">(</span>
-    <span class="n">model_class</span><span class="o">=</span><span class="n">SimpleClassifier</span><span class="p">,</span>
-    <span class="n">model_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_layers&quot;</span><span class="p">:</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;output_layers&quot;</span><span class="p">:</span> <span class="n">n_classes</span><span class="p">},</span>
-    <span class="n">loss_fn</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">,</span>
-    <span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">,</span>
-    <span class="n">optimizer_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">1e-3</span><span class="p">},</span>
-    <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>  <span class="c1"># or &quot;cuda&quot; if available</span>
-<span class="p">)</span>
-</pre></div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>To be implemented in future releases.</p>
 </div>
-</section>
-<section id="training">
-<h3>Training<a class="headerlink" href="#training" title="Link to this heading">¶</a></h3>
-<p>Train from arrays/tensors:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Alternatively, use a custom <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code> for full control over batching and transforms:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">TensorDataset</span>
-
-<span class="n">train_ds</span> <span class="o">=</span> <span class="n">TensorDataset</span><span class="p">(</span><span class="n">X_train_tensor</span><span class="p">,</span> <span class="n">y_train_tensor</span><span class="p">)</span>
-<span class="n">train_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">train_ds</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dataloader</span><span class="o">=</span><span class="n">train_loader</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="validation-metrics-per-epoch">
-<h3>Validation metrics (per-epoch)<a class="headerlink" href="#validation-metrics-per-epoch" title="Link to this heading">¶</a></h3>
-<p>Optionally pass validation data and metrics to track validation performance at the end of each epoch. Training-step metrics are also recorded during the epoch.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">log_loss</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
-
-<span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-    <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">f1_score</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;micro&quot;</span><span class="p">),</span>
-    <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">log_loss</span><span class="p">),</span>
-<span class="p">]</span>
-
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-    <span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span>
-    <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span>
-    <span class="n">X_val</span><span class="o">=</span><span class="n">X_val</span><span class="p">,</span>
-    <span class="n">y_val</span><span class="o">=</span><span class="n">y_val</span><span class="p">,</span>
-    <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="c1"># Retrieve histories</span>
-<span class="n">train_history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics_history</span><span class="p">()</span>              <span class="c1"># per-step within epoch</span>
-<span class="n">val_history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics_history</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">)</span>     <span class="c1"># per-epoch</span>
-</pre></div>
-</div>
-</section>
-<section id="predicting">
-<h3>Predicting<a class="headerlink" href="#predicting" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
-<span class="n">y_proba</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="id1">
-<h3>Computing metrics<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scores</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="freezing-layers-fine-tuning">
-<h3>Freezing layers (fine-tuning)<a class="headerlink" href="#freezing-layers-fine-tuning" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">freeze_layers</span><span class="p">([</span><span class="s2">&quot;fc2&quot;</span><span class="p">])</span>  <span class="c1"># unfreezes only selected module names</span>
-</pre></div>
-</div>
-</section>
-<section id="saving-and-loading">
-<h3>Saving and loading<a class="headerlink" href="#saving-and-loading" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;model.ckpt&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;torch&quot;</span><span class="p">)</span>          <span class="c1"># or &quot;pkl&quot; or &quot;safetensors&quot;</span>
-<span class="n">model</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model.ckpt&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;torch&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Refer to the examples below for end-to-end usage patterns including MLflow tracking and search.</p>
-</section>
 </section>
 <section id="tensorflowmodel">
 <h2><code class="docutils literal notranslate"><span class="pre">TensorflowModel</span></code><a class="headerlink" href="#tensorflowmodel" title="Link to this heading">¶</a></h2>
@@ -501,12 +399,6 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="../python_examples/ml/1_sklearn_example.html"><span class="std std-doc">Basic <code class="docutils literal notranslate"><span class="pre">SkLearnModel</span></code> usage</span></a></p></li>
 <li><p><a class="reference internal" href="../python_examples/ml/2_multimodel_example.html"><span class="std std-doc">Multi <code class="docutils literal notranslate"><span class="pre">SkLearnModel</span></code> model training through <code class="docutils literal notranslate"><span class="pre">for</span></code> loops</span></a></p></li>
-<li><p><a class="reference internal" href="../python_examples/ml/8_pytorch_example.html"><span class="std std-doc">Basic <code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code> usage</span></a></p></li>
-<li><p><a class="reference internal" href="../python_examples/ml/9_pytorch_gs_example.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code> + GridSearch</span></a></p></li>
-<li><p><a class="reference internal" href="../python_examples/ml/10_pytorch_hp_example.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code> + HyperOpt</span></a></p></li>
-<li><p><a class="reference internal" href="../python_examples/ml/11_pytorch_mlflow_example.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code> + MLflow</span></a></p></li>
-<li><p><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code> freeze and fine-tune</span></a></p></li>
-<li><p><a class="reference internal" href="../python_examples/ml/13_pytorch_resnet18.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code> with ResNet18</span></a></p></li>
 </ul>
 </section>
 </section>
@@ -577,16 +469,7 @@
 </li>
 <li><a class="reference internal" href="#sklearnmodel"><code class="docutils literal notranslate"><span class="pre">SklearnModel</span></code></a></li>
 <li><a class="reference internal" href="#xgboostmodel"><code class="docutils literal notranslate"><span class="pre">XgboostModel</span></code></a></li>
-<li><a class="reference internal" href="#pytorchmodel"><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code></a><ul>
-<li><a class="reference internal" href="#initializing">Initializing</a></li>
-<li><a class="reference internal" href="#training">Training</a></li>
-<li><a class="reference internal" href="#validation-metrics-per-epoch">Validation metrics (per-epoch)</a></li>
-<li><a class="reference internal" href="#predicting">Predicting</a></li>
-<li><a class="reference internal" href="#id1">Computing metrics</a></li>
-<li><a class="reference internal" href="#freezing-layers-fine-tuning">Freezing layers (fine-tuning)</a></li>
-<li><a class="reference internal" href="#saving-and-loading">Saving and loading</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#pytorchmodel"><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code></a></li>
 <li><a class="reference internal" href="#tensorflowmodel"><code class="docutils literal notranslate"><span class="pre">TensorflowModel</span></code></a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
 </ul>

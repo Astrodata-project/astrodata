@@ -261,12 +261,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/astrotaxi/step3_ml.html">astrotaxi/step3_ml.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/1_data_example.html">data/1_data_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/2_preml_example.html">data/2_preml_example.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/3_torch_data.html">data/3_torch_data.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/13_pytorch_resnet18.html">ml/13_pytorch_resnet18.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/14_pytorch_save_example.html">ml/14_pytorch_save_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/1_sklearn_example.html">ml/1_sklearn_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/2_multimodel_example.html">ml/2_multimodel_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/3_gridsearch_example.html">ml/3_gridsearch_example.py</a></li>
@@ -274,8 +268,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/5_mlflow_simple_example.html">ml/5_mlflow_simple_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/6_mlflow_gs_example.html">ml/6_mlflow_gs_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/7_mlflow_hp_example.html">ml/7_mlflow_hp_example.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/8_pytorch_example.html">ml/8_pytorch_example.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/9_pytorch_gs_example.html">ml/9_pytorch_gs_example.py</a></li>
 </ul>
 
 </div>
@@ -321,17 +313,97 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="astrodata-data-loaders-base-module">
-<h2>astrodata.data.loaders.base module<a class="headerlink" href="#astrodata-data-loaders-base-module" title="Link to this heading">¶</a></h2>
+<section id="module-astrodata.data.loaders.base">
+<span id="astrodata-data-loaders-base-module"></span><h2>astrodata.data.loaders.base module<a class="headerlink" href="#module-astrodata.data.loaders.base" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.data.loaders.base.BaseLoader">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.data.loaders.base.</span></span><span class="sig-name descname"><span class="pre">BaseLoader</span></span><a class="headerlink" href="#astrodata.data.loaders.base.BaseLoader" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Abstract base class for data loaders.</p>
+<p>This class defines the interface for all data loaders, requiring
+the implementation of the <cite>load</cite> method to load data from a given path.</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">load(path</span></span></dt>
+<dd><p>str) -&gt; RawData:
+Abstract method to load data from the specified path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.data.loaders.base.BaseLoader.load">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.data.loaders.base.BaseLoader.load" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="astrodata.data.html#astrodata.data.schemas.RawData" title="astrodata.data.schemas.RawData"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawData</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="astrodata-data-loaders-csv-loader-module">
-<h2>astrodata.data.loaders.csv_loader module<a class="headerlink" href="#astrodata-data-loaders-csv-loader-module" title="Link to this heading">¶</a></h2>
+<section id="module-astrodata.data.loaders.csv_loader">
+<span id="astrodata-data-loaders-csv-loader-module"></span><h2>astrodata.data.loaders.csv_loader module<a class="headerlink" href="#module-astrodata.data.loaders.csv_loader" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.data.loaders.csv_loader.CsvLoader">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.data.loaders.csv_loader.</span></span><span class="sig-name descname"><span class="pre">CsvLoader</span></span><a class="headerlink" href="#astrodata.data.loaders.csv_loader.CsvLoader" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#astrodata.data.loaders.base.BaseLoader" title="astrodata.data.loaders.base.BaseLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoader</span></code></a></p>
+<p>Data loader for CSV files.</p>
+<p>This class implements the <cite>BaseLoader</cite> interface to load data
+from CSV files using pandas.</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">load(path</span></span></dt>
+<dd><p>str) -&gt; RawData:
+Loads data from the specified CSV file path and returns
+it as a <cite>RawData</cite> object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.data.loaders.csv_loader.CsvLoader.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.data.loaders.csv_loader.CsvLoader.load" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="astrodata.data.html#astrodata.data.schemas.RawData" title="astrodata.data.schemas.RawData"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawData</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="astrodata-data-loaders-parquet-loader-module">
-<h2>astrodata.data.loaders.parquet_loader module<a class="headerlink" href="#astrodata-data-loaders-parquet-loader-module" title="Link to this heading">¶</a></h2>
+<section id="module-astrodata.data.loaders.parquet_loader">
+<span id="astrodata-data-loaders-parquet-loader-module"></span><h2>astrodata.data.loaders.parquet_loader module<a class="headerlink" href="#module-astrodata.data.loaders.parquet_loader" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.data.loaders.parquet_loader.ParquetLoader">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.data.loaders.parquet_loader.</span></span><span class="sig-name descname"><span class="pre">ParquetLoader</span></span><a class="headerlink" href="#astrodata.data.loaders.parquet_loader.ParquetLoader" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#astrodata.data.loaders.base.BaseLoader" title="astrodata.data.loaders.base.BaseLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoader</span></code></a></p>
+<p>Data loader for Parquet files.</p>
+<p>This class implements the <cite>BaseLoader</cite> interface to load data
+from Parquet files using pandas.</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">load(path</span></span></dt>
+<dd><p>str) -&gt; RawData:
+Loads data from the specified Parquet file path and returns
+it as a <cite>RawData</cite> object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.data.loaders.parquet_loader.ParquetLoader.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.data.loaders.parquet_loader.ParquetLoader.load" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="astrodata.data.html#astrodata.data.schemas.RawData" title="astrodata.data.schemas.RawData"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawData</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<section id="module-astrodata.data.loaders">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-astrodata.data.loaders" title="Link to this heading">¶</a></h2>
 </section>
 </section>
 
@@ -392,10 +464,28 @@
             <ul>
 <li><a class="reference internal" href="#">astrodata.data.loaders package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#astrodata-data-loaders-base-module">astrodata.data.loaders.base module</a></li>
-<li><a class="reference internal" href="#astrodata-data-loaders-csv-loader-module">astrodata.data.loaders.csv_loader module</a></li>
-<li><a class="reference internal" href="#astrodata-data-loaders-parquet-loader-module">astrodata.data.loaders.parquet_loader module</a></li>
-<li><a class="reference internal" href="#module-contents">Module contents</a></li>
+<li><a class="reference internal" href="#module-astrodata.data.loaders.base">astrodata.data.loaders.base module</a><ul>
+<li><a class="reference internal" href="#astrodata.data.loaders.base.BaseLoader"><code class="docutils literal notranslate"><span class="pre">BaseLoader</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.data.loaders.base.BaseLoader.load"><code class="docutils literal notranslate"><span class="pre">BaseLoader.load()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-astrodata.data.loaders.csv_loader">astrodata.data.loaders.csv_loader module</a><ul>
+<li><a class="reference internal" href="#astrodata.data.loaders.csv_loader.CsvLoader"><code class="docutils literal notranslate"><span class="pre">CsvLoader</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.data.loaders.csv_loader.CsvLoader.load"><code class="docutils literal notranslate"><span class="pre">CsvLoader.load()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-astrodata.data.loaders.parquet_loader">astrodata.data.loaders.parquet_loader module</a><ul>
+<li><a class="reference internal" href="#astrodata.data.loaders.parquet_loader.ParquetLoader"><code class="docutils literal notranslate"><span class="pre">ParquetLoader</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.data.loaders.parquet_loader.ParquetLoader.load"><code class="docutils literal notranslate"><span class="pre">ParquetLoader.load()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-astrodata.data.loaders">Module contents</a></li>
 </ul>
 </li>
 </ul>
