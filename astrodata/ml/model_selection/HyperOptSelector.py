@@ -79,7 +79,6 @@ class HyperOptSelector(BaseMlModelSelector):
     def _objective(
         self, params: Dict[str, Any], X, y, X_val=None, y_val=None
     ) -> Dict[str, Any]:
-        # hyperopt passes numpy floats, so cast where needed
         params_t = params.copy()
         model = params_t.pop("model")
 

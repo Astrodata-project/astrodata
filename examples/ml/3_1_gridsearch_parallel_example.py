@@ -8,8 +8,8 @@ from sklearn.svm import LinearSVC
 
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.model_selection.GridSearchSelector_parallel import (
-    GridSearchCVSelector_parallel,
-    GridSearchSelector_parallel,
+    GridSearchSelectorParallel,
+    GridSearchCVSelectorParallel,
 )
 from astrodata.ml.models.SklearnModel import SklearnModel
 
@@ -52,7 +52,7 @@ print(gss)
 """
 
 
-gss = GridSearchSelector_parallel(
+gss = GridSearchSelectorParallel(
     model,
     param_grid={
         "C": [0.1, 1, 10],

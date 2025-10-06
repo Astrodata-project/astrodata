@@ -7,8 +7,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.model_selection.HyperOptSelector_parallel import (  # ← Make sure the import path matches your project
-    HyperOptSelector_,
+from astrodata.ml.model_selection.HyperOptSelector_parallel import (  
+    HyperOptSelectorParallel,
 )
 from astrodata.ml.models.SklearnModel import SklearnModel
 
@@ -17,7 +17,7 @@ from astrodata.ml.models.SklearnModel import SklearnModel
 # directory for mongo workers, set it to find its files
 # (if you want the training to run in parallel, otherwise you don't  need it)
 path_workers_job = (
-    "C:/Users/yourfolder/PycharmProjects/yourproject/MongoDB_workers_jobs"
+    "testdata/MongoDB_workers_jobs"
 )
 os.makedirs(path_workers_job, exist_ok=True)
 os.chdir(path_workers_job)
@@ -72,7 +72,7 @@ print("You have", n_cores_available, "cores available on this machine.")
 # choose n_core_choosen = 1 if you do NOT want to parallelize on multiple cores.
 # If you want to parallelize the training, please install MongoDB and set the mongo_url
 
-n_cores_chosen = 8
+n_cores_chosen = -1
 
 
 # IMPORTANT: Use "mongo://" as the protocol, not "mongodb://"
@@ -89,7 +89,7 @@ mongo_url = "mongo://localhost:27017/hyperopt_db/jobs"
 
 
 if use_cv == 1:
-    hos = HyperOptSelector_(
+    hos = HyperOptSelectorParallel(
         n_cores=n_cores_chosen,
         mongo_url=mongo_url,
         show_worker_terminal=False,
@@ -97,7 +97,6 @@ if use_cv == 1:
         # | but if you have problems, they can be informative
         param_space=param_space,
         model_mapping=model_mapping,
-        model_list=model_list,
         scorer=accuracy,
         use_cv=True,
         cv=5,
@@ -107,7 +106,7 @@ if use_cv == 1:
     )
 
 else:
-    hos = HyperOptSelector_(
+    hos = HyperOptSelectorParallel(
         n_cores=n_cores_chosen,
         mongo_url=mongo_url,
         show_worker_terminal=False,
@@ -115,7 +114,6 @@ else:
         # | but if you have problems, they can be informative
         param_space=param_space,
         model_mapping=model_mapping,  # se no da None
-        model_list=model_list,  #
         scorer=accuracy,
         use_cv=False,
         cv=5,
