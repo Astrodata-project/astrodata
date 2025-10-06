@@ -79,12 +79,11 @@ preml:
 
 ## 4. Grid Search Hyperparameter Tuning
 
-**File:** `ml/3_gridsearch_example.py`
+**Files:**
 
-- Demonstrates hyperparameter tuning with `GridSearchCVSelector`.
-- Uses `SklearnModel` and scikit-learn's `LinearSVC`.
-- Specifies parameter grids and scorer functions.
-- Finds and prints the best parameters and model metrics.
+- `ml/3_gridsearch_example.py` – Demonstrates hyperparameter tuning with `GridSearchCVSelector` on a `LinearSVC`.
+- `ml/3_1_gridsearch_parallel_example.py` – Shows a minimal invocation of the parallel selector for timing comparisons.
+- `ml/3_2_gridsearch_parallel_comparison.py` – Runs serial and parallel selectors side-by-side with identical seeds, asserting that both converge to the same best parameters while letting you vary the training set size.
 
 
 

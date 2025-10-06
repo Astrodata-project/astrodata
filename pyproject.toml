@@ -62,3 +62,6 @@ torch = [
     "torchaudio>=2.7.1",
     "torchvision>=0.22.1",
 ]
+parallel = [
+    "pymongo==3.12.0",
+]
