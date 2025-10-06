@@ -1,5 +1,3 @@
-from typing import Any, Dict, Optional
-
 from torch.utils.data import DataLoader
 
 from astrodata.data.schemas import TorchProcessedData, TorchRawData
@@ -20,7 +18,6 @@ class TorchDataLoaderWrapper:
         batch_size: int = 32,
         num_workers: int = 0,
         pin_memory: bool = False,
-        transform_config: Optional[Dict[str, Any]] = None,
     ):
         """
         Initialize the DataLoader wrapper.

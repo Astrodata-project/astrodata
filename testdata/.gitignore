@@ -4,3 +4,4 @@
 !green_tripdata_2024-01_config.yaml
 !imagenet_ex/
 !imagenet_ex/**
+!torch/fits/

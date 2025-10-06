@@ -1,8 +1,10 @@
 from pathlib import Path
 from typing import Any, Dict, Literal, Optional, Tuple
 
+import numpy as np
 import pandas as pd
 import torch
+from astropy.io import fits
 from pydantic import BaseModel
 from torch.utils.data import DataLoader, Dataset
 from torchvision.io import decode_image
@@ -51,6 +53,83 @@ class ProcessedData(BaseModel):
         self.data.to_parquet(path, index=False)
 
 
+class TorchRawData(BaseModel):
+    """
+    Represents raw PyTorch datasets loaded from image directories.
+
+    This schema is specifically designed for PyTorch image datasets
+    organized in train/validation/test splits with class folders.
+
+    Attributes:
+        source: Root directory containing the datasets
+        data: Dictionary of PyTorch datasets (train/val/test)
+        metadata: Information about classes, splits, etc.
+    """
+
+    source: Path | str
+    data: Dict[str, Dataset]
+    metadata: Dict[str, Any]
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    def get_dataset(self, split: str):
+        """
+        Get a specific dataset split.
+
+        Args:
+            split: The split name ('train', 'val', or 'test')
+
+        Returns:
+            The requested dataset
+
+        Raises:
+            KeyError: If the split doesn't exist
+        """
+        if split not in self.data:
+            raise KeyError(
+                f"Split '{split}' not found. Available splits: {list(self.data.keys())}"
+            )
+        return self.data[split]
+
+
+class TorchProcessedData(BaseModel):
+    """
+    Represents processed PyTorch data after transformations and DataLoader creation.
+
+    This schema holds DataLoaders and training-related metadata.
+
+    Attributes:
+        dataloaders: Dictionary of PyTorch DataLoaders
+        metadata: Information about batch size, transforms, etc.
+    """
+
+    dataloaders: Dict[str, DataLoader]  # Dictionary of DataLoader objects
+    metadata: Dict[str, Any]
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    def get_dataloader(self, split: str):
+        """
+        Get a specific DataLoader split.
+
+        Args:
+            split: The split name ('train', 'val', or 'test')
+
+        Returns:
+            The requested DataLoader
+
+        Raises:
+            KeyError: If the split doesn't exist
+        """
+        if split not in self.dataloaders:
+            raise KeyError(
+                f"Split '{split}' not found. Available splits: {list(self.dataloaders.keys())}"
+            )
+        return self.dataloaders[split]
+
+
 class TorchImageDataset(Dataset):
     """
     Custom PyTorch Dataset for image data with train/validation/test splits.
@@ -58,6 +137,8 @@ class TorchImageDataset(Dataset):
     This dataset loads images from specified directories.
     It expects images to be organized in folders by class/label.
     """
+
+    # TODO: controllare che la prima dimensione sia il canale
 
     def __init__(
         self,
@@ -123,78 +204,74 @@ class TorchImageDataset(Dataset):
         return image, label
 
 
-class TorchRawData(BaseModel):
+class TorchFITSDataset(Dataset):
     """
-    Represents raw PyTorch datasets loaded from image directories.
+    Custom PyTorch Dataset for FITS image data with train/validation/test splits.
 
-    This schema is specifically designed for PyTorch image datasets
-    organized in train/validation/test splits with class folders.
-
-    Attributes:
-        source: Root directory containing the datasets
-        data: Dictionary of PyTorch datasets (train/val/test)
-        metadata: Information about classes, splits, etc.
+    Expects images organized in class folders under a split directory.
     """
 
-    source: Path | str
-    data: Dict[str, TorchImageDataset]  # Dictionary of TorchImageDataset objects
-    metadata: Dict[str, Any]
-
-    class Config:
-        arbitrary_types_allowed = True
-
-    def get_dataset(self, split: str):
+    def __init__(self, image_dir: str):
         """
-        Get a specific dataset split.
+        Initialize the dataset.
 
         Args:
-            split: The split name ('train', 'val', or 'test')
-
-        Returns:
-            The requested dataset
-
-        Raises:
-            KeyError: If the split doesn't exist
+            image_dir: Directory containing FITS images organized by class folders
         """
-        if split not in self.data:
-            raise KeyError(
-                f"Split '{split}' not found. Available splits: {list(self.data.keys())}"
-            )
-        return self.data[split]
+        self.image_dir = Path(image_dir)
 
+        self.image_paths = []
+        self.labels = []
+        self.class_to_idx = {}
 
-class TorchProcessedData(BaseModel):
-    """
-    Represents processed PyTorch data after transformations and DataLoader creation.
+        self._load_image_paths()
 
-    This schema holds DataLoaders and training-related metadata.
+    def _load_image_paths(self):
+        """Load FITS image paths and create class mappings."""
 
-    Attributes:
-        dataloaders: Dictionary of PyTorch DataLoaders
-        metadata: Information about batch size, transforms, etc.
-    """
+        class_dirs = [d for d in self.image_dir.iterdir() if d.is_dir()]
+        class_dirs.sort()
 
-    dataloaders: Dict[str, DataLoader]  # Dictionary of DataLoader objects
-    metadata: Dict[str, Any]
+        self.class_to_idx = {
+            cls_dir.name: idx for idx, cls_dir in enumerate(class_dirs)
+        }
 
-    class Config:
-        arbitrary_types_allowed = True
+        for class_dir in class_dirs:
+            class_idx = self.class_to_idx[class_dir.name]
 
-    def get_dataloader(self, split: str):
+            for img_path in class_dir.iterdir():
+                self.image_paths.append(img_path)
+                self.labels.append(class_idx)
+
+    def __len__(self) -> int:
+        """Return the number of samples in the dataset."""
+        return len(self.image_paths)
+
+    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, int]:
         """
-        Get a specific DataLoader split.
+        Get a sample from the dataset.
 
         Args:
-            split: The split name ('train', 'val', or 'test')
+            idx: Index of the sample to retrieve
 
         Returns:
-            The requested DataLoader
-
-        Raises:
-            KeyError: If the split doesn't exist
+            Tuple of (image_tensor, label), where image tensor is shape [C, H, W]
         """
-        if split not in self.dataloaders:
-            raise KeyError(
-                f"Split '{split}' not found. Available splits: {list(self.dataloaders.keys())}"
-            )
-        return self.dataloaders[split]
+        img_path = self.image_paths[idx]
+        label = self.labels[idx]
+
+        with fits.open(str(img_path)) as hdul:
+            data = hdul[0].data
+
+            if data is None:
+                raise ValueError(f"No image data found in FITS file: {img_path}")
+
+            if data.ndim == 2:
+                data_native = np.asarray(data, dtype=np.float32)
+                tensor = torch.from_numpy(data_native).unsqueeze(0)
+            else:
+                raise ValueError(
+                    f"Expected 2D FITS image, got {data.ndim}D in {img_path}"
+                )
+
+        return tensor, label
