@@ -1,9 +1,10 @@
-import torchvision
-import json
 import glob
-from torchvision.models import resnet18
+import json
+
+import torchvision
 from torch import nn, optim
 from torch.utils.data import DataLoader
+from torchvision.models import resnet18
 
 from astrodata.ml.models import PytorchModel
 
@@ -23,18 +24,20 @@ if __name__ == "__main__":
         device="cpu",
         with_weight_init=True,
     )
-    
+
     print(model)
-    
+
     img_paths = sorted(glob.glob("testdata/imagenet_ex/*.jpg"))
 
     img_list = []
 
     for image_path in img_paths:
         img_list.append(transform(torchvision.io.read_image(image_path)))
-        
+
     dataloader_img_list = DataLoader(img_list, batch_size=1)
     pred = model.predict(dataloader_img_list, 1)
-    
+
     for i in range(len(pred)):
-        print(f"Ground Truth: {str.split(img_paths[i], '/')[-1]}    Prediction: {classes[str(pred[i])][1]}")
+        print(
+            f"Ground Truth: {str.split(img_paths[i], '/')[-1]}    Prediction: {classes[str(pred[i])][1]}"
+        )
