@@ -1,56 +1,12 @@
 from pathlib import Path
-from typing import Any, Dict, Literal, Optional, Tuple
+from typing import Any, Dict, Tuple
 
 import numpy as np
-import pandas as pd
 import torch
 from astropy.io import fits
 from pydantic import BaseModel
 from torch.utils.data import DataLoader, Dataset
 from torchvision.io import decode_image
-
-
-class RawData(BaseModel):
-    """
-    Represents raw input data loaded from a source file.
-
-    Attributes:
-        source (str): The source of the data (e.g., file path or URL).
-        format (Literal): The format of the data (e.g., "fits", "hdf5", "csv", "parquet").
-        data (pd.DataFrame): The actual data as a Pandas DataFrame.
-    """
-
-    source: Path | str
-    format: Literal["fits", "hdf5", "csv", "parquet"]
-    data: pd.DataFrame
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
-class ProcessedData(BaseModel):
-    """
-    Represents processed data after transformations.
-
-    Attributes:
-        data (pd.DataFrame): The actual data as a Pandas DataFrame.
-        metadata (Optional[dict]): Additional metadata about the processed data.
-    """
-
-    data: pd.DataFrame
-    metadata: Optional[dict] = {}
-
-    class Config:
-        arbitrary_types_allowed = True
-
-    def dump_parquet(self, path: Path):
-        """
-        Dumps the processed data to a Parquet file.
-
-        Args:
-            path (Path): The file path to save the Parquet file.
-        """
-        self.data.to_parquet(path, index=False)
 
 
 class TorchRawData(BaseModel):

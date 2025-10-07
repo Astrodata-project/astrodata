@@ -11,8 +11,6 @@ class TorchDataLoaderWrapper:
     common transforms and configurations.
     """
 
-    # TODO: check gpu/cpu settings
-
     def __init__(
         self,
         batch_size: int = 32,
