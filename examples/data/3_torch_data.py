@@ -53,8 +53,6 @@ def setup_datasets(cifar_dir, fits_dir):
 
 
 if __name__ == "__main__":
-    loader = TorchLoader()
-    print("TorchImageLoader initialized.")
 
     # ==============================================================
     # DATA SETUP (executed once for both classic image + FITS examples)
@@ -69,6 +67,10 @@ if __name__ == "__main__":
     fits_dir = "../../testdata/torch/fits"
     setup_datasets(cifar_dir, fits_dir)
 
+    # Initialize the TorchLoader, which can handle both classic images and FITS
+    loader = TorchLoader()
+    print("TorchImageLoader initialized.")
+
     # ==============================================================
     # SECTION 1: CLASSIC (RGB) IMAGE DATA EXAMPLE (CIFAR10)
     # --------------------------------------------------------------
@@ -76,9 +78,6 @@ if __name__ == "__main__":
     #       folder layout with class subdirectories) is loaded and wrapped
     #       into PyTorch DataLoaders.
     # ==============================================================
-    print("\n" + "=" * 70)
-    print("SECTION 1: CIFAR10 (classic RGB image) workflow")
-    print("=" * 70)
 
     # Load directory-structured CIFAR10 dataset (train/test folders)
     cifar_data = loader.load(cifar_dir)
@@ -131,9 +130,6 @@ if __name__ == "__main__":
     # The FITS setup duplicated one sample file to keep this extremely small.
     # We still wrap it in DataLoaders to mimic a real workflow.
     # ==============================================================
-    print("\n" + "=" * 70)
-    print("SECTION 2: FITS images workflow")
-    print("=" * 70)
 
     fits_data = loader.load(fits_dir)
     print("Loaded FITS structured dataset object.")

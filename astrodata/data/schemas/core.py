@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Optional
 
 import pandas as pd
 from pydantic import BaseModel
@@ -11,12 +11,12 @@ class RawData(BaseModel):
 
     Attributes:
         source (str): The source of the data (e.g., file path or URL).
-        format (Literal): The format of the data (e.g., "fits", "hdf5", "csv", "parquet").
+        format (str): The format of the data (e.g., 'csv', 'parquet').
         data (pd.DataFrame): The actual data as a Pandas DataFrame.
     """
 
     source: Path | str
-    format: Literal["fits", "hdf5", "csv", "parquet"]
+    format: str
     data: pd.DataFrame
 
     class Config:

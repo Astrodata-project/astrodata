@@ -94,8 +94,6 @@ class TorchImageDataset(Dataset):
     It expects images to be organized in folders by class/label.
     """
 
-    # TODO: controllare che la prima dimensione sia il canale
-
     def __init__(
         self,
         image_dir: str,
@@ -225,9 +223,16 @@ class TorchFITSDataset(Dataset):
             if data.ndim == 2:
                 data_native = np.asarray(data, dtype=np.float32)
                 tensor = torch.from_numpy(data_native).unsqueeze(0)
+            elif data.ndim == 3:
+                if data.shape[0] > 4:
+                    raise ValueError(
+                        f"Expected 2D or 3D FITS image with channel first, got shape {data.shape} in {img_path}"
+                    )
+                data_native = np.asarray(data, dtype=np.float32)
+                tensor = torch.from_numpy(data_native)
             else:
                 raise ValueError(
-                    f"Expected 2D FITS image, got {data.ndim}D in {img_path}"
+                    f"Expected 2D or 3D FITS image, got shape {data.shape} in {img_path}"
                 )
 
         return tensor, label
