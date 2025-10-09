@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = ">=3.10"
 resolution-markers = [
     "python_full_version >= '3.14'",
@@ -299,6 +300,8 @@ name = "astrodata"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "astropy", version = "6.1.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "astropy", version = "7.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "dvc" },
     { name = "gitpython" },
     { name = "hyperopt" },
@@ -350,6 +353,7 @@ tests = [
 
 [package.metadata]
 requires-dist = [
+    { name = "astropy", specifier = ">=6.1.7" },
     { name = "dvc", specifier = ">=3.59.2" },
     { name = "gitpython", specifier = ">=3.1.44" },
     { name = "hyperopt", specifier = ">=0.2.7" },
@@ -368,6 +372,7 @@ requires-dist = [
     { name = "tqdm", specifier = ">=4.67.1" },
     { name = "xgboost", specifier = ">=3.0.0" },
 ]
+provides-extras = ["tensorflow", "torch"]
 
 [package.metadata.requires-dev]
 dev = [
