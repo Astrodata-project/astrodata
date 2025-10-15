@@ -8,8 +8,8 @@ from sklearn.svm import LinearSVC
 
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
 from astrodata.ml.model_selection.GridSearchSelector_parallel import (
-    GridSearchSelectorParallel,
     GridSearchCVSelectorParallel,
+    GridSearchSelectorParallel,
 )
 from astrodata.ml.models.SklearnModel import SklearnModel
 

@@ -8,6 +8,6 @@ except (ImportError, ModuleNotFoundError):
     PytorchModel = None
 
 try:
-    from .KerasModel import KerasModel
+    from .TensorflowModel import TensorflowModel
 except (ImportError, ModuleNotFoundError):
-    KerasModel = None
+    TensorflowModel = None

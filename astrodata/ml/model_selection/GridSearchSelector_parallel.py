@@ -27,7 +27,9 @@ def _resolve_n_jobs(n_jobs: Optional[int]) -> int:
 
 def _param_product(param_grid: Dict[str, Iterable]) -> List[Dict[str, Any]]:
     keys = list(param_grid.keys())
-    return [dict(zip(keys, values)) for values in itertools.product(*param_grid.values())]
+    return [
+        dict(zip(keys, values)) for values in itertools.product(*param_grid.values())
+    ]
 
 
 def _make_cv_splitter(cv, random_state: int):
@@ -108,7 +110,9 @@ class GridSearchCVSelectorParallel(BaseMlModelSelector):
                 self._best_metrics = metrics
 
         if self._best_params is None:
-            raise RuntimeError("Grid search failed to evaluate any parameter combinations.")
+            raise RuntimeError(
+                "Grid search failed to evaluate any parameter combinations."
+            )
 
         if self.tracker:
             self._best_model, _, _ = fit_model_score(
@@ -248,7 +252,9 @@ class GridSearchSelectorParallel(BaseMlModelSelector):
                 self._best_metrics = metrics
 
         if self._best_params is None:
-            raise RuntimeError("Grid search failed to evaluate any parameter combinations.")
+            raise RuntimeError(
+                "Grid search failed to evaluate any parameter combinations."
+            )
 
         try:
             X_full = pd.concat([X_train, X_val])

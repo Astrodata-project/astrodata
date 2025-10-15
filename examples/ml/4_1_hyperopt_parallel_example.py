@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.model_selection.HyperOptSelector_parallel import (  
+from astrodata.ml.model_selection.HyperOptSelector_parallel import (
     HyperOptSelectorParallel,
 )
 from astrodata.ml.models.SklearnModel import SklearnModel
@@ -16,9 +16,7 @@ from astrodata.ml.models.SklearnModel import SklearnModel
 
 # directory for mongo workers, set it to find its files
 # (if you want the training to run in parallel, otherwise you don't  need it)
-path_workers_job = (
-    "testdata/MongoDB_workers_jobs"
-)
+path_workers_job = "testdata/MongoDB_workers_jobs"
 os.makedirs(path_workers_job, exist_ok=True)
 os.chdir(path_workers_job)
 

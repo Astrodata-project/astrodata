@@ -73,6 +73,7 @@ class PytorchModel(BaseMlModel):
         fine_tune: bool = False,
         X_val: Optional[Any] = None,
         y_val: Optional[Any] = None,
+        dataloader_val: Optional[DataLoader] = None,
         save_every_n_epochs: Optional[int] = None,
         save_folder: Optional[str] = None,
         save_format: str = "torch",
@@ -161,6 +162,7 @@ class PytorchModel(BaseMlModel):
                     metrics=metrics,
                     X_val=X_val,
                     y_val=y_val,
+                    dataloader_val=dataloader_val,
                     batch_size=batch_size,
                     device=device,
                 )
@@ -183,6 +185,82 @@ class PytorchModel(BaseMlModel):
                     path = os.path.join(save_folder, fname)
                     self.save(path, format=save_format)
         return self
+
+    def _train_one_epoch(
+        self,
+        optimizer: Optimizer,
+        epoch_index: int,
+        model: Module,
+        loss_fn,
+        training_loader: torch.utils.data.DataLoader,
+        metrics: Optional[List[BaseMetric]] = None,
+        X_val: Optional[Any] = None,
+        y_val: Optional[Any] = None,
+        dataloader_val: Optional[DataLoader] = None,
+        batch_size: Optional[int] = None,
+        device: Optional[str] = None,
+    ) -> float:
+
+        if dataloader_val is None:
+            if not isinstance(X_val, torch.Tensor):
+                X_val = torch.tensor(X_val, dtype=torch.float32)
+            if not isinstance(y_val, torch.Tensor):
+                y_val = torch.tensor(y_val, dtype=torch.long)
+            if device is None:
+                device = self.device
+
+            dataset_val = TensorDataset(X_val.to(device), y_val.to(device))
+            dataloader_val = DataLoader(
+                dataset_val, batch_size=batch_size, shuffle=True
+            )
+
+        for i, data in enumerate(training_loader):
+            # Each data instance is an input + label pair
+            inputs, labels = data
+
+            # Zero the gradients
+            optimizer.zero_grad()
+
+            # Forward pass
+            outputs = model(inputs)
+
+            # Backward and optimize
+            loss = loss_fn(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            # Compute predictions for metrics without toggling eval mode
+            with torch.no_grad():
+                if outputs.dim() > 1 and outputs.shape[-1] > 1:
+                    preds = outputs.detach().argmax(dim=1).cpu().numpy()
+                else:
+                    preds = outputs.detach().cpu().squeeze().numpy()
+
+            if metrics is not None:
+                y_true = labels.detach().cpu().numpy()
+                for metric in metrics:
+                    self.metrics_history_.append(
+                        (f"{metric.get_name()}_epoch", metric(y_true, preds))
+                    )
+                self.metrics_history_.append(("loss_epoch", loss.item()))
+
+            # Epoch-level validation metrics
+            if metrics is not None and dataloader_val is not None:
+                X_val, y_val = next(iter(dataloader_val))
+                val_scores = self.get_metrics(
+                    X_val,
+                    y_val,
+                    metrics=metrics,
+                    batch_size=batch_size or self.batch_size or 32,
+                    device=device or self.device,
+                )
+                for name, value in val_scores.items():
+                    self._val_metrics_history_.append((f"{name}_epoch", value))
+                self._val_metrics_history_.append(
+                    ("loss_epoch", loss_fn(model(X_val), y_val).item())
+                )
+
+            return loss.item()
 
     def predict(
         self, X, batch_size: int, device: Optional[str] = None, **kwargs
@@ -456,82 +534,6 @@ class PytorchModel(BaseMlModel):
         String representation of the wrapper and underlying class.
         """
         return f"{self.__class__.__name__}(torch_model={self.model_class.__class__.__name__})"
-
-    def _train_one_epoch(
-        self,
-        optimizer: Optimizer,
-        epoch_index: int,
-        model: Module,
-        loss_fn,
-        training_loader: torch.utils.data.DataLoader,
-        metrics: Optional[List[BaseMetric]] = None,
-        X_val: Optional[Any] = None,
-        y_val: Optional[Any] = None,
-        batch_size: Optional[int] = None,
-        device: Optional[str] = None,
-    ) -> float:
-
-        dataloader_val = None
-
-        if X_val is not None and y_val is not None:
-
-            if not isinstance(X_val, torch.Tensor):
-                X_val = torch.tensor(X_val, dtype=torch.float32)
-            if not isinstance(y_val, torch.Tensor):
-                y_val = torch.tensor(y_val, dtype=torch.long)
-            if device is None:
-                device = self.device
-
-            dataset = TensorDataset(X_val.to(device), y_val.to(device))
-            dataloader_val = DataLoader(dataset, batch_size=len(X_val), shuffle=True)
-
-        for i, data in enumerate(training_loader):
-            # Each data instance is an input + label pair
-            inputs, labels = data
-
-            # Zero the gradients
-            optimizer.zero_grad()
-
-            # Forward pass
-            outputs = model(inputs)
-
-            # Backward and optimize
-            loss = loss_fn(outputs, labels)
-            loss.backward()
-            optimizer.step()
-
-            # Compute predictions for metrics without toggling eval mode
-            with torch.no_grad():
-                if outputs.dim() > 1 and outputs.shape[-1] > 1:
-                    preds = outputs.detach().argmax(dim=1).cpu().numpy()
-                else:
-                    preds = outputs.detach().cpu().squeeze().numpy()
-
-            if metrics is not None:
-                y_true = labels.detach().cpu().numpy()
-                for metric in metrics:
-                    self.metrics_history_.append(
-                        (f"{metric.get_name()}_epoch", metric(y_true, preds))
-                    )
-                self.metrics_history_.append(("loss_epoch", loss.item()))
-
-            # Epoch-level validation metrics
-            if metrics is not None and dataloader_val is not None:
-                X_val, y_val = next(iter(dataloader_val))
-                val_scores = self.get_metrics(
-                    X_val,
-                    y_val,
-                    metrics=metrics,
-                    batch_size=batch_size or self.batch_size or 32,
-                    device=device or self.device,
-                )
-                for name, value in val_scores.items():
-                    self._val_metrics_history_.append((f"{name}_epoch", value))
-                self._val_metrics_history_.append(
-                    ("loss_epoch", loss_fn(model(X_val), y_val).item())
-                )
-
-            return loss.item()
 
     def _get_model(self):
         if isinstance(self.model_class, Module):
