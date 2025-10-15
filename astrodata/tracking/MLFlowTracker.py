@@ -290,6 +290,8 @@ class PytorchMLflowTracker(MlflowBaseTracker):
         y_test=None,
         X_val=None,
         y_val=None,
+        dataloader_test=None,
+        dataloader_val=None,
         metrics: Optional[List[BaseMetric]] = None,
         log_model: bool = False,
         tags: Dict[str, Any] = {},
@@ -303,7 +305,7 @@ class PytorchMLflowTracker(MlflowBaseTracker):
         metrics = metrics or []
 
         @functools.wraps(orig_class.fit)
-        def fit_with_tracking(self, X, y, *args, **kwargs):
+        def fit_with_tracking(self, X=None, y=None, dataloader=None, *args, **kwargs):
 
             mlflow.set_experiment(tracker.experiment_name)
             with mlflow.start_run(run_name=tracker.run_name):
@@ -314,24 +316,45 @@ class PytorchMLflowTracker(MlflowBaseTracker):
                 except Exception as e:
                     logger.error(f"Could not log params: {e}")
 
-                result = orig_class.fit(self, X, y, metrics=metrics, *args, **kwargs)
+                result = orig_class.fit(
+                    self, 
+                    X=X, 
+                    y=y, 
+                    dataloader=dataloader,
+                    dataloader_val=dataloader_val,
+                    metrics=metrics, 
+                    *args, 
+                    **kwargs
+                )
 
                 # Optionally log model
                 if log_model:
                     try:
+                        # For PyTorch models with dataloaders, we need sample data for signature
+                        if X is not None:
+                            sample_input = X[:5] if hasattr(X, '__getitem__') else None
+                            sample_output = y[:5] if hasattr(y, '__getitem__') else None
+                        else:
+                            sample_input = None
+                            sample_output = None
+                            
                         mlflow.pytorch.log_model(
                             self.model_,
                             name="model",
                             signature=mlflow.models.infer_signature(
-                                model_input=X[:5], model_output=y[:5]
-                            ),
+                                model_input=sample_input, model_output=sample_output
+                            ) if sample_input is not None else None,
                         )
                     except Exception as e:
                         logger.error(f"Could not log model: {e}")
 
-                _log_metrics_and_loss_pytorch(X, y, self, metrics, "train")
-                _log_metrics_and_loss_pytorch(X_test, y_test, self, metrics, "test")
-                _log_metrics_and_loss_pytorch(X_val, y_val, self, metrics, "val")
+                # Log metrics for different splits
+                if X is not None and y is not None:
+                    _log_metrics_and_loss_pytorch(X, y, self, metrics, "train")
+                if X_test is not None and y_test is not None:
+                    _log_metrics_and_loss_pytorch(X_test, y_test, self, metrics, "test")
+                if X_val is not None and y_val is not None:
+                    _log_metrics_and_loss_pytorch(X_val, y_val, self, metrics, "val")
 
                 if manual_metrics is not None:
                     _log_metrics_manual(*manual_metrics)
