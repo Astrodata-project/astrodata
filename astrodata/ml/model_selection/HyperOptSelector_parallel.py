@@ -25,7 +25,9 @@ def _get_best_metrics_and_params(trials: Trials):
         trial for trial in trials if STATUS_OK == trial["result"]["status"]
     ]
     if not valid_trial_list:
-        raise RuntimeError("Hyperopt trials did not produce any successful evaluations.")
+        raise RuntimeError(
+            "Hyperopt trials did not produce any successful evaluations."
+        )
 
     losses = [float(trial["result"]["loss"]) for trial in valid_trial_list]
     best_index = int(np.argmin(losses))
@@ -99,7 +101,9 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
             return KFold(n_splits=self.cv, shuffle=True, random_state=self.random_state)
         return self.cv
 
-    def _objective(self, params: Dict[str, Any], X, y, X_val=None, y_val=None) -> Dict[str, Any]:
+    def _objective(
+        self, params: Dict[str, Any], X, y, X_val=None, y_val=None
+    ) -> Dict[str, Any]:
         params_t = dict(params)
         model_choice = params_t.pop("model")
         model = self._resolve_model(model_choice)
@@ -145,7 +149,12 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
 
         greater_is_better = self.scorer.greater_is_better if self.scorer else True
         loss = -score if greater_is_better else score
-        return {"loss": loss, "status": STATUS_OK, "metrics": metrics, "params": logged_params}
+        return {
+            "loss": loss,
+            "status": STATUS_OK,
+            "metrics": metrics,
+            "params": logged_params,
+        }
 
     def _ensure_mongo_ready(self):
         os_name = platform.system()
@@ -155,7 +164,9 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
             elif os_name == "Linux":
                 subprocess.run(["systemctl", "start", "mongod"], check=False)
             elif os_name == "Darwin":
-                subprocess.run(["brew", "services", "start", "mongodb-community"], check=False)
+                subprocess.run(
+                    ["brew", "services", "start", "mongodb-community"], check=False
+                )
         except Exception as exc:
             logger.warning("Unable to ensure MongoDB service is running: %s", exc)
 
@@ -169,7 +180,9 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
             try:
                 if platform.system() == "Windows":
                     creationflags = 0
-                    if not self.show_worker_terminal and hasattr(subprocess, "CREATE_NO_WINDOW"):
+                    if not self.show_worker_terminal and hasattr(
+                        subprocess, "CREATE_NO_WINDOW"
+                    ):
                         creationflags = subprocess.CREATE_NO_WINDOW
                     subprocess.Popen(
                         ["cmd", "/c", " ".join(worker_cmd)],

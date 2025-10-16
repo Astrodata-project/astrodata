@@ -1,6 +1,8 @@
+import torch
 from hyperopt import hp
 from sklearn.datasets import load_iris
 from sklearn.metrics import accuracy_score, f1_score, log_loss
+from sklearn.model_selection import train_test_split
 from torch import nn, optim
 
 from astrodata.ml.metrics import SklearnMetric
@@ -9,6 +11,22 @@ from astrodata.ml.models import PytorchModel
 
 if __name__ == "__main__":
     X, y = load_iris(return_X_y=True)
+    X_train, X_val, y_train, y_val = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+
+    dataset = torch.utils.data.TensorDataset(
+        torch.tensor(X_train, dtype=torch.float32),
+        torch.tensor(y_train, dtype=torch.long),
+    )
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
+
+    dataset_val = torch.utils.data.TensorDataset(
+        torch.tensor(X_val, dtype=torch.float32), torch.tensor(y_val, dtype=torch.long)
+    )
+    dataloader_val = torch.utils.data.DataLoader(
+        dataset_val, batch_size=32, shuffle=False
+    )
 
     class IrisNet(nn.Module):
         def __init__(self, input_layers, output_layers):
@@ -55,7 +73,7 @@ if __name__ == "__main__":
         metrics=metrics,
     )
 
-    hos.fit(X, y)
+    hos.fit(dataloader_train=dataloader, dataloader_val=dataloader_val)
 
     print(hos.get_best_params())
     print(hos.get_best_metrics())

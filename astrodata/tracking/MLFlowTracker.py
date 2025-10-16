@@ -8,7 +8,7 @@ import mlflow
 from astrodata.ml.metrics._utils import get_loss_func
 from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.models import BaseMlModel
+from astrodata.ml.models import BaseMlModel, PytorchModel
 from astrodata.tracking.ModelTracker import ModelTracker
 from astrodata.utils.logger import setup_logger
 
@@ -285,16 +285,18 @@ class PytorchMLflowTracker(MlflowBaseTracker):
 
     def wrap_fit(
         self,
-        model: BaseMlModel,
+        model: PytorchModel,
         X_test=None,
         y_test=None,
         X_val=None,
         y_val=None,
+        dataloader_test=None,
+        dataloader_val=None,
         metrics: Optional[List[BaseMetric]] = None,
         log_model: bool = False,
         tags: Dict[str, Any] = {},
         manual_metrics: Tuple[Dict[str, Any], str] = None,
-    ) -> BaseMlModel:
+    ) -> PytorchModel:
 
         orig_class = model.__class__
         if "is_final" not in tags.keys():
@@ -303,7 +305,19 @@ class PytorchMLflowTracker(MlflowBaseTracker):
         metrics = metrics or []
 
         @functools.wraps(orig_class.fit)
-        def fit_with_tracking(self, X, y, *args, **kwargs):
+        def fit_with_tracking(
+            self,
+            X=None,
+            y=None,
+            dataloader_train=None,
+            epochs=None,
+            batch_size=None,
+            device=None,
+            fine_tune=False,
+            save_every_n_epochs=None,
+            save_folder=None,
+            save_format="torch",
+        ):
 
             mlflow.set_experiment(tracker.experiment_name)
             with mlflow.start_run(run_name=tracker.run_name):
@@ -314,24 +328,74 @@ class PytorchMLflowTracker(MlflowBaseTracker):
                 except Exception as e:
                     logger.error(f"Could not log params: {e}")
 
-                result = orig_class.fit(self, X, y, metrics=metrics, *args, **kwargs)
+                result = orig_class.fit(
+                    self,
+                    X=X,
+                    y=y,
+                    dataloader=dataloader_train,
+                    epochs=epochs,
+                    batch_size=batch_size,
+                    device=device,
+                    metrics=metrics,
+                    fine_tune=fine_tune,
+                    X_val=X_val,
+                    y_val=y_val,
+                    dataloader_val=dataloader_val,
+                    save_every_n_epochs=save_every_n_epochs,
+                    save_folder=save_folder,
+                    save_format=save_format,
+                )
 
                 # Optionally log model
                 if log_model:
                     try:
+                        # For PyTorch models with dataloaders, we need sample data for signature
+                        if X is not None:
+                            sample_input = X[:5] if hasattr(X, "__getitem__") else None
+                            sample_output = y[:5] if hasattr(y, "__getitem__") else None
+                        else:
+                            sample_input = None
+                            sample_output = None
+
                         mlflow.pytorch.log_model(
                             self.model_,
                             name="model",
-                            signature=mlflow.models.infer_signature(
-                                model_input=X[:5], model_output=y[:5]
+                            signature=(
+                                mlflow.models.infer_signature(
+                                    model_input=sample_input, model_output=sample_output
+                                )
+                                if sample_input is not None
+                                else None
                             ),
                         )
                     except Exception as e:
                         logger.error(f"Could not log model: {e}")
 
-                _log_metrics_and_loss_pytorch(X, y, self, metrics, "train")
-                _log_metrics_and_loss_pytorch(X_test, y_test, self, metrics, "test")
-                _log_metrics_and_loss_pytorch(X_val, y_val, self, metrics, "val")
+                # Log metrics for different splits
+                if X is not None and y is not None:
+                    _log_metrics_and_loss_pytorch(X, y, None, self, metrics, "train")
+                elif dataloader_train is not None:
+                    _log_metrics_and_loss_pytorch(
+                        None, None, dataloader_train, self, metrics, "train"
+                    )
+
+                if X_test is not None and y_test is not None:
+                    _log_metrics_and_loss_pytorch(
+                        X_test, y_test, None, self, metrics, "test"
+                    )
+                elif dataloader_test is not None:
+                    _log_metrics_and_loss_pytorch(
+                        None, None, dataloader_test, self, metrics, "test"
+                    )
+
+                if X_val is not None and y_val is not None:
+                    _log_metrics_and_loss_pytorch(
+                        X_val, y_val, None, self, metrics, "val"
+                    )
+                elif dataloader_val is not None:
+                    _log_metrics_and_loss_pytorch(
+                        None, None, dataloader_val, self, metrics, "val"
+                    )
 
                 if manual_metrics is not None:
                     _log_metrics_manual(*manual_metrics)
@@ -387,13 +451,47 @@ def _log_metrics_and_loss_sklearn(
                     )
 
 
-# Helper for metrics and loss for sklearn
+# Helper for metrics and loss for PyTorch
 def _log_metrics_and_loss_pytorch(
-    X_split, y_split, model: BaseMlModel, metrics: BaseMetric, split_name: str
+    X_split,
+    y_split,
+    dataloader_split,
+    model: PytorchModel,
+    metrics: BaseMetric,
+    split_name: str,
 ):
-    if X_split is not None and y_split is not None and hasattr(model, "get_metrics"):
-        scores = model.get_metrics(X=X_split, y=y_split, metrics=metrics)
+    """
+    Log metrics and loss curves for a PyTorch model split.
+
+    Supports both X/y arrays and dataloaders as input.
+
+    Parameters
+    ----------
+    X_split : array-like, optional
+        Features for the split.
+    y_split : array-like, optional
+        Labels for the split.
+    dataloader_split : torch.utils.data.DataLoader, optional
+        Dataloader for the split.
+    model : PytorchModel
+        The fitted PyTorch model.
+    metrics : list of BaseMetric
+        Metrics to compute.
+    split_name : str
+        Name of the split ('train', 'val', 'test').
+    """
+    # Determine if we have data to evaluate
+    has_array_data = X_split is not None and y_split is not None
+    has_dataloader = dataloader_split is not None
+
+    if (has_array_data or has_dataloader) and hasattr(model, "get_metrics"):
+        if has_dataloader:
+            scores = model.get_metrics(dataloader=dataloader_split, metrics=metrics)
+        else:
+            scores = model.get_metrics(X=X_split, y=y_split, metrics=metrics)
+
         mlflow.log_metrics({f"{k}_{split_name}": v for k, v in scores.items()})
+
         # Loss curve
         if split_name == "train" or split_name == "val":
             curves = model.get_metrics_history(split=split_name)

@@ -344,6 +344,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.11.3" },
     { name = "safetensors", specifier = ">=0.6.2" },
     { name = "scikit-learn", specifier = ">=1.6.1" },
+    { name = "tensorflow", specifier = ">=2.20.0" },
     { name = "tensorflow", marker = "extra == 'tensorflow'", specifier = ">=2.0.0" },
     { name = "torch", specifier = ">=2.7.1" },
     { name = "torch", marker = "extra == 'torch'", specifier = ">=2.0.1" },

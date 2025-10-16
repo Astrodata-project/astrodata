@@ -118,7 +118,7 @@ class BaseMlModel(ABC):
         pass
 
     @abstractmethod
-    def get_metrics(self, X_test: Any, y_test: Any, **kwargs) -> Dict[str, float]:
+    def get_metrics(self, X: Any, y: Any, **kwargs) -> Dict[str, float]:
         """
         Compute and return model metrics on test data.
 
