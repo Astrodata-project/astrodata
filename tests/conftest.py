@@ -1,7 +1,11 @@
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
+import torch
+from astropy.io import fits
+from torchvision.io import write_png
 
 from astrodata.data.loaders.base import BaseLoader
 from astrodata.data.processors.base import AbstractProcessor
@@ -53,3 +57,37 @@ def dummy_loader():
 @pytest.fixture
 def dummy_processor():
     return DummyProcessor()
+
+
+@pytest.fixture
+def tmp_image_dataset(tmp_path: Path) -> Path:
+
+    root = tmp_path / "image_dataset"
+    splits = ["train", "test", "val"]
+    classes = ["class1", "class2"]
+
+    for split in splits:
+        for cls in classes:
+            d = root / split / cls
+            d.mkdir(parents=True, exist_ok=True)
+            for i in range(2):
+                img = torch.randint(0, 255, (3, 8, 8), dtype=torch.uint8)
+                write_png(img, str(d / f"img_{i}.png"))
+    return root
+
+
+@pytest.fixture
+def tmp_fits_dataset(tmp_path: Path) -> Path:
+
+    root = tmp_path / "fits_dataset"
+    splits = ["train", "test"]
+    classes = ["class1", "class2"]
+
+    for split in splits:
+        for cls in classes:
+            d = root / split / cls
+            d.mkdir(parents=True, exist_ok=True)
+            for i in range(2):
+                data = (np.random.rand(8, 8) * 100).astype("float32")
+                fits.writeto(str(d / f"img_{i}.fits"), data, overwrite=True)
+    return root
