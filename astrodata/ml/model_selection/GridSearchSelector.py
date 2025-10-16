@@ -116,20 +116,24 @@ class GridSearchSelector(BaseMlModelSelector):
         Raises
         ------
         ValueError
-            If neither validation data nor val_size is provided, or if neither 
+            If neither validation data nor val_size is provided, or if neither
             (X_train, y_train) nor dataloader_train is provided.
         """
 
         # Validate input format - either (X_train, y_train) or dataloader_train
         if (X_train is None or y_train is None) and dataloader_train is None:
-            raise ValueError("Either (X_train, y_train) or dataloader_train must be provided.")
+            raise ValueError(
+                "Either (X_train, y_train) or dataloader_train must be provided."
+            )
 
         # If using traditional X,y format, handle validation split
         if dataloader_train is None:
             # If validation data not provided, split from training data
             if X_val is None or y_val is None:
                 if self.val_size is None:
-                    raise ValueError("Either val_size or validation data must be provided when using X,y format.")
+                    raise ValueError(
+                        "Either val_size or validation data must be provided when using X,y format."
+                    )
                 X_train, X_val, y_train, y_val = train_test_split(
                     X_train,
                     y_train,
@@ -139,7 +143,9 @@ class GridSearchSelector(BaseMlModelSelector):
         else:
             # If using dataloader format, validation data should also be a dataloader
             if dataloader_val is None:
-                raise ValueError("When using dataloader_train, dataloader_val must also be provided.")
+                raise ValueError(
+                    "When using dataloader_train, dataloader_val must also be provided."
+                )
 
         greater_is_better = self.scorer.greater_is_better if self.scorer else True
         best_score = -np.inf if greater_is_better else np.inf
@@ -235,9 +241,13 @@ class GridSearchSelector(BaseMlModelSelector):
             self._best_model = self.model.clone()
             self._best_model.set_params(**self._best_params)
             if final_dataloader_train is not None:
-                self._best_model = self._best_model.fit(dataloader=final_dataloader_train, **kwargs)
+                self._best_model = self._best_model.fit(
+                    dataloader=final_dataloader_train, **kwargs
+                )
             else:
-                self._best_model = self._best_model.fit(final_X_train, final_y_train, **kwargs)
+                self._best_model = self._best_model.fit(
+                    final_X_train, final_y_train, **kwargs
+                )
 
         return self
 

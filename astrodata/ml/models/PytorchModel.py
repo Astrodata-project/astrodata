@@ -122,7 +122,9 @@ class PytorchModel(BaseMlModel):
         batch_size = batch_size if batch_size is not None else self.batch_size
         self.metrics_history_ = []
         self._val_metrics_history_ = (
-            [] if (X_val is not None and y_val is not None) or dataloader_val is not None else None
+            []
+            if (X_val is not None and y_val is not None) or dataloader_val is not None
+            else None
         )
 
         if epochs <= 0:
@@ -195,7 +197,9 @@ class PytorchModel(BaseMlModel):
     ) -> float:
 
         if dataloader_val is None and X_val is not None and y_val is not None:
-            dataloader_val = self._create_dataloader(X_val, y_val, batch_size, device, shuffle=True)
+            dataloader_val = self._create_dataloader(
+                X_val, y_val, batch_size, device, shuffle=True
+            )
 
         for i, data in enumerate(training_loader):
             # Each data instance is an input + label pair
@@ -237,15 +241,15 @@ class PytorchModel(BaseMlModel):
             )
             for name, value in val_scores.items():
                 self._val_metrics_history_.append((f"{name}_epoch", value))
-                
-            val_loss_acc = []                
+
+            val_loss_acc = []
             for i, data in enumerate(dataloader_val):
                 inputs, labels = data
 
                 # Forward pass
                 outputs = model(inputs)
                 val_loss_acc.append(loss_fn(outputs, labels).item())
-                
+
             self._val_metrics_history_.append(
                 ("loss_epoch", sum(val_loss_acc) / len(val_loss_acc))
             )
@@ -350,13 +354,14 @@ class PytorchModel(BaseMlModel):
             return outputs.numpy().ravel()
         return outputs.argmax(dim=1).numpy()
 
-    def score(self,
-              dataloader=None,
-              X=None,
-              y=None,
-              device=None,
-              batch_size=None,
-              ):    
+    def score(
+        self,
+        dataloader=None,
+        X=None,
+        y=None,
+        device=None,
+        batch_size=None,
+    ):
         """
         Compute the average loss on the given data.
 
@@ -387,31 +392,33 @@ class PytorchModel(BaseMlModel):
         """
         if self.model_ is None:
             raise RuntimeError("Model is not fitted yet.")
-        
+
         if dataloader is None and (X is None or y is None):
             raise ValueError("Either dataloader or both X and y must be provided.")
-        
+
         if dataloader is None and (X is not None and y is not None):
-            dataloader = self._create_dataloader(X, y, batch_size, device, shuffle=False)
-        
+            dataloader = self._create_dataloader(
+                X, y, batch_size, device, shuffle=False
+            )
+
         device = device or self.device
         self.model_.eval()
         loss_fn = self.loss_fn()
-        
+
         total_loss = 0.0
         num_batches = 0
-        
+
         with torch.no_grad():
             for inputs, labels in dataloader:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
-                
+
                 outputs = self.model_(inputs)
                 loss = loss_fn(outputs, labels)
-                
+
                 total_loss += loss.item()
                 num_batches += 1
-        
+
         return total_loss / num_batches if num_batches > 0 else 0.0
 
     def get_scorer_metric(self):
@@ -541,26 +548,28 @@ class PytorchModel(BaseMlModel):
         """
         if (X is None or y is None) and dataloader is None:
             raise ValueError("Either dataloader or both X and y must be provided.")
-        
+
         if dataloader is None:
-            dataloader = self._create_dataloader(X, y, batch_size, device, shuffle=False)
-            
+            dataloader = self._create_dataloader(
+                X, y, batch_size, device, shuffle=False
+            )
+
         # Collect all predictions and true labels
         all_y_true = []
         all_y_pred = []
         all_y_pred_proba = []
-        
+
         device = device or self.device
         self.model_.eval()
-        
+
         with torch.no_grad():
             for inputs, labels in dataloader:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
-                
+
                 # Get predictions
                 outputs = self.model_(inputs)
-                
+
                 # Convert to predictions
                 if outputs.dim() > 1 and outputs.shape[-1] > 1:
                     preds = outputs.argmax(dim=1)
@@ -572,12 +581,12 @@ class PytorchModel(BaseMlModel):
                     probs = torch.sigmoid(outputs)
                     if probs.dim() == 1:
                         probs = torch.stack([1 - probs, probs], dim=1)
-                
+
                 # Collect results
                 all_y_true.append(labels.cpu().numpy())
                 all_y_pred.append(preds.cpu().numpy())
                 all_y_pred_proba.append(probs.cpu().numpy())
-        
+
         # Concatenate all results
         y_true = np.concatenate(all_y_true)
         y_pred = np.concatenate(all_y_pred)
@@ -643,7 +652,9 @@ class PytorchModel(BaseMlModel):
         else:
             return self.optimizer(model.parameters(), **(self.optimizer_params or {}))
 
-    def _create_dataloader(self, X, y, batch_size: int, device: Optional[str] = None, shuffle: bool = True) -> DataLoader:
+    def _create_dataloader(
+        self, X, y, batch_size: int, device: Optional[str] = None, shuffle: bool = True
+    ) -> DataLoader:
         """
         Create a DataLoader from X and y tensors.
 

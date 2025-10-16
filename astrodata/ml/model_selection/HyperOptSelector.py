@@ -77,7 +77,15 @@ class HyperOptSelector(BaseMlModelSelector):
         self._best_metrics = None
 
     def _objective(
-        self, params: Dict[str, Any], X=None, y=None, X_val=None, y_val=None, dataloader_train=None, dataloader_val=None, **kwargs
+        self,
+        params: Dict[str, Any],
+        X=None,
+        y=None,
+        X_val=None,
+        y_val=None,
+        dataloader_train=None,
+        dataloader_val=None,
+        **kwargs,
     ) -> Dict[str, Any]:
         params_t = params.copy()
         model = params_t.pop("model")
@@ -106,7 +114,9 @@ class HyperOptSelector(BaseMlModelSelector):
             if dataloader_train is not None:
                 # Using dataloader format
                 if dataloader_val is None:
-                    raise ValueError("When using dataloader_train, dataloader_val must also be provided.")
+                    raise ValueError(
+                        "When using dataloader_train, dataloader_val must also be provided."
+                    )
                 X_train, y_train = None, None
                 X_val_use, y_val_use = None, None
                 dataloader_train_use = dataloader_train
@@ -237,7 +247,9 @@ class HyperOptSelector(BaseMlModelSelector):
             self._best_model = best_params_t.pop("model").clone()
             self._best_model.set_params(**best_params_t)
             if final_dataloader_train is not None:
-                self._best_model = self._best_model.fit(dataloader=final_dataloader_train, **kwargs)
+                self._best_model = self._best_model.fit(
+                    dataloader=final_dataloader_train, **kwargs
+                )
             else:
                 self._best_model = self._best_model.fit(X_full, y_full, **kwargs)
 

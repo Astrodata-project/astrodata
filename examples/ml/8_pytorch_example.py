@@ -1,9 +1,9 @@
+import torch
 import torch.nn.functional as F
 from sklearn.datasets import load_breast_cancer
 from sklearn.metrics import accuracy_score, f1_score, log_loss
 from sklearn.model_selection import train_test_split
 from torch import nn, optim
-import torch
 
 from astrodata.ml.metrics import SklearnMetric
 from astrodata.ml.models import PytorchModel
@@ -12,11 +12,19 @@ if __name__ == "__main__":
     X, y = load_breast_cancer(return_X_y=True)
     X_train, X_test, y_train, y_test = train_test_split(X, y)
 
-    dataset = torch.utils.data.TensorDataset(torch.tensor(X_train, dtype=torch.float32), torch.tensor(y_train, dtype=torch.long))
+    dataset = torch.utils.data.TensorDataset(
+        torch.tensor(X_train, dtype=torch.float32),
+        torch.tensor(y_train, dtype=torch.long),
+    )
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
 
-    dataset_test = torch.utils.data.TensorDataset(torch.tensor(X_test, dtype=torch.float32), torch.tensor(y_test, dtype=torch.long))
-    dataloader_test = torch.utils.data.DataLoader(dataset_test, batch_size=32, shuffle=False)
+    dataset_test = torch.utils.data.TensorDataset(
+        torch.tensor(X_test, dtype=torch.float32),
+        torch.tensor(y_test, dtype=torch.long),
+    )
+    dataloader_test = torch.utils.data.DataLoader(
+        dataset_test, batch_size=32, shuffle=False
+    )
 
     class SimpleClassifier(nn.Module):
         def __init__(self, input_layers, output_layers):
@@ -53,13 +61,13 @@ if __name__ == "__main__":
     logloss = SklearnMetric(log_loss)
 
     metrics = [accuracy, f1, logloss]
-    
+
     model.fit(
         dataloader=dataloader,
         metrics=metrics,
         dataloader_val=dataloader_test,
     )
-    
+
     y_pred = model.predict(
         X=X_test,
         batch_size=32,

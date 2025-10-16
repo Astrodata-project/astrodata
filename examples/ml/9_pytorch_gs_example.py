@@ -11,14 +11,22 @@ from astrodata.ml.models import PytorchModel
 
 if __name__ == "__main__":
     X, y = load_iris(return_X_y=True)
-    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_val, y_train, y_val = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
 
-    dataset = torch.utils.data.TensorDataset(torch.tensor(X_train, dtype=torch.float32), torch.tensor(y_train, dtype=torch.long))
+    dataset = torch.utils.data.TensorDataset(
+        torch.tensor(X_train, dtype=torch.float32),
+        torch.tensor(y_train, dtype=torch.long),
+    )
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
 
-    dataset_val = torch.utils.data.TensorDataset(torch.tensor(X_val, dtype=torch.float32), torch.tensor(y_val, dtype=torch.long))
-    dataloader_val = torch.utils.data.DataLoader(dataset_val, batch_size=32, shuffle=False)
-
+    dataset_val = torch.utils.data.TensorDataset(
+        torch.tensor(X_val, dtype=torch.float32), torch.tensor(y_val, dtype=torch.long)
+    )
+    dataloader_val = torch.utils.data.DataLoader(
+        dataset_val, batch_size=32, shuffle=False
+    )
 
     class IrisNet(nn.Module):
         def __init__(self, input_layers, output_layers):

@@ -127,22 +127,28 @@ def fit_model_score(
         m.fit(dataloader=dataloader_train, dataloader_val=dataloader_val, **kwargs)
     else:
         m.fit(X_train, y_train_mod, X_val=X_val, y_val=y_val_mod, **kwargs)
-        
+
     if dataloader_train is not None:
         if scorer:
-            score = m.get_metrics(dataloader=dataloader_val, metrics=[scorer])[scorer.get_name()]
+            score = m.get_metrics(dataloader=dataloader_val, metrics=[scorer])[
+                scorer.get_name()
+            ]
         else:
             score = m.score(dataloader=dataloader_val)
-        
+
         metrics_res = (
-            m.get_metrics(dataloader=dataloader_val, metrics=metrics) if metrics else None
+            m.get_metrics(dataloader=dataloader_val, metrics=metrics)
+            if metrics
+            else None
         )
-        
+
         return m, metrics_res, score
 
     if X_val is not None and y_val is not None:
         if scorer:
-            score = m.get_metrics(X=X_val, y=y_val_mod, metrics=[scorer])[scorer.get_name()]
+            score = m.get_metrics(X=X_val, y=y_val_mod, metrics=[scorer])[
+                scorer.get_name()
+            ]
         else:
             score = m.score(X=X_val, y=y_val_mod)
 
