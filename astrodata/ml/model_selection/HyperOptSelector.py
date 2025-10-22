@@ -83,8 +83,8 @@ class HyperOptSelector(BaseMlModelSelector):
         y=None,
         X_val=None,
         y_val=None,
-        dataloader_train=None,
-        dataloader_val=None,
+        dataset_train=None,
+        dataset_val=None,
         **kwargs,
     ) -> Dict[str, Any]:
         params_t = params.copy()
@@ -111,16 +111,16 @@ class HyperOptSelector(BaseMlModelSelector):
                 tags={"stage": "training", "is_final": False, "params": params},
             )
         else:
-            if dataloader_train is not None:
-                # Using dataloader format
-                if dataloader_val is None:
+            if dataset_train is not None:
+                # Using dataset format
+                if dataset_val is None:
                     raise ValueError(
-                        "When using dataloader_train, dataloader_val must also be provided."
+                        "When using dataset_train, dataset_val must also be provided."
                     )
                 X_train, y_train = None, None
                 X_val_use, y_val_use = None, None
-                dataloader_train_use = dataloader_train
-                dataloader_val_use = dataloader_val
+                dataset_train_use = dataset_train
+                dataset_val_use = dataset_val
             else:
                 # Using X,y format
                 if X_val is None or y_val is None:
@@ -133,8 +133,8 @@ class HyperOptSelector(BaseMlModelSelector):
                 else:
                     X_train, y_train = X, y
                     X_val_use, y_val_use = X_val, y_val
-                dataloader_train_use = None
-                dataloader_val_use = None
+                dataset_train_use = None
+                dataset_val_use = None
 
             m, metrics, score = fit_model_score(
                 model,
@@ -144,8 +144,8 @@ class HyperOptSelector(BaseMlModelSelector):
                 y_train,
                 X_val_use,
                 y_val_use,
-                dataloader_train=dataloader_train_use,
-                dataloader_val=dataloader_val_use,
+                dataset_train=dataset_train_use,
+                dataset_val=dataset_val_use,
                 metrics=self.metrics,
                 tracker=self.tracker,
                 log_model=self.log_all_models,
@@ -170,20 +170,20 @@ class HyperOptSelector(BaseMlModelSelector):
         y_val=None,
         X_test=None,
         y_test=None,
-        dataloader_train=None,
-        dataloader_val=None,
-        dataloader_test=None,
+        dataset_train=None,
+        dataset_val=None,
+        dataset_test=None,
         *args,
         **kwargs,
     ) -> "HyperOptSelector":
         # Validate input format
-        if (X is None or y is None) and dataloader_train is None:
-            raise ValueError("Either (X, y) or dataloader_train must be provided.")
+        if (X is None or y is None) and dataset_train is None:
+            raise ValueError("Either (X, y) or dataset_train must be provided.")
 
         trials = Trials()
         best_params = fmin(
             fn=lambda params: self._objective(
-                params, X, y, X_val, y_val, dataloader_train, dataloader_val, **kwargs
+                params, X, y, X_val, y_val, dataset_train, dataset_val, **kwargs
             ),
             space=self.param_space,
             algo=tpe.suggest,
@@ -194,18 +194,18 @@ class HyperOptSelector(BaseMlModelSelector):
 
         # Evaluate best to get metrics
         if self.use_cv:
-            if dataloader_train is not None:
-                # For CV with dataloaders, we can't easily split, so use original dataloader
+            if dataset_train is not None:
+                # For CV with datasets, we can't easily split, so use original dataset
                 X_full, y_full = None, None
-                final_dataloader_train = dataloader_train
+                final_dataset_train = dataset_train
             else:
                 X_full, y_full = X, y
-                final_dataloader_train = None
+                final_dataset_train = None
         else:
-            if dataloader_train is not None:
-                # For dataloader format, use original training dataloader
+            if dataset_train is not None:
+                # For dataset format, use original training dataset
                 X_full, y_full = None, None
-                final_dataloader_train = dataloader_train
+                final_dataset_train = dataset_train
             else:
                 # For X,y format, combine train and val if val was provided
                 if X_val is not None and y_val is not None:
@@ -213,7 +213,7 @@ class HyperOptSelector(BaseMlModelSelector):
                     y_full = pd.concat([y, y_val])
                 else:
                     X_full, y_full = X, y
-                final_dataloader_train = None
+                final_dataset_train = None
 
         # Train best model on all data
         self._best_metrics, self._best_params = _getBestMetricsParamsfromTrials(trials)
@@ -229,8 +229,8 @@ class HyperOptSelector(BaseMlModelSelector):
                 y_train=y_full,
                 X_test=X_test,
                 y_test=y_test,
-                dataloader_train=final_dataloader_train,
-                dataloader_test=dataloader_test,
+                dataset_train=final_dataset_train,
+                dataset_test=dataset_test,
                 metrics=self.metrics,
                 tracker=self.tracker,
                 log_model=True,
@@ -246,9 +246,9 @@ class HyperOptSelector(BaseMlModelSelector):
         else:
             self._best_model = best_params_t.pop("model").clone()
             self._best_model.set_params(**best_params_t)
-            if final_dataloader_train is not None:
+            if final_dataset_train is not None:
                 self._best_model = self._best_model.fit(
-                    dataloader=final_dataloader_train, **kwargs
+                    dataset=final_dataset_train, **kwargs
                 )
             else:
                 self._best_model = self._best_model.fit(X_full, y_full, **kwargs)

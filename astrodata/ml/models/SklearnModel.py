@@ -101,7 +101,7 @@ class SklearnModel(BaseMlModel):
         """
         self.model_ = joblib.load(filepath, **kwargs)
 
-    def fit(self, X, y, **fit_params) -> BaseMlModel:
+    def fit(self, X, y, X_val=None, y_val=None, **fit_params) -> BaseMlModel:
         """
         Fit the model to data.
 

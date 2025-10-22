@@ -22,21 +22,14 @@ if __name__ == "__main__":
         torch.tensor(X_train, dtype=torch.float32),
         torch.tensor(y_train, dtype=torch.long),
     )
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
 
     dataset_val = torch.utils.data.TensorDataset(
         torch.tensor(X_val, dtype=torch.float32), torch.tensor(y_val, dtype=torch.long)
-    )
-    dataloader_val = torch.utils.data.DataLoader(
-        dataset_val, batch_size=32, shuffle=False
     )
 
     dataset_test = torch.utils.data.TensorDataset(
         torch.tensor(X_test, dtype=torch.float32),
         torch.tensor(y_test, dtype=torch.long),
-    )
-    dataloader_test = torch.utils.data.DataLoader(
-        dataset_test, batch_size=32, shuffle=False
     )
 
     class SimpleClassifier(nn.Module):
@@ -83,13 +76,13 @@ if __name__ == "__main__":
 
     tracked_model = tracker.wrap_fit(
         model,
-        dataloader_val=dataloader_val,
-        dataloader_test=dataloader_test,
+        dataset_val=dataset_val,
+        dataset_test=dataset_test,
         metrics=metrics,
         log_model=True,
     )
 
-    tracked_model.fit(dataloader_train=dataloader)
+    tracked_model.fit(dataset_train=dataset)
 
     y_pred = tracked_model.predict(
         X=X_test,
@@ -98,5 +91,5 @@ if __name__ == "__main__":
 
     print(
         "Test metrics:",
-        tracked_model.get_metrics(dataloader=dataloader_test, metrics=metrics),
+        tracked_model.get_metrics(dataset=dataset_test, metrics=metrics),
     )
