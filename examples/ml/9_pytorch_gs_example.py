@@ -19,13 +19,9 @@ if __name__ == "__main__":
         torch.tensor(X_train, dtype=torch.float32),
         torch.tensor(y_train, dtype=torch.long),
     )
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
 
     dataset_val = torch.utils.data.TensorDataset(
         torch.tensor(X_val, dtype=torch.float32), torch.tensor(y_val, dtype=torch.long)
-    )
-    dataloader_val = torch.utils.data.DataLoader(
-        dataset_val, batch_size=32, shuffle=False
     )
 
     class IrisNet(nn.Module):
@@ -69,7 +65,7 @@ if __name__ == "__main__":
         metrics=metrics,
     )
 
-    gss.fit(dataloader_train=dataloader, dataloader_val=dataloader_val)
+    gss.fit(dataset_train=dataset, dataset_val=dataset_val)
 
     print(gss.get_best_params())
     print(gss.get_best_metrics())

@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     print(gss)
 
-    gss.fit(X_train, y_train, X_test=X_test, y_test=y_test)
+    gss.fit(X=X_train, y=y_train, X_test=X_test, y_test=y_test)
 
     print(f"Best parameters found: {gss.get_best_params()}")
     print(f"Best metrics: {gss.get_best_metrics()}")

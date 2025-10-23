@@ -16,14 +16,10 @@ if __name__ == "__main__":
         torch.tensor(X_train, dtype=torch.float32),
         torch.tensor(y_train, dtype=torch.long),
     )
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
 
     dataset_test = torch.utils.data.TensorDataset(
         torch.tensor(X_test, dtype=torch.float32),
         torch.tensor(y_test, dtype=torch.long),
-    )
-    dataloader_test = torch.utils.data.DataLoader(
-        dataset_test, batch_size=32, shuffle=False
     )
 
     class SimpleClassifier(nn.Module):
@@ -63,14 +59,15 @@ if __name__ == "__main__":
     metrics = [accuracy, f1, logloss]
 
     model.fit(
-        dataloader=dataloader,
+        X=X,
+        y=y,
         metrics=metrics,
-        dataloader_val=dataloader_test,
+        dataset_val=dataset_test,
     )
 
     y_pred = model.predict(
-        X=X_test,
+        data=X_test,
         batch_size=32,
     )
 
-    print(model.get_metrics(dataloader=dataloader_test, metrics=metrics))
+    print(model.get_metrics(dataset=dataset_test, metrics=metrics))

@@ -10,7 +10,7 @@ from safetensors.torch import load_file as safetensors_load
 from safetensors.torch import save_file as safetensors_save
 from torch.nn import Module
 from torch.optim import Optimizer
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader, Dataset, TensorDataset
 from tqdm import trange
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
@@ -66,7 +66,7 @@ class PytorchModel(BaseMlModel):
         self,
         X: Optional[Any] = None,
         y: Optional[Any] = None,
-        dataloader: Optional[DataLoader] = None,
+        dataset: Optional[Dataset] = None,
         epochs: Optional[int] = None,
         batch_size: Optional[int] = None,
         device: Optional[str] = None,
@@ -74,23 +74,25 @@ class PytorchModel(BaseMlModel):
         fine_tune: bool = False,
         X_val: Optional[Any] = None,
         y_val: Optional[Any] = None,
-        dataloader_val: Optional[DataLoader] = None,
+        dataset_val: Optional[Dataset] = None,
         save_every_n_epochs: Optional[int] = None,
         save_folder: Optional[str] = None,
         save_format: str = "torch",
+        shuffle: bool = True,
+        seed: int = 42,
         **kwargs,
     ) -> "PytorchModel":
         """
-        Fit the model using the provided data or dataloader.
+        Fit the model using the provided data or dataset.
 
         Parameters
         ----------
         X : array-like or torch.Tensor, optional
-            Training features. Ignored if ``dataloader`` is provided.
+            Training features. Ignored if ``dataset`` is provided.
         y : array-like or torch.Tensor, optional
-            Training labels. Ignored if ``dataloader`` is provided.
-        dataloader : torch.utils.data.DataLoader, optional
-            Pre-built training dataloader yielding ``(inputs, labels)``.
+            Training labels. Ignored if ``dataset`` is provided.
+        dataset : torch.utils.data.Dataset, optional
+            Pre-built training dataset yielding ``(inputs, labels)``.
         epochs : int, optional
             Number of training epochs. Defaults to the instance value.
         batch_size : int, optional
@@ -123,7 +125,7 @@ class PytorchModel(BaseMlModel):
         self.metrics_history_ = []
         self._val_metrics_history_ = (
             []
-            if (X_val is not None and y_val is not None) or dataloader_val is not None
+            if (X_val is not None and y_val is not None) or dataset_val is not None
             else None
         )
 
@@ -132,12 +134,17 @@ class PytorchModel(BaseMlModel):
         if batch_size <= 0:
             raise ValueError("Batch size must be greater than 0.")
 
-        if (X is None and y is None) and dataloader is None:
-            raise ValueError("Either X and y or dataloader must be provided.")
+        if (X is None and y is None) and dataset is None:
+            raise ValueError("Either X and y or dataset must be provided.")
 
-        if dataloader is None:
-            dataloader = self._create_dataloader(X, y, batch_size, device, shuffle=True)
+        if dataset is None:
+            dataset = self._create_dataset(X, y, device)
         # if a dataloader was passed, we trust it yields tensors on the right device
+
+        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
+
+        if dataset_val is None and X_val is not None and y_val is not None:
+            dataset_val = self._create_dataset(X_val, y_val, device)
 
         if not fine_tune or self.model_ is None:
             self.model_ = self._get_model().to(self.device)
@@ -155,9 +162,7 @@ class PytorchModel(BaseMlModel):
                     loss_fn=self.loss_fn_,
                     training_loader=dataloader,
                     metrics=metrics,
-                    X_val=X_val,
-                    y_val=y_val,
-                    dataloader_val=dataloader_val,
+                    dataset_val=dataset_val,
                     batch_size=batch_size,
                     device=device,
                 )
@@ -189,17 +194,10 @@ class PytorchModel(BaseMlModel):
         loss_fn,
         training_loader: torch.utils.data.DataLoader,
         metrics: Optional[List[BaseMetric]] = None,
-        X_val: Optional[Any] = None,
-        y_val: Optional[Any] = None,
-        dataloader_val: Optional[DataLoader] = None,
+        dataset_val: Optional[Dataset] = None,
         batch_size: Optional[int] = None,
         device: Optional[str] = None,
     ) -> float:
-
-        if dataloader_val is None and X_val is not None and y_val is not None:
-            dataloader_val = self._create_dataloader(
-                X_val, y_val, batch_size, device, shuffle=True
-            )
 
         for i, data in enumerate(training_loader):
             # Each data instance is an input + label pair
@@ -232,9 +230,9 @@ class PytorchModel(BaseMlModel):
             self.metrics_history_.append(("loss_epoch", loss.item()))
 
         # Epoch-level validation metrics
-        if metrics is not None and dataloader_val is not None:
+        if metrics is not None and dataset_val is not None:
             val_scores = self.get_metrics(
-                dataloader=dataloader_val,
+                dataset=dataset_val,
                 metrics=metrics,
                 batch_size=batch_size or self.batch_size or 32,
                 device=device or self.device,
@@ -243,7 +241,13 @@ class PytorchModel(BaseMlModel):
                 self._val_metrics_history_.append((f"{name}_epoch", value))
 
             val_loss_acc = []
-            for i, data in enumerate(dataloader_val):
+            for i, data in enumerate(
+                DataLoader(
+                    dataset_val,
+                    batch_size=batch_size or self.batch_size or 32,
+                    shuffle=False,
+                )
+            ):
                 inputs, labels = data
 
                 # Forward pass
@@ -257,18 +261,18 @@ class PytorchModel(BaseMlModel):
         return loss.item()
 
     def predict(
-        self, X, batch_size: int, device: Optional[str] = None, **kwargs
+        self, data, batch_size: int, device: Optional[str] = None, **kwargs
     ) -> Any:
         """
         Predict outputs for input ``X``.
 
         Parameters
         ----------
-        X : array-like, torch.Tensor, or DataLoader
-            Features to predict. If a DataLoader is provided, it should yield
+        data : array-like, torch.Tensor, or Dataset
+            Features to predict. If a Dataset is provided, it should yield
             feature tensors only.
         batch_size : int
-            Batch size used when ``X`` is not a DataLoader.
+            Batch size.
         device : str, optional
             Device to use for inference. Defaults to instance device.
 
@@ -282,21 +286,21 @@ class PytorchModel(BaseMlModel):
         RuntimeError
             If the model is not fitted yet.
         """
-        return self._predict(X, batch_size, device, use_proba=False)
+        return self._predict(data, batch_size, device, use_proba=False)
 
     def predict_proba(
-        self, X, batch_size: int, device: Optional[str] = None, **kwargs
+        self, data, batch_size: int, device: Optional[str] = None, **kwargs
     ) -> Any:
         """
         Predict class probabilities for input ``X``.
 
         Parameters
         ----------
-        X : array-like, torch.Tensor, or DataLoader
-            Features to predict. If a DataLoader is provided, it should yield
+        data : array-like, torch.Tensor, or Dataset
+            Features to predict. If a Dataset is provided, it should yield
             feature tensors only.
         batch_size : int
-            Batch size used when ``X`` is not a DataLoader.
+            Batch size used when ``X`` is not a Dataset.
         device : str, optional
             Device to use for inference. Defaults to instance device.
 
@@ -310,7 +314,7 @@ class PytorchModel(BaseMlModel):
         RuntimeError
             If the model is not fitted yet.
         """
-        return self._predict(X, batch_size, device, use_proba=True)
+        return self._predict(data, batch_size, device, use_proba=True)
 
     def _predict(
         self, X, batch_size: int, device: Optional[str], use_proba: bool
@@ -321,19 +325,16 @@ class PytorchModel(BaseMlModel):
         device = device or self.device
         self.model_.eval()
 
-        if not isinstance(X, torch.Tensor) and not isinstance(X, DataLoader):
+        if not isinstance(X, Dataset):
             X = torch.tensor(X, dtype=torch.float32)
+            X = TensorDataset(X)
 
-        dataloader = (
-            DataLoader(X, batch_size=batch_size, shuffle=False)
-            if not isinstance(X, DataLoader)
-            else X
-        )
+        dataloader = DataLoader(dataset=X, batch_size=batch_size, shuffle=False)
         outputs = []
 
         with torch.no_grad():
             for batch_X in dataloader:
-                batch_X = batch_X.to(device)
+                batch_X = batch_X[0].to(device)
                 out = self.model_(batch_X)
                 try:
                     outputs.append(out.cpu())
@@ -356,7 +357,7 @@ class PytorchModel(BaseMlModel):
 
     def score(
         self,
-        dataloader=None,
+        dataset=None,
         X=None,
         y=None,
         device=None,
@@ -367,12 +368,12 @@ class PytorchModel(BaseMlModel):
 
         Parameters
         ----------
-        dataloader : torch.utils.data.DataLoader, optional
-            Pre-built dataloader yielding ``(inputs, labels)``.
+        dataset : torch.utils.data.Dataset, optional
+            Pre-built dataset yielding ``(inputs, labels)``.
         X : array-like or torch.Tensor, optional
-            Features. Ignored if ``dataloader`` is provided.
+            Features. Ignored if ``dataset`` is provided.
         y : array-like or torch.Tensor, optional
-            Labels. Ignored if ``dataloader`` is provided.
+            Labels. Ignored if ``dataset`` is provided.
         device : str, optional
             Device to use for inference. Defaults to instance device.
         batch_size : int, optional
@@ -388,18 +389,20 @@ class PytorchModel(BaseMlModel):
         RuntimeError
             If the model is not fitted yet.
         ValueError
-            If neither dataloader nor (X, y) are provided.
+            If neither dataset nor (X, y) are provided.
         """
         if self.model_ is None:
             raise RuntimeError("Model is not fitted yet.")
 
-        if dataloader is None and (X is None or y is None):
-            raise ValueError("Either dataloader or both X and y must be provided.")
+        if dataset is None and (X is None or y is None):
+            raise ValueError("Either dataset or both X and y must be provided.")
 
-        if dataloader is None and (X is not None and y is not None):
-            dataloader = self._create_dataloader(
-                X, y, batch_size, device, shuffle=False
-            )
+        if dataset is None and (X is not None and y is not None):
+            dataset = self._create_dataset(X, y, device=device)
+
+        dataloader = DataLoader(
+            dataset, batch_size=batch_size or self.batch_size or 32, shuffle=False
+        )
 
         device = device or self.device
         self.model_.eval()
@@ -513,7 +516,7 @@ class PytorchModel(BaseMlModel):
         self,
         X=None,
         y=None,
-        dataloader=None,
+        dataset=None,
         metrics: List[BaseMetric] = None,
         batch_size: int = 32,
         device: Optional[str] = None,
@@ -524,11 +527,11 @@ class PytorchModel(BaseMlModel):
         Parameters
         ----------
         X : array-like or torch.Tensor, optional
-            Features. Ignored if ``dataloader`` is provided.
+            Features. Ignored if ``dataset`` is provided.
         y : array-like or torch.Tensor, optional
-            Labels. Ignored if ``dataloader`` is provided.
-        dataloader : torch.utils.data.DataLoader, optional
-            Pre-built dataloader yielding ``(inputs, labels)``.
+            Labels. Ignored if ``dataset`` is provided.
+        dataset : torch.utils.data.Dataset, optional
+            Pre-built dataset yielding ``(inputs, labels)``.
         metrics : list of BaseMetric
             Metrics to compute.
         batch_size : int, default 32
@@ -544,15 +547,17 @@ class PytorchModel(BaseMlModel):
         Raises
         ------
         ValueError
-            If neither dataloader nor (X, y) are provided.
+            If neither dataset nor (X, y) are provided.
         """
-        if (X is None or y is None) and dataloader is None:
-            raise ValueError("Either dataloader or both X and y must be provided.")
+        if (X is None or y is None) and dataset is None:
+            raise ValueError("Either dataset or both X and y must be provided.")
 
-        if dataloader is None:
-            dataloader = self._create_dataloader(
-                X, y, batch_size, device, shuffle=False
-            )
+        if dataset is None:
+            dataset = self._create_dataset(X, y, device=device)
+
+        dataloader = DataLoader(
+            dataset, batch_size=batch_size or self.batch_size or 32, shuffle=False
+        )
 
         # Collect all predictions and true labels
         all_y_true = []
@@ -652,11 +657,9 @@ class PytorchModel(BaseMlModel):
         else:
             return self.optimizer(model.parameters(), **(self.optimizer_params or {}))
 
-    def _create_dataloader(
-        self, X, y, batch_size: int, device: Optional[str] = None, shuffle: bool = True
-    ) -> DataLoader:
+    def _create_dataset(self, X, y, device: Optional[str] = None) -> Dataset:
         """
-        Create a DataLoader from X and y tensors.
+        Create a Dataset from X and y tensors.
 
         Parameters
         ----------
@@ -665,7 +668,7 @@ class PytorchModel(BaseMlModel):
         y : array-like or torch.Tensor
             Target labels.
         batch_size : int
-            Batch size for the DataLoader.
+            Batch size for the Dataset.
         device : str, optional
             Device to place tensors on. Defaults to self.device.
         shuffle : bool, default True
@@ -673,8 +676,8 @@ class PytorchModel(BaseMlModel):
 
         Returns
         -------
-        DataLoader
-            A DataLoader containing the input data.
+        Dataset
+            A Dataset containing the input data.
         """
         if not isinstance(X, torch.Tensor):
             X = torch.tensor(X, dtype=torch.float32)
@@ -684,7 +687,7 @@ class PytorchModel(BaseMlModel):
             device = self.device
 
         dataset = TensorDataset(X.to(device), y.to(device))
-        return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
+        return dataset
 
     def clone(self) -> "PytorchModel":
         """

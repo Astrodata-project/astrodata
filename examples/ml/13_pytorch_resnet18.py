@@ -1,6 +1,7 @@
 import glob
 import json
 
+import torch
 import torchvision
 from torch import nn, optim
 from torch.utils.data import DataLoader
@@ -34,8 +35,9 @@ if __name__ == "__main__":
     for image_path in img_paths:
         img_list.append(transform(torchvision.io.read_image(image_path)))
 
-    dataloader_img_list = DataLoader(img_list, batch_size=1)
-    pred = model.predict(dataloader_img_list, 1)
+    dataset = torch.utils.data.TensorDataset(torch.stack(img_list))
+
+    pred = model.predict(dataset, 1)
 
     for i in range(len(pred)):
         print(

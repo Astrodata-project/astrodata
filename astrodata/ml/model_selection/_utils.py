@@ -76,9 +76,9 @@ def fit_model_score(
     y_val: pd.DataFrame = None,
     X_test: pd.DataFrame = None,
     y_test: pd.DataFrame = None,
-    dataloader_train=None,
-    dataloader_val=None,
-    dataloader_test=None,
+    dataset_train=None,
+    dataset_val=None,
+    dataset_test=None,
     metrics: List[BaseMetric] = None,
     tracker: ModelTracker = None,
     log_model: bool = False,
@@ -90,9 +90,9 @@ def fit_model_score(
     m = model.clone()
     m.set_params(**params)
 
-    # Handle input format - either (X_train, y_train) or dataloader_train
-    if dataloader_train is not None:
-        # For dataloader input, we don't need to modify y_train
+    # Handle input format - either (X_train, y_train) or dataset_train
+    if dataset_train is not None:
+        # For dataset input, we don't need to modify y_train
         y_train_mod = None
         y_val_mod = None
     else:
@@ -114,8 +114,8 @@ def fit_model_score(
             y_val=y_val,
             X_test=X_test,
             y_test=y_test,
-            dataloader_val=dataloader_val,
-            dataloader_test=dataloader_test,
+            dataset_val=dataset_val,
+            dataset_test=dataset_test,
             metrics=metrics,
             log_model=log_model,
             tags=tags,
@@ -123,23 +123,21 @@ def fit_model_score(
         )
 
     # Fit the model with appropriate input format
-    if dataloader_train is not None:
-        m.fit(dataloader=dataloader_train, dataloader_val=dataloader_val, **kwargs)
+    if dataset_train is not None:
+        m.fit(dataset=dataset_train, dataset_val=dataset_val, **kwargs)
     else:
         m.fit(X_train, y_train_mod, X_val=X_val, y_val=y_val_mod, **kwargs)
 
-    if dataloader_train is not None:
+    if dataset_train is not None:
         if scorer:
-            score = m.get_metrics(dataloader=dataloader_val, metrics=[scorer])[
+            score = m.get_metrics(dataset=dataset_val, metrics=[scorer])[
                 scorer.get_name()
             ]
         else:
-            score = m.score(dataloader=dataloader_val)
+            score = m.score(dataset=dataset_val)
 
         metrics_res = (
-            m.get_metrics(dataloader=dataloader_val, metrics=metrics)
-            if metrics
-            else None
+            m.get_metrics(dataset=dataset_val, metrics=metrics) if metrics else None
         )
 
         return m, metrics_res, score
