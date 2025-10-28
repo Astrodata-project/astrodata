@@ -79,7 +79,7 @@ class PytorchModel(BaseMlModel):
         save_folder: Optional[str] = None,
         save_format: str = "torch",
         shuffle: bool = True,
-        seed: int = 42,
+        seed: int = None,
         **kwargs,
     ) -> "PytorchModel":
         """
@@ -120,6 +120,7 @@ class PytorchModel(BaseMlModel):
             The fitted model instance.
         """
 
+        torch.manual_seed(seed if seed is not None else self.random_state)
         epochs = epochs if epochs is not None else self.epochs
         batch_size = batch_size if batch_size is not None else self.batch_size
         self.metrics_history_ = []
@@ -261,7 +262,7 @@ class PytorchModel(BaseMlModel):
         return loss.item()
 
     def predict(
-        self, data, batch_size: int, device: Optional[str] = None, **kwargs
+        self, data, batch_size: int = 32, device: Optional[str] = None, **kwargs
     ) -> Any:
         """
         Predict outputs for input ``X``.
@@ -425,7 +426,7 @@ class PytorchModel(BaseMlModel):
         return total_loss / num_batches if num_batches > 0 else 0.0
 
     def get_scorer_metric(self):
-        pass
+        return self.loss_fn
 
     def save(self, filepath: str, format: str = "torch", **kwargs) -> None:
         """
