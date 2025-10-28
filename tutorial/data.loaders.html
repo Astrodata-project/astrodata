@@ -1,15 +1,15 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="processors" href="data.processors.html" /><link rel="prev" title="Overview" href="data.overview.html" />
-        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/tutorial/data.loaders.html" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="processors" href="data.processors.html"><link rel="prev" title="Overview" href="data.overview.html">
+        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/tutorial/data.loaders.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>loaders - astrodata documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=c9eb4647" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
@@ -24,14 +24,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -146,14 +146,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -163,8 +159,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -172,8 +167,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -181,8 +175,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -206,26 +199,26 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="data.html">data</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="data.html">data</a><input aria-label="Toggle navigation of data" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="data.overview.html">Overview</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">loaders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.processors.html">processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="preml.html">pre-machine learning</a><input aria-label="Toggle navigation of pre-machine learning" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="preml.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="preml.processors.html">processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="ml.html">machine learning</a><input aria-label="Toggle navigation of machine learning" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="ml.models.html">models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ml.model_selection.html">model selection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ml.metrics.html">metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="tracking.html">tracking</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of tracking</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tracking.html">tracking</a><input aria-label="Toggle navigation of tracking" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="tracking.git.html">git</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tracking.dvc.html">DVC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tracking.models.html">Model Tracking</a></li>
@@ -236,16 +229,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/astrodata.data.html">astrodata.data package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of astrodata.data package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/astrodata.data.html">astrodata.data package</a><input aria-label="Toggle navigation of astrodata.data package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/astrodata.data.loaders.html">astrodata.data.loaders package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/astrodata.data.processors.html">astrodata.data.processors package</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/astrodata.preml.html">astrodata.preml package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of astrodata.preml package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/astrodata.preml.html">astrodata.preml package</a><input aria-label="Toggle navigation of astrodata.preml package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/astrodata.preml.processors.html">astrodata.preml.processors package</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/astrodata.ml.html">astrodata.ml package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of astrodata.ml package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/astrodata.ml.html">astrodata.ml package</a><input aria-label="Toggle navigation of astrodata.ml package" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/astrodata.ml.metrics.html">astrodata.ml.metrics package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/astrodata.ml.model_selection.html">astrodata.ml.model_selection package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/astrodata.ml.models.html">astrodata.ml.models package</a></li>
@@ -267,9 +260,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/13_pytorch_resnet18.html">ml/13_pytorch_resnet18.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/14_pytorch_save_example.html">ml/14_pytorch_save_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/15_tensorflow_example.html">ml/15_tensorflow_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/16_tensorflow_gs_example.html">ml/16_tensorflow_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/17_tensorflow_hp_example.html">ml/17_tensorflow_hp_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/18_tensorflow_mlflow_example.html">ml/18_tensorflow_mlflow_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/19_tensorflow_freeze_train.html">ml/19_tensorflow_freeze_train.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/1_sklearn_example.html">ml/1_sklearn_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/2_multimodel_example.html">ml/2_multimodel_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/3_1_gridsearch_parallel_example.html">ml/3_1_gridsearch_parallel_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/3_2_gridsearch_parallel_comparison.html">ml/3_2_gridsearch_parallel_comparison.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/3_gridsearch_example.html">ml/3_gridsearch_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/4_1_hyperopt_parallel_example.html">ml/4_1_hyperopt_parallel_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/4_hyperopt_example.html">ml/4_hyperopt_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/5_mlflow_simple_example.html">ml/5_mlflow_simple_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/6_mlflow_gs_example.html">ml/6_mlflow_gs_example.py</a></li>
@@ -302,8 +303,7 @@
   </a>
 </div>
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -311,8 +311,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -357,6 +356,125 @@
 <section id="extensibility">
 <h2>Extensibility<a class="headerlink" href="#extensibility" title="Link to this heading">¶</a></h2>
 <p>The loaders module is designed for easy extension. To add support for a new format (e.g., HDF5, FITS), subclass <code class="docutils literal notranslate"><span class="pre">BaseLoader</span></code> and implement the <code class="docutils literal notranslate"><span class="pre">load</span></code> method for your format. Planned future releases will include loaders for standard astrophysics formats.</p>
+</section>
+<hr class="docutils" />
+<section id="torch-vision-fits-data-support">
+<h2>Torch vision / FITS data support<a class="headerlink" href="#torch-vision-fits-data-support" title="Link to this heading">¶</a></h2>
+<p>Astrodata provides support for PyTorch-like image datasets (classic RGB images and FITS images) through the following components:</p>
+<section id="core-classes">
+<h3>Core Classes<a class="headerlink" href="#core-classes" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">TorchLoader</span></code></strong><br />
+High-level loader that:</p>
+<ul>
+<li><p>Expects a directory with train[/val]/test splits.</p></li>
+<li><p>Each split contains one subdirectory per class.</p></li>
+<li><p>Automatically infers dataset type (PNG/JPEG vs FITS) by scanning the train split.</p></li>
+<li><p>Returns a <code class="docutils literal notranslate"><span class="pre">TorchRawData</span></code> object containing split-specific <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> instances and metadata.</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">TorchDataLoaderWrapper</span></code></strong><br />
+Convenience wrapper that:</p>
+<ul>
+<li><p>Consumes a <code class="docutils literal notranslate"><span class="pre">TorchRawData</span></code> object.</p></li>
+<li><p>Builds PyTorch <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code> instances for each split with uniform settings (batch size, workers, pin_memory).</p></li>
+<li><p>Returns a <code class="docutils literal notranslate"><span class="pre">TorchProcessedData</span></code> object.</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">TorchImageDataset</span></code></strong><br />
+Underlying <code class="docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code> for standard image formats (<code class="docutils literal notranslate"><span class="pre">.png</span></code>, <code class="docutils literal notranslate"><span class="pre">.jpg</span></code>, <code class="docutils literal notranslate"><span class="pre">.jpeg</span></code>):</p>
+<ul>
+<li><p>Builds <code class="docutils literal notranslate"><span class="pre">class_to_idx</span></code> mapping.</p></li>
+<li><p>Loads images using <code class="docutils literal notranslate"><span class="pre">torchvision.io.decode_image</span></code> (tensor shape <code class="docutils literal notranslate"><span class="pre">[C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>).</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">TorchFITSDataset</span></code></strong><br />
+Dataset for FITS images:</p>
+<ul>
+<li><p>Assumes 2D single-plane image data (converted to <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>).</p></li>
+<li><p>Uses <code class="docutils literal notranslate"><span class="pre">astropy.io.fits</span></code> to read pixel arrays.</p></li>
+</ul>
+</li>
+<li><p><strong>Schemas</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">TorchRawData</span></code>: Holds split-name → Dataset mapping and metadata (e.g. dataset_type).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TorchProcessedData</span></code>: Holds split-name → DataLoader mapping plus loader parameters.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="expected-directory-structure">
+<h3>Expected Directory Structure<a class="headerlink" href="#expected-directory-structure" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset_root</span><span class="o">/</span>
+    <span class="n">train</span><span class="o">/</span>
+        <span class="n">class_a</span><span class="o">/</span>
+            <span class="n">img1</span><span class="o">.</span><span class="n">png</span> <span class="o">|</span> <span class="n">img1</span><span class="o">.</span><span class="n">fits</span>
+            <span class="o">...</span>
+        <span class="n">class_b</span><span class="o">/</span>
+            <span class="o">...</span>
+    <span class="n">val</span><span class="o">/</span>            <span class="c1"># optional</span>
+        <span class="n">class_a</span><span class="o">/</span>
+        <span class="n">class_b</span><span class="o">/</span>
+    <span class="n">test</span><span class="o">/</span>
+        <span class="n">class_a</span><span class="o">/</span>
+        <span class="n">class_b</span><span class="o">/</span>
+</pre></div>
+</div>
+<div class="highlight-{note}: notranslate"><div class="highlight"><pre><span></span>- `val/` is optional.
+- Mixing FITS and PNG/JPEG in the same dataset root is not allowed (the loader will raise).
+- Class names are inferred from subdirectory names.
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h3>How to Use<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>Below is a minimal example extracted and simplified from <code class="docutils literal notranslate"><span class="pre">examples/data/3_torch_data.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">TorchLoader</span><span class="p">,</span> <span class="n">TorchDataLoaderWrapper</span>
+
+<span class="n">root</span> <span class="o">=</span> <span class="s2">&quot;path/to/dataset_root&quot;</span>
+
+<span class="n">loader</span> <span class="o">=</span> <span class="n">TorchLoader</span><span class="p">()</span>
+<span class="n">raw</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+<span class="n">wrapper</span> <span class="o">=</span> <span class="n">TorchDataLoaderWrapper</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">processed</span> <span class="o">=</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">create_dataloaders</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+
+<span class="n">train_loader</span> <span class="o">=</span> <span class="n">processed</span><span class="o">.</span><span class="n">get_dataloader</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">train_loader</span><span class="p">:</span>
+    <span class="c1"># images: tensor [B, C, H, W]</span>
+    <span class="c1"># labels: tensor [B]</span>
+    <span class="k">break</span>
+</pre></div>
+</div>
+</section>
+<section id="fits-vs-image-handling">
+<h3>FITS vs Image Handling<a class="headerlink" href="#fits-vs-image-handling" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>PNG/JPEG:</p>
+<ul>
+<li><p>Decoded via <code class="docutils literal notranslate"><span class="pre">torchvision.io.decode_image</span></code>.</p></li>
+<li><p>No transforms are applied by default; users can wrap datasets or extend the loader for augmentations.</p></li>
+</ul>
+</li>
+<li><p>FITS:</p>
+<ul>
+<li><p>Only 2D primary HDU images supported currently.</p></li>
+<li><p>Data coerced to <code class="docutils literal notranslate"><span class="pre">float32</span></code>, single channel with shape <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p></li>
+<li><p>Extend <code class="docutils literal notranslate"><span class="pre">TorchFITSDataset</span></code> to handle multi-extension or multi-channel cases.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="common-extension-points">
+<h3>Common Extension Points<a class="headerlink" href="#common-extension-points" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Add transforms: wrap <code class="docutils literal notranslate"><span class="pre">TorchImageDataset</span></code> or modify its <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code>.</p></li>
+<li><p>Support more image types: extend valid extensions set.</p></li>
+<li><p>Multi-channel FITS: change FITS loading logic (e.g., stack planes).</p></li>
+<li><p>Custom sampling strategies: provide <code class="docutils literal notranslate"><span class="pre">sampler</span></code> argument when instantiating <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code>.</p></li>
+</ul>
+<p>Refer to <code class="docutils literal notranslate"><span class="pre">examples/data/3_torch_data.py</span></code> for a full runnable demonstration that prepares CIFAR10-style image directories and a minimal FITS example.</p>
+</section>
 </section>
 </section>
 
@@ -424,6 +542,14 @@
 </li>
 <li><a class="reference internal" href="#available-loaders">Available Loaders</a></li>
 <li><a class="reference internal" href="#extensibility">Extensibility</a></li>
+<li><a class="reference internal" href="#torch-vision-fits-data-support">Torch vision / FITS data support</a><ul>
+<li><a class="reference internal" href="#core-classes">Core Classes</a></li>
+<li><a class="reference internal" href="#expected-directory-structure">Expected Directory Structure</a></li>
+<li><a class="reference internal" href="#id1">How to Use</a></li>
+<li><a class="reference internal" href="#fits-vs-image-handling">FITS vs Image Handling</a></li>
+<li><a class="reference internal" href="#common-extension-points">Common Extension Points</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

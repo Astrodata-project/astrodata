@@ -1,15 +1,15 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="ml/10_pytorch_hp_example.py" href="../ml/10_pytorch_hp_example.html" /><link rel="prev" title="data/2_preml_example.py" href="2_preml_example.html" />
-        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/python_examples/data/3_torch_data.html" />
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="ml/10_pytorch_hp_example.py" href="../ml/10_pytorch_hp_example.html"><link rel="prev" title="data/2_preml_example.py" href="2_preml_example.html">
+        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/python_examples/data/3_torch_data.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>data/3_torch_data.py - astrodata documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=c9eb4647" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
@@ -24,14 +24,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -146,14 +146,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -163,8 +159,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -172,8 +167,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -181,8 +175,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -206,26 +199,26 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/data.html">data</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/data.html">data</a><input aria-label="Toggle navigation of data" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.loaders.html">loaders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.processors.html">processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/preml.html">pre-machine learning</a><input aria-label="Toggle navigation of pre-machine learning" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.processors.html">processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/ml.html">machine learning</a><input aria-label="Toggle navigation of machine learning" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/ml.models.html">models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/ml.model_selection.html">model selection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/ml.metrics.html">metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/tracking.html">tracking</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of tracking</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorial/tracking.html">tracking</a><input aria-label="Toggle navigation of tracking" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/tracking.git.html">git</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/tracking.dvc.html">DVC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorial/tracking.models.html">Model Tracking</a></li>
@@ -236,16 +229,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../python_api/astrodata.data.html">astrodata.data package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of astrodata.data package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../python_api/astrodata.data.html">astrodata.data package</a><input aria-label="Toggle navigation of astrodata.data package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../python_api/astrodata.data.loaders.html">astrodata.data.loaders package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../python_api/astrodata.data.processors.html">astrodata.data.processors package</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../python_api/astrodata.preml.html">astrodata.preml package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of astrodata.preml package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../python_api/astrodata.preml.html">astrodata.preml package</a><input aria-label="Toggle navigation of astrodata.preml package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../python_api/astrodata.preml.processors.html">astrodata.preml.processors package</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../python_api/astrodata.ml.html">astrodata.ml package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of astrodata.ml package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../python_api/astrodata.ml.html">astrodata.ml package</a><input aria-label="Toggle navigation of astrodata.ml package" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../python_api/astrodata.ml.metrics.html">astrodata.ml.metrics package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../python_api/astrodata.ml.model_selection.html">astrodata.ml.model_selection package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../python_api/astrodata.ml.models.html">astrodata.ml.models package</a></li>
@@ -267,9 +260,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ml/13_pytorch_resnet18.html">ml/13_pytorch_resnet18.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ml/14_pytorch_save_example.html">ml/14_pytorch_save_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ml/15_tensorflow_example.html">ml/15_tensorflow_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ml/16_tensorflow_gs_example.html">ml/16_tensorflow_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ml/17_tensorflow_hp_example.html">ml/17_tensorflow_hp_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ml/18_tensorflow_mlflow_example.html">ml/18_tensorflow_mlflow_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ml/19_tensorflow_freeze_train.html">ml/19_tensorflow_freeze_train.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ml/1_sklearn_example.html">ml/1_sklearn_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ml/2_multimodel_example.html">ml/2_multimodel_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ml/3_1_gridsearch_parallel_example.html">ml/3_1_gridsearch_parallel_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ml/3_2_gridsearch_parallel_comparison.html">ml/3_2_gridsearch_parallel_comparison.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ml/3_gridsearch_example.html">ml/3_gridsearch_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ml/4_1_hyperopt_parallel_example.html">ml/4_1_hyperopt_parallel_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ml/4_hyperopt_example.html">ml/4_hyperopt_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ml/5_mlflow_simple_example.html">ml/5_mlflow_simple_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ml/6_mlflow_gs_example.html">ml/6_mlflow_gs_example.py</a></li>
@@ -302,8 +303,7 @@
   </a>
 </div>
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -311,59 +311,167 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
           <section id="data-3-torch-data-py">
 <h1>data/3_torch_data.py<a class="headerlink" href="#data-3-torch-data-py" title="Link to this heading">¶</a></h1>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.data.loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">TorchDataLoaderWrapper</span><span class="p">,</span> <span class="n">TorchLoader</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchvision</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.data.loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">TorchDataLoaderWrapper</span><span class="p">,</span> <span class="n">TorchLoader</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">save_dataset</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">subset_name</span><span class="p">):</span>
+    <span class="n">subset_dir</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="n">subset_name</span>
+    <span class="k">if</span> <span class="n">subset_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span>
+    <span class="n">subset_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+        <span class="n">label_dir</span> <span class="o">=</span> <span class="n">subset_dir</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">label_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">label_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">.png&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">setup_datasets</span><span class="p">(</span><span class="n">cifar_dir</span><span class="p">,</span> <span class="n">fits_dir</span><span class="p">):</span>
+    <span class="n">cifar_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">cifar_dir</span><span class="p">)</span>
+    <span class="n">fits_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fits_dir</span><span class="p">)</span>
+
+    <span class="n">cifar_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">fits_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">cifar_train</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cifar_path</span><span class="p">),</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">cifar_test</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cifar_path</span><span class="p">),</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">split_ds_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">cifar_train</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">cifar_test</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">):</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">split_ds_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">split</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">save_dataset</span><span class="p">(</span><span class="n">cifar_path</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">split</span><span class="p">)</span>
+
+    <span class="n">image_file</span> <span class="o">=</span> <span class="n">download_file</span><span class="p">(</span>
+        <span class="s2">&quot;http://data.astropy.org/tutorials/FITS-images/HorseHead.fits&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">image_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">image_data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">clss</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">):</span>
+            <span class="n">cls_dir</span> <span class="o">=</span> <span class="n">fits_path</span> <span class="o">/</span> <span class="n">split</span> <span class="o">/</span> <span class="n">clss</span>
+            <span class="n">cls_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">target_file</span> <span class="o">=</span> <span class="n">cls_dir</span> <span class="o">/</span> <span class="s2">&quot;image.fits&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">target_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">target_file</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_f</span><span class="p">:</span>
+                    <span class="n">out_f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
+
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1"># ==============================================================</span>
+    <span class="c1"># DATA SETUP (executed once for both classic image + FITS examples)</span>
+    <span class="c1"># This will:</span>
+    <span class="c1"># 1. Download CIFAR10.</span>
+    <span class="c1"># 2. Materialize its train/test splits into an ImageFolder-like directory tree.</span>
+    <span class="c1"># 3. Download a single example FITS file and duplicate it into a dummy</span>
+    <span class="c1">#    train/test, multi-class directory tree for demonstration.</span>
+    <span class="c1"># ==============================================================</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting up datasets...&quot;</span><span class="p">)</span>
+    <span class="n">cifar_dir</span> <span class="o">=</span> <span class="s2">&quot;../../testdata/torch/cifar10&quot;</span>
+    <span class="n">fits_dir</span> <span class="o">=</span> <span class="s2">&quot;../../testdata/torch/fits&quot;</span>
+    <span class="n">setup_datasets</span><span class="p">(</span><span class="n">cifar_dir</span><span class="p">,</span> <span class="n">fits_dir</span><span class="p">)</span>
+
+    <span class="c1"># Initialize the TorchLoader, which can handle both classic images and FITS</span>
     <span class="n">loader</span> <span class="o">=</span> <span class="n">TorchLoader</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TorchLoader initialized.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TorchImageLoader initialized.&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Load the image data from the specified directory structure.</span>
-    <span class="c1"># The directory should contain train/val/test folders with class subdirectories.</span>
-    <span class="n">raw_data</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
-        <span class="s2">&quot;../../testdata/torch/mnist/&quot;</span>
-    <span class="p">)</span>  <span class="c1"># Points to folder with train/val/test</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Image data loaded from directory structure.&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;train data class_to_idx: </span><span class="si">{</span><span class="n">raw_data</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">class_to_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;test data class_to_idx: </span><span class="si">{</span><span class="n">raw_data</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">class_to_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="c1"># print(f&quot;val data class_to_idx: {raw_data.get_dataset(&#39;val&#39;).class_to_idx}&quot;)</span>
+    <span class="c1"># ==============================================================</span>
+    <span class="c1"># SECTION 1: CLASSIC (RGB) IMAGE DATA EXAMPLE (CIFAR10)</span>
+    <span class="c1"># --------------------------------------------------------------</span>
+    <span class="c1"># Goal: Show how a standard natural-image style dataset (already in a</span>
+    <span class="c1">#       folder layout with class subdirectories) is loaded and wrapped</span>
+    <span class="c1">#       into PyTorch DataLoaders.</span>
+    <span class="c1"># ==============================================================</span>
 
-    <span class="c1"># Define the DataLoader wrapper with desired settings for training.</span>
-    <span class="c1"># This wrapper will create PyTorch DataLoaders</span>
+    <span class="c1"># Load directory-structured CIFAR10 dataset (train/test folders)</span>
+    <span class="n">cifar_data</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">cifar_dir</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loaded CIFAR10 structured dataset object.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Display class mappings for both splits</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CIFAR10 train class_to_idx: </span><span class="si">{</span><span class="n">cifar_data</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">class_to_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CIFAR10 test  class_to_idx: </span><span class="si">{</span><span class="n">cifar_data</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">class_to_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create DataLoader wrapper (shared config, could be tuned per section)</span>
     <span class="n">dataloader_wrapper</span> <span class="o">=</span> <span class="n">TorchDataLoaderWrapper</span><span class="p">(</span>
         <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
         <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">pin_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TorchDataLoaderWrapper initialized with training configuration.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initialized TorchDataLoaderWrapper.&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Create the actual PyTorch DataLoaders from the raw data.</span>
-    <span class="n">dataloaders</span> <span class="o">=</span> <span class="n">dataloader_wrapper</span><span class="o">.</span><span class="n">create_dataloaders</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch DataLoaders created successfully.&quot;</span><span class="p">)</span>
+    <span class="c1"># Build actual PyTorch DataLoaders</span>
+    <span class="n">cifar_dataloaders</span> <span class="o">=</span> <span class="n">dataloader_wrapper</span><span class="o">.</span><span class="n">create_dataloaders</span><span class="p">(</span><span class="n">cifar_data</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created CIFAR10 DataLoaders.&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Extract individual DataLoaders for each data split.</span>
-    <span class="c1"># These DataLoaders can be directly used in PyTorch training loops.</span>
-    <span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">dataloaders</span><span class="o">.</span><span class="n">get_dataloader</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
-    <span class="c1"># val_dataloader = dataloaders.get_dataloader(&quot;val&quot;)</span>
-    <span class="n">test_dataloader</span> <span class="o">=</span> <span class="n">dataloaders</span><span class="o">.</span><span class="n">get_dataloader</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+    <span class="c1"># Extract split-specific loaders</span>
+    <span class="n">cifar_train_loader</span> <span class="o">=</span> <span class="n">cifar_dataloaders</span><span class="o">.</span><span class="n">get_dataloader</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+    <span class="n">cifar_test_loader</span> <span class="o">=</span> <span class="n">cifar_dataloaders</span><span class="o">.</span><span class="n">get_dataloader</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Show in detail what&#39;s inside the train DataLoader</span>
+    <span class="c1"># Introspect the train DataLoader</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--&quot;</span> <span class="o">*</span> <span class="mi">30</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Train DataLoader details:&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of batches in train DataLoader: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_dataloader</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch size: </span><span class="si">{</span><span class="n">train_dataloader</span><span class="o">.</span><span class="n">batch_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CIFAR10 Train DataLoader details:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of batches: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cifar_train_loader</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch size: </span><span class="si">{</span><span class="n">cifar_train_loader</span><span class="o">.</span><span class="n">batch_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--&quot;</span> <span class="o">*</span> <span class="mi">30</span><span class="p">)</span>
 
-    <span class="c1"># Show how a train_dataloader can be accessed in a training loop</span>
-    <span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">train_dataloader</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch of images shape: </span><span class="si">{</span><span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch of labels shape: </span><span class="si">{</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Demonstrate single training batch access</span>
+    <span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">cifar_train_loader</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[CIFAR10] Example batch images tensor shape: </span><span class="si">{</span><span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[CIFAR10] Example batch labels tensor shape: </span><span class="si">{</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">break</span>
+
+    <span class="c1"># ==============================================================</span>
+    <span class="c1"># SECTION 2: FITS (ASTRONOMICAL) IMAGE DATA EXAMPLE</span>
+    <span class="c1"># --------------------------------------------------------------</span>
+    <span class="c1"># Goal: Show how the same loader abstraction can handle FITS images</span>
+    <span class="c1">#       arranged in the same folder pattern:</span>
+    <span class="c1">#         fits_dir/</span>
+    <span class="c1">#             train/first/*.fits</span>
+    <span class="c1">#             train/second/*.fits</span>
+    <span class="c1">#             test/first/*.fits</span>
+    <span class="c1">#             test/second/*.fits</span>
+    <span class="c1">#</span>
+    <span class="c1"># The FITS setup duplicated one sample file to keep this extremely small.</span>
+    <span class="c1"># We still wrap it in DataLoaders to mimic a real workflow.</span>
+    <span class="c1"># ==============================================================</span>
+
+    <span class="n">fits_data</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fits_dir</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loaded FITS structured dataset object.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FITS train class_to_idx: </span><span class="si">{</span><span class="n">fits_data</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">class_to_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FITS test  class_to_idx: </span><span class="si">{</span><span class="n">fits_data</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">class_to_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Reuse the same wrapper (could alternatively instantiate with different params)</span>
+    <span class="n">fits_dataloaders</span> <span class="o">=</span> <span class="n">dataloader_wrapper</span><span class="o">.</span><span class="n">create_dataloaders</span><span class="p">(</span><span class="n">fits_data</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created FITS DataLoaders.&quot;</span><span class="p">)</span>
+
+    <span class="n">fits_train_loader</span> <span class="o">=</span> <span class="n">fits_dataloaders</span><span class="o">.</span><span class="n">get_dataloader</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+    <span class="n">fits_test_loader</span> <span class="o">=</span> <span class="n">fits_dataloaders</span><span class="o">.</span><span class="n">get_dataloader</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--&quot;</span> <span class="o">*</span> <span class="mi">30</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;FITS Train DataLoader details:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of batches: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">fits_train_loader</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch size: </span><span class="si">{</span><span class="n">fits_train_loader</span><span class="o">.</span><span class="n">batch_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--&quot;</span> <span class="o">*</span> <span class="mi">30</span><span class="p">)</span>
+
+    <span class="c1"># Show a single batch (each element a single-channel tensor)</span>
+    <span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">fits_train_loader</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[FITS] Example batch images tensor shape: </span><span class="si">{</span><span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[FITS] Example batch labels tensor shape: </span><span class="si">{</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">break</span>
 </pre></div>
 </div>

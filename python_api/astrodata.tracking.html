@@ -1,15 +1,15 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="astrotaxi/0_astrotaxi_example.py" href="../python_examples/astrotaxi/0_astrotaxi_example.html" /><link rel="prev" title="astrodata.ml.models package" href="astrodata.ml.models.html" />
-        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/python_api/astrodata.tracking.html" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="astrotaxi/0_astrotaxi_example.py" href="../python_examples/astrotaxi/0_astrotaxi_example.html"><link rel="prev" title="astrodata.ml.models package" href="astrodata.ml.models.html">
+        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/python_api/astrodata.tracking.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>astrodata.tracking package - astrodata documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=c9eb4647" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
@@ -24,14 +24,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -146,14 +146,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -163,8 +159,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -172,8 +167,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -181,8 +175,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -206,26 +199,26 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/data.html">data</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/data.html">data</a><input aria-label="Toggle navigation of data" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.loaders.html">loaders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.processors.html">processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/preml.html">pre-machine learning</a><input aria-label="Toggle navigation of pre-machine learning" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.processors.html">processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/ml.html">machine learning</a><input aria-label="Toggle navigation of machine learning" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/ml.models.html">models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/ml.model_selection.html">model selection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/ml.metrics.html">metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/tracking.html">tracking</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of tracking</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/tracking.html">tracking</a><input aria-label="Toggle navigation of tracking" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/tracking.git.html">git</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/tracking.dvc.html">DVC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/tracking.models.html">Model Tracking</a></li>
@@ -236,16 +229,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
 <ul class="current">
-<li class="toctree-l1 has-children"><a class="reference internal" href="astrodata.data.html">astrodata.data package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of astrodata.data package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="astrodata.data.html">astrodata.data package</a><input aria-label="Toggle navigation of astrodata.data package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.data.loaders.html">astrodata.data.loaders package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.data.processors.html">astrodata.data.processors package</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="astrodata.preml.html">astrodata.preml package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of astrodata.preml package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="astrodata.preml.html">astrodata.preml package</a><input aria-label="Toggle navigation of astrodata.preml package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.preml.processors.html">astrodata.preml.processors package</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="astrodata.ml.html">astrodata.ml package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of astrodata.ml package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="astrodata.ml.html">astrodata.ml package</a><input aria-label="Toggle navigation of astrodata.ml package" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.ml.metrics.html">astrodata.ml.metrics package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.ml.model_selection.html">astrodata.ml.model_selection package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.ml.models.html">astrodata.ml.models package</a></li>
@@ -267,9 +260,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/13_pytorch_resnet18.html">ml/13_pytorch_resnet18.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/14_pytorch_save_example.html">ml/14_pytorch_save_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/15_tensorflow_example.html">ml/15_tensorflow_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/16_tensorflow_gs_example.html">ml/16_tensorflow_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/17_tensorflow_hp_example.html">ml/17_tensorflow_hp_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/18_tensorflow_mlflow_example.html">ml/18_tensorflow_mlflow_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/19_tensorflow_freeze_train.html">ml/19_tensorflow_freeze_train.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/1_sklearn_example.html">ml/1_sklearn_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/2_multimodel_example.html">ml/2_multimodel_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/3_1_gridsearch_parallel_example.html">ml/3_1_gridsearch_parallel_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/3_2_gridsearch_parallel_comparison.html">ml/3_2_gridsearch_parallel_comparison.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/3_gridsearch_example.html">ml/3_gridsearch_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/4_1_hyperopt_parallel_example.html">ml/4_1_hyperopt_parallel_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/4_hyperopt_example.html">ml/4_hyperopt_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/5_mlflow_simple_example.html">ml/5_mlflow_simple_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/6_mlflow_gs_example.html">ml/6_mlflow_gs_example.py</a></li>
@@ -302,8 +303,7 @@
   </a>
 </div>
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -311,8 +311,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -544,90 +543,8 @@ add files to DVC tracking, and synchronize data with a remote storage.</p>
 </dd></dl>
 
 </section>
-<section id="module-astrodata.tracking.MLFlowTracker">
-<span id="astrodata-tracking-mlflowtracker-module"></span><h2>astrodata.tracking.MLFlowTracker module<a class="headerlink" href="#module-astrodata.tracking.MLFlowTracker" title="Link to this heading">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="astrodata.tracking.MLFlowTracker.MlflowBaseTracker">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.MLFlowTracker.</span></span><span class="sig-name descname"><span class="pre">MlflowBaseTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#astrodata.tracking.ModelTracker.ModelTracker" title="astrodata.tracking.ModelTracker.ModelTracker"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelTracker</span></code></a></p>
-<p>Base tracker class for MLflow experiment tracking.</p>
-<p>Handles MLflow configuration and provides base methods for registering tracked models.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.tracking.MLFlowTracker.MlflowBaseTracker.register_best_model">
-<span class="sig-name descname"><span class="pre">register_best_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">registered_model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Production'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker.register_best_model" title="Link to this definition">¶</a></dt>
-<dd><p>Register the best model in MLflow Model Registry based on a metric.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>metric</strong> (<a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a>) – Metric used to select the best run.</p></li>
-<li><p><strong>model_artifact_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the model artifact in MLflow run.</p></li>
-<li><p><strong>registered_model_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name for the registered model. Defaults to experiment name.</p></li>
-<li><p><strong>split_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Which split’s metric to use (‘train’, ‘val’, or ‘test’).</p></li>
-<li><p><strong>stage</strong> (<em>str</em><em>, </em><em>optional</em>) – Model stage to assign (e.g., ‘Production’, ‘Staging’).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The result of the registration.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>mlflow.entities.model_registry.RegisteredModelVersion</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If the experiment or suitable run is not found.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.tracking.MLFlowTracker.MlflowBaseTracker.wrap_fit">
-<span class="sig-name descname"><span class="pre">wrap_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker.wrap_fit" title="Link to this definition">¶</a></dt>
-<dd><p>Placeholder for tracker-specific model wrapping.</p>
-<p>To be implemented in subclass.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlModel</span></code></a></span></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="astrodata.tracking.MLFlowTracker.SklearnMLflowTracker">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.MLFlowTracker.</span></span><span class="sig-name descname"><span class="pre">SklearnMLflowTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MLFlowTracker.SklearnMLflowTracker" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker" title="astrodata.tracking.MLFlowTracker.MlflowBaseTracker"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code></a></p>
-<p>Tracker for scikit-learn models with MLflow integration.</p>
-<p>Provides run lifecycle, parameter logging, metric logging, and optional model logging.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.tracking.MLFlowTracker.SklearnMLflowTracker.wrap_fit">
-<span class="sig-name descname"><span class="pre">wrap_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manual_metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MLFlowTracker.SklearnMLflowTracker.wrap_fit" title="Link to this definition">¶</a></dt>
-<dd><p>Wrap a BaseMlModel’s fit method to perform MLflow logging.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model</strong> (<a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><em>BaseMlModel</em></a>) – The model to wrap.</p></li>
-<li><p><strong>X_test</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Test data for metric logging.</p></li>
-<li><p><strong>y_test</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Test labels for metric logging.</p></li>
-<li><p><strong>X_val</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Validation data for metric logging.</p></li>
-<li><p><strong>y_val</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Validation labels for metric logging.</p></li>
-<li><p><strong>metrics</strong> (<em>list</em><em> of </em><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a><em>, </em><em>optional</em>) – Metrics to log. If missing, a default loss metric is added.</p></li>
-<li><p><strong>log_model</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, log the fitted model as an MLflow artifact.</p></li>
-<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>default {}</em>) – Any additional tags that should be added to the model. By default the tag “is_final” is set as equal to log_model so that
-any logged model is considered as a candidate for production (for register_best_model) unless specified otherwise
-(e.g. in the model selectors for intermediate steps)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new instance of the model with an MLflow-logging fit method.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel">BaseMlModel</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="astrodata-tracking-mlflowtracker-module">
+<h2>astrodata.tracking.MLFlowTracker module<a class="headerlink" href="#astrodata-tracking-mlflowtracker-module" title="Link to this heading">¶</a></h2>
 </section>
 <section id="module-astrodata.tracking.ModelTracker">
 <span id="astrodata-tracking-modeltracker-module"></span><h2>astrodata.tracking.ModelTracker module<a class="headerlink" href="#module-astrodata.tracking.ModelTracker" title="Link to this heading">¶</a></h2>
@@ -772,18 +689,7 @@ pushes data to the DVC remote, and commits and pushes code changes to the Git re
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-astrodata.tracking.MLFlowTracker">astrodata.tracking.MLFlowTracker module</a><ul>
-<li><a class="reference internal" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker"><code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code></a><ul>
-<li><a class="reference internal" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker.register_best_model"><code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker.register_best_model()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker.wrap_fit"><code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker.wrap_fit()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#astrodata.tracking.MLFlowTracker.SklearnMLflowTracker"><code class="docutils literal notranslate"><span class="pre">SklearnMLflowTracker</span></code></a><ul>
-<li><a class="reference internal" href="#astrodata.tracking.MLFlowTracker.SklearnMLflowTracker.wrap_fit"><code class="docutils literal notranslate"><span class="pre">SklearnMLflowTracker.wrap_fit()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#astrodata-tracking-mlflowtracker-module">astrodata.tracking.MLFlowTracker module</a></li>
 <li><a class="reference internal" href="#module-astrodata.tracking.ModelTracker">astrodata.tracking.ModelTracker module</a><ul>
 <li><a class="reference internal" href="#astrodata.tracking.ModelTracker.ModelTracker"><code class="docutils literal notranslate"><span class="pre">ModelTracker</span></code></a><ul>
 <li><a class="reference internal" href="#astrodata.tracking.ModelTracker.ModelTracker.wrap_fit"><code class="docutils literal notranslate"><span class="pre">ModelTracker.wrap_fit()</span></code></a></li>

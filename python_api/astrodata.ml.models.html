@@ -1,15 +1,15 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="astrodata.tracking package" href="astrodata.tracking.html" /><link rel="prev" title="astrodata.ml.model_selection package" href="astrodata.ml.model_selection.html" />
-        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/python_api/astrodata.ml.models.html" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="astrodata.tracking package" href="astrodata.tracking.html"><link rel="prev" title="astrodata.ml.model_selection package" href="astrodata.ml.model_selection.html">
+        <link rel="canonical" href="https://Astrodata-project.github.io/astrodata/python_api/astrodata.ml.models.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>astrodata.ml.models package - astrodata documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=c9eb4647" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
@@ -24,14 +24,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -146,14 +146,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -163,8 +159,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -172,8 +167,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -181,8 +175,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -206,26 +199,26 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/data.html">data</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/data.html">data</a><input aria-label="Toggle navigation of data" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.loaders.html">loaders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.processors.html">processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/data.pipeline.html">Data Pipeline</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/preml.html">pre-machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of pre-machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/preml.html">pre-machine learning</a><input aria-label="Toggle navigation of pre-machine learning" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.processors.html">processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/preml.pipeline.html">PremlPipeline</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/ml.html">machine learning</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of machine learning</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/ml.html">machine learning</a><input aria-label="Toggle navigation of machine learning" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/ml.models.html">models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/ml.model_selection.html">model selection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/ml.metrics.html">metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/tracking.html">tracking</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of tracking</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial/tracking.html">tracking</a><input aria-label="Toggle navigation of tracking" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/tracking.git.html">git</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/tracking.dvc.html">DVC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial/tracking.models.html">Model Tracking</a></li>
@@ -236,16 +229,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
 <ul class="current">
-<li class="toctree-l1 has-children"><a class="reference internal" href="astrodata.data.html">astrodata.data package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of astrodata.data package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="astrodata.data.html">astrodata.data package</a><input aria-label="Toggle navigation of astrodata.data package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.data.loaders.html">astrodata.data.loaders package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.data.processors.html">astrodata.data.processors package</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="astrodata.preml.html">astrodata.preml package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of astrodata.preml package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="astrodata.preml.html">astrodata.preml package</a><input aria-label="Toggle navigation of astrodata.preml package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.preml.processors.html">astrodata.preml.processors package</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="astrodata.ml.html">astrodata.ml package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of astrodata.ml package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="astrodata.ml.html">astrodata.ml package</a><input aria-label="Toggle navigation of astrodata.ml package" checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="astrodata.ml.metrics.html">astrodata.ml.metrics package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.ml.model_selection.html">astrodata.ml.model_selection package</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">astrodata.ml.models package</a></li>
@@ -267,9 +260,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/13_pytorch_resnet18.html">ml/13_pytorch_resnet18.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/14_pytorch_save_example.html">ml/14_pytorch_save_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/15_tensorflow_example.html">ml/15_tensorflow_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/16_tensorflow_gs_example.html">ml/16_tensorflow_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/17_tensorflow_hp_example.html">ml/17_tensorflow_hp_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/18_tensorflow_mlflow_example.html">ml/18_tensorflow_mlflow_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/19_tensorflow_freeze_train.html">ml/19_tensorflow_freeze_train.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/1_sklearn_example.html">ml/1_sklearn_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/2_multimodel_example.html">ml/2_multimodel_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/3_1_gridsearch_parallel_example.html">ml/3_1_gridsearch_parallel_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/3_2_gridsearch_parallel_comparison.html">ml/3_2_gridsearch_parallel_comparison.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/3_gridsearch_example.html">ml/3_gridsearch_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/4_1_hyperopt_parallel_example.html">ml/4_1_hyperopt_parallel_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/4_hyperopt_example.html">ml/4_hyperopt_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/5_mlflow_simple_example.html">ml/5_mlflow_simple_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/6_mlflow_gs_example.html">ml/6_mlflow_gs_example.py</a></li>
@@ -302,8 +303,7 @@
   </a>
 </div>
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -311,8 +311,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -366,7 +365,7 @@ Defines the standard interface expected from all models.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="astrodata.ml.models.BaseMlModel.BaseMlModel.get_metrics">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_test</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.BaseMlModel.BaseMlModel.get_metrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.BaseMlModel.BaseMlModel.get_metrics" title="Link to this definition">¶</a></dt>
 <dd><p>Compute and return model metrics on test data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -408,7 +407,7 @@ Defines the standard interface expected from all models.</p>
 <dd><p>Returns the score function default metric.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMetric</span></code></a></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMetric</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -513,17 +512,298 @@ Defines the standard interface expected from all models.</p>
 </section>
 <section id="module-astrodata.ml.models.PytorchModel">
 <span id="astrodata-ml-models-pytorchmodel-module"></span><h2>astrodata.ml.models.PytorchModel module<a class="headerlink" href="#module-astrodata.ml.models.PytorchModel" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.PytorchModel.</span></span><span class="sig-name descname"><span class="pre">PytorchModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1900714291</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_weight_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlModel</span></code></a></p>
+<p>A lightweight wrapper around PyTorch models providing a unified
+training/prediction interface and metric tracking.</p>
+<p class="rubric">Notes</p>
+<p>This class expects a callable <code class="docutils literal notranslate"><span class="pre">loss_fn</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">nn.CrossEntropyLoss</span></code>)
+and an <code class="docutils literal notranslate"><span class="pre">optimizer</span></code> class (e.g., <code class="docutils literal notranslate"><span class="pre">optim.AdamW</span></code>). <code class="docutils literal notranslate"><span class="pre">model_class</span></code> can be
+either an instantiated <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> or a class to be constructed from
+<code class="docutils literal notranslate"><span class="pre">model_params</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.clone">
+<span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.clone" title="Link to this definition">¶</a></dt>
+<dd><p>Create a shallow clone with the same initialization parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>New instance with copied parameters.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel" title="astrodata.ml.models.PytorchModel.PytorchModel">PytorchModel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fine_tune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_every_n_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'torch'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.fit" title="Link to this definition">¶</a></dt>
+<dd><p>Fit the model using the provided data or dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Training features. Ignored if <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is provided.</p></li>
+<li><p><strong>y</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Training labels. Ignored if <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is provided.</p></li>
+<li><p><strong>dataset</strong> (<em>torch.utils.data.Dataset</em><em>, </em><em>optional</em>) – Pre-built training dataset yielding <code class="docutils literal notranslate"><span class="pre">(inputs,</span> <span class="pre">labels)</span></code>.</p></li>
+<li><p><strong>epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of training epochs. Defaults to the instance value.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Batch size for training/prediction. Defaults to the instance value.</p></li>
+<li><p><strong>device</strong> (<em>str</em><em>, </em><em>optional</em>) – Device to use (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;cuda&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;cpu&quot;</span></code>). Defaults to instance.</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em> of </em><em>BaseMetric</em><em>, </em><em>optional</em>) – Metrics to compute during training (per step) and validation (per epoch).</p></li>
+<li><p><strong>fine_tune</strong> (<em>bool</em><em>, </em><em>default False</em>) – If True, reuse existing model weights/optimizer state when available.</p></li>
+<li><p><strong>X_val</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Validation features for epoch-wise metric tracking.</p></li>
+<li><p><strong>y_val</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Validation labels for epoch-wise metric tracking.</p></li>
+<li><p><strong>save_every_n_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Save model every n epochs if provided.</p></li>
+<li><p><strong>save_folder</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory path where checkpoints will be saved.</p></li>
+<li><p><strong>save_format</strong> (<em>{&quot;torch&quot;</em><em>,</em><em>&quot;pkl&quot;</em><em>,</em><em>&quot;safetensors&quot;}</em><em>, </em><em>default &quot;torch&quot;</em>) – Serialization format for checkpoints.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The fitted model instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel" title="astrodata.ml.models.PytorchModel.PytorchModel">PytorchModel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.freeze_layers">
+<span class="sig-name descname"><span class="pre">freeze_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.freeze_layers" title="Link to this definition">¶</a></dt>
+<dd><p>Freeze all layers except those included in <code class="docutils literal notranslate"><span class="pre">layer_names</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>layer_names</strong> (<em>list</em><em> of </em><em>str</em>) – Names of modules to unfreeze.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.get_metrics">
+<span class="sig-name descname"><span class="pre">get_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_metrics" title="Link to this definition">¶</a></dt>
+<dd><p>Compute metrics for given data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Features. Ignored if <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is provided.</p></li>
+<li><p><strong>y</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Labels. Ignored if <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is provided.</p></li>
+<li><p><strong>dataset</strong> (<em>torch.utils.data.Dataset</em><em>, </em><em>optional</em>) – Pre-built dataset yielding <code class="docutils literal notranslate"><span class="pre">(inputs,</span> <span class="pre">labels)</span></code>.</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em> of </em><em>BaseMetric</em>) – Metrics to compute.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>default 32</em>) – Batch size when <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are provided.</p></li>
+<li><p><strong>device</strong> (<em>str</em><em>, </em><em>optional</em>) – Device to use for inference.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mapping from metric names to values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If neither dataset nor (X, y) are provided.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.get_metrics_history">
+<span class="sig-name descname"><span class="pre">get_metrics_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'train'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_metrics_history" title="Link to this definition">¶</a></dt>
+<dd><p>Get the recorded metric history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>split</strong> (<em>{&quot;train&quot;</em><em>, </em><em>&quot;val&quot;}</em><em>, </em><em>default &quot;train&quot;</em>) – Which split to return history for. Validation history is
+recorded at epoch granularity.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mapping from metric name to list of values in time order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.get_params">
+<span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_params" title="Link to this definition">¶</a></dt>
+<dd><p>Get initialization parameters for this model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Parameters used to construct the model.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.get_scorer_metric">
+<span class="sig-name descname"><span class="pre">get_scorer_metric</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_scorer_metric" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the score function default metric.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.has_loss_history">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_loss_history</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.has_loss_history" title="Link to this definition">¶</a></dt>
+<dd><p>Check if the underlying model supports loss history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if loss history is available, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'torch'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.load" title="Link to this definition">¶</a></dt>
+<dd><p>Load model parameters and optimizer state from disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – Source path.</p></li>
+<li><p><strong>format</strong> (<em>{&quot;torch&quot;</em><em>, </em><em>&quot;pkl&quot;</em><em>, </em><em>&quot;safetensors&quot;}</em>) – Serialization format.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The model instance with loaded weights.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel" title="astrodata.ml.models.PytorchModel.PytorchModel">PytorchModel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Predict outputs for input <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>array-like</em><em>, </em><em>torch.Tensor</em><em>, or </em><em>Dataset</em>) – Features to predict. If a Dataset is provided, it should yield
+feature tensors only.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – Batch size.</p></li>
+<li><p><strong>device</strong> (<em>str</em><em>, </em><em>optional</em>) – Device to use for inference. Defaults to instance device.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Predicted labels for classification, or raw outputs for regression.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If the model is not fitted yet.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.predict_proba">
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.predict_proba" title="Link to this definition">¶</a></dt>
+<dd><p>Predict class probabilities for input <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>array-like</em><em>, </em><em>torch.Tensor</em><em>, or </em><em>Dataset</em>) – Features to predict. If a Dataset is provided, it should yield
+feature tensors only.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – Batch size used when <code class="docutils literal notranslate"><span class="pre">X</span></code> is not a Dataset.</p></li>
+<li><p><strong>device</strong> (<em>str</em><em>, </em><em>optional</em>) – Device to use for inference. Defaults to instance device.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Predicted probabilities with shape <code class="docutils literal notranslate"><span class="pre">[N,</span> <span class="pre">n_classes]</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If the model is not fitted yet.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'torch'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.save" title="Link to this definition">¶</a></dt>
+<dd><p>Save the model parameters and optimizer state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – Destination path.</p></li>
+<li><p><strong>format</strong> (<em>{&quot;torch&quot;</em><em>, </em><em>&quot;pkl&quot;</em><em>, </em><em>&quot;safetensors&quot;}</em>) – Serialization format.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.score">
+<span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.score" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the average loss on the given data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>torch.utils.data.Dataset</em><em>, </em><em>optional</em>) – Pre-built dataset yielding <code class="docutils literal notranslate"><span class="pre">(inputs,</span> <span class="pre">labels)</span></code>.</p></li>
+<li><p><strong>X</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Features. Ignored if <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is provided.</p></li>
+<li><p><strong>y</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Labels. Ignored if <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is provided.</p></li>
+<li><p><strong>device</strong> (<em>str</em><em>, </em><em>optional</em>) – Device to use for inference. Defaults to instance device.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Batch size when <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are provided.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Average loss over the dataset.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – If the model is not fitted yet.</p></li>
+<li><p><strong>ValueError</strong> – If neither dataset nor (X, y) are provided.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.set_params">
+<span class="sig-name descname"><span class="pre">set_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.set_params" title="Link to this definition">¶</a></dt>
+<dd><p>Set initialization parameters for this model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Parameters to set on the instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-astrodata.ml.models.SklearnModel">
 <span id="astrodata-ml-models-sklearnmodel-module"></span><h2>astrodata.ml.models.SklearnModel module<a class="headerlink" href="#module-astrodata.ml.models.SklearnModel" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="astrodata.ml.models.SklearnModel.SklearnModel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.SklearnModel.</span></span><span class="sig-name descname"><span class="pre">SklearnModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3170578733</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">model_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.SklearnModel.SklearnModel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.SklearnModel.</span></span><span class="sig-name descname"><span class="pre">SklearnModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4117362404</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">model_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.SklearnModel.SklearnModel" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlModel</span></code></a></p>
 <p>A wrapper class for scikit-learn models to standardize the interface and add extended functionality.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="astrodata.ml.models.SklearnModel.SklearnModel.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fit_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.SklearnModel.SklearnModel.fit" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fit_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.SklearnModel.SklearnModel.fit" title="Link to this definition">¶</a></dt>
 <dd><p>Fit the model to data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -571,7 +851,7 @@ Defines the standard interface expected from all models.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Data features to use for staged predictions.</p></li>
 <li><p><strong>y</strong> (<em>array-like</em><em>, </em><em>optional</em>) – True labels for X.</p></li>
-<li><p><strong>metrics</strong> (<em>List</em><em>[</em><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a><em>]</em><em>, </em><em>optional</em>) – Metrics to compute for each stage.</p></li>
+<li><p><strong>metrics</strong> (<em>List</em><em>[</em><em>BaseMetric</em><em>]</em><em>, </em><em>optional</em>) – Metrics to compute for each stage.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -599,7 +879,7 @@ Defines the standard interface expected from all models.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em>) – Data features.</p></li>
 <li><p><strong>y</strong> (<em>array-like</em>) – Data targets.</p></li>
-<li><p><strong>metrics</strong> (<em>list</em><em> of </em><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a>) – List of metrics to compute.</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em> of </em><em>BaseMetric</em>) – List of metrics to compute.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -787,12 +1067,12 @@ Defines the standard interface expected from all models.</p>
 <span id="astrodata-ml-models-xgboostmodel-module"></span><h2>astrodata.ml.models.XGBoostModel module<a class="headerlink" href="#module-astrodata.ml.models.XGBoostModel" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="astrodata.ml.models.XGBoostModel.XGBoostModel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.XGBoostModel.</span></span><span class="sig-name descname"><span class="pre">XGBoostModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3234787177</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">model_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.XGBoostModel.XGBoostModel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.XGBoostModel.</span></span><span class="sig-name descname"><span class="pre">XGBoostModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2835307173</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">model_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.XGBoostModel.XGBoostModel" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlModel</span></code></a></p>
 <p>Wrapper for XGBoost models, providing a standardized interface and additional utilities.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="astrodata.ml.models.XGBoostModel.XGBoostModel.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fit_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.XGBoostModel.XGBoostModel.fit" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fit_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.XGBoostModel.XGBoostModel.fit" title="Link to this definition">¶</a></dt>
 <dd><p>Fit the XGBoost model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -838,7 +1118,7 @@ is not provided, it will default to the training data.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Data features to use for staged predictions.</p></li>
 <li><p><strong>y</strong> (<em>array-like</em><em>, </em><em>optional</em>) – True labels for X.</p></li>
-<li><p><strong>metrics</strong> (<em>List</em><em>[</em><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a><em>]</em><em>, </em><em>optional</em>) – Metrics to compute for each boosting stage.</p></li>
+<li><p><strong>metrics</strong> (<em>List</em><em>[</em><em>BaseMetric</em><em>]</em><em>, </em><em>optional</em>) – Metrics to compute for each boosting stage.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -866,7 +1146,7 @@ is not provided, it will default to the training data.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em>) – Data features.</p></li>
 <li><p><strong>y</strong> (<em>array-like</em>) – Data targets.</p></li>
-<li><p><strong>metrics</strong> (<em>list</em><em> of </em><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a>) – List of metrics to compute.</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em> of </em><em>BaseMetric</em>) – List of metrics to compute.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1099,7 +1379,26 @@ is not provided, it will default to the training data.</p></li>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-astrodata.ml.models.PytorchModel">astrodata.ml.models.PytorchModel module</a></li>
+<li><a class="reference internal" href="#module-astrodata.ml.models.PytorchModel">astrodata.ml.models.PytorchModel module</a><ul>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel"><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.clone"><code class="docutils literal notranslate"><span class="pre">PytorchModel.clone()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.fit"><code class="docutils literal notranslate"><span class="pre">PytorchModel.fit()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.freeze_layers"><code class="docutils literal notranslate"><span class="pre">PytorchModel.freeze_layers()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_metrics"><code class="docutils literal notranslate"><span class="pre">PytorchModel.get_metrics()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_metrics_history"><code class="docutils literal notranslate"><span class="pre">PytorchModel.get_metrics_history()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_params"><code class="docutils literal notranslate"><span class="pre">PytorchModel.get_params()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_scorer_metric"><code class="docutils literal notranslate"><span class="pre">PytorchModel.get_scorer_metric()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.has_loss_history"><code class="docutils literal notranslate"><span class="pre">PytorchModel.has_loss_history</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.load"><code class="docutils literal notranslate"><span class="pre">PytorchModel.load()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.predict"><code class="docutils literal notranslate"><span class="pre">PytorchModel.predict()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.predict_proba"><code class="docutils literal notranslate"><span class="pre">PytorchModel.predict_proba()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.save"><code class="docutils literal notranslate"><span class="pre">PytorchModel.save()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.score"><code class="docutils literal notranslate"><span class="pre">PytorchModel.score()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.set_params"><code class="docutils literal notranslate"><span class="pre">PytorchModel.set_params()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-astrodata.ml.models.SklearnModel">astrodata.ml.models.SklearnModel module</a><ul>
 <li><a class="reference internal" href="#astrodata.ml.models.SklearnModel.SklearnModel"><code class="docutils literal notranslate"><span class="pre">SklearnModel</span></code></a><ul>
 <li><a class="reference internal" href="#astrodata.ml.models.SklearnModel.SklearnModel.fit"><code class="docutils literal notranslate"><span class="pre">SklearnModel.fit()</span></code></a></li>
