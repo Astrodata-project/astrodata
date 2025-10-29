@@ -72,12 +72,15 @@ class GridSearchSelector(BaseMlModelSelector):
 
     def fit(
         self,
-        X_train,
-        y_train,
+        X_train=None,
+        y_train=None,
         X_val=None,
         y_val=None,
         X_test=None,
         y_test=None,
+        dataset_train=None,
+        dataset_val=None,
+        dataset_test=None,
         *args,
         **kwargs,
     ) -> BaseMlModelSelector:
@@ -86,18 +89,24 @@ class GridSearchSelector(BaseMlModelSelector):
 
         Parameters
         ----------
-        X_train : array-like
-            Training data features.
-        y_train : array-like
-            Training data targets.
+        X_train : array-like, optional
+            Training data features. Ignored if dataset_train is provided.
+        y_train : array-like, optional
+            Training data targets. Ignored if dataset_train is provided.
         X_val : array-like, optional
-            Validation data features. If None, a random split is performed.
+            Validation data features. If None and dataset_val is None, a random split is performed.
         y_val : array-like, optional
-            Validation data targets. If None, a random split is performed.
+            Validation data targets. If None and dataset_val is None, a random split is performed.
         X_test : array-like, optional
             Test data features for tracking/logging (not used in selection).
         y_test : array-like, optional
             Test data targets for tracking/logging (not used in selection).
+        dataset_train : Dataset, optional
+            Training dataset. If provided, X_train and y_train are ignored.
+        dataset_val : Dataset, optional
+            Validation dataset. If provided, X_val and y_val are ignored.
+        dataset_test : Dataset, optional
+            Test dataset for tracking/logging (not used in selection).
 
         Returns
         -------
@@ -107,19 +116,36 @@ class GridSearchSelector(BaseMlModelSelector):
         Raises
         ------
         ValueError
-            If neither validation data nor val_size is provided.
+            If neither validation data nor val_size is provided, or if neither
+            (X_train, y_train) nor dataset_train is provided.
         """
 
-        # If validation data not provided, split from training data
-        if X_val is None or y_val is None:
-            if self.val_size is None:
-                raise ValueError("Either val_size or validation data must be provided.")
-            X_train, X_val, y_train, y_val = train_test_split(
-                X_train,
-                y_train,
-                test_size=self.val_size,
-                random_state=self.random_state,
+        # Validate input format - either (X_train, y_train) or dataset_train
+        if (X_train is None or y_train is None) and dataset_train is None:
+            raise ValueError(
+                "Either (X_train, y_train) or dataset_train must be provided."
             )
+
+        # If using traditional X,y format, handle validation split
+        if dataset_train is None:
+            # If validation data not provided, split from training data
+            if X_val is None or y_val is None:
+                if self.val_size is None:
+                    raise ValueError(
+                        "Either val_size or validation data must be provided when using X,y format."
+                    )
+                X_train, X_val, y_train, y_val = train_test_split(
+                    X_train,
+                    y_train,
+                    test_size=self.val_size,
+                    random_state=self.random_state,
+                )
+        else:
+            # If using dataset format, validation data should also be a dataset
+            if dataset_val is None:
+                raise ValueError(
+                    "When using dataset_train, dataset_val must also be provided."
+                )
 
         greater_is_better = self.scorer.greater_is_better if self.scorer else True
         best_score = -np.inf if greater_is_better else np.inf
@@ -127,6 +153,8 @@ class GridSearchSelector(BaseMlModelSelector):
         # Store data for refit
         self._X_train, self._y_train = X_train, y_train
         self._X_val, self._y_val = X_val, y_val
+        self._dataset_train = dataset_train
+        self._dataset_val = dataset_val
 
         best_params = None
         best_metrics = None
@@ -146,10 +174,13 @@ class GridSearchSelector(BaseMlModelSelector):
                 y_train=y_train,
                 X_val=X_val,
                 y_val=y_val,
+                dataset_train=dataset_train,
+                dataset_val=dataset_val,
                 metrics=self.metrics,
                 tracker=self.tracker,
                 log_model=self.log_all_models,
                 tags={"stage": "training", "is_final": False, "params": params},
+                **kwargs,
             )
 
             if (greater_is_better and score > best_score) or (
@@ -164,22 +195,36 @@ class GridSearchSelector(BaseMlModelSelector):
         self._best_metrics = best_metrics
 
         # Refit best model on full data (train + val)
-        try:
-            X_full = pd.concat([self._X_train, self._X_val])
-            y_full = pd.concat([self._y_train, self._y_val])
-        except TypeError:
-            X_full = np.concatenate([self._X_train, self._X_val])
-            y_full = np.concatenate([self._y_train, self._y_val])
+        if dataset_train is not None:
+            # For dataset format, we can't easily combine train and val datasets
+            # So we refit on the original training dataset
+            final_dataset_train = dataset_train
+            final_dataset_val = None  # No validation during final fit
+            final_X_train, final_y_train = None, None
+            final_X_test, final_y_test = X_test, y_test
+        else:
+            # For X,y format, combine train and val as before
+            try:
+                final_X_train = pd.concat([self._X_train, self._X_val])
+                final_y_train = pd.concat([self._y_train, self._y_val])
+            except TypeError:
+                final_X_train = np.concatenate([self._X_train, self._X_val])
+                final_y_train = np.concatenate([self._y_train, self._y_val])
+            final_dataset_train = None
+            final_dataset_val = None
+            final_X_test, final_y_test = X_test, y_test
 
         if self.tracker:
             self._best_model, _, _ = fit_model_score(
                 model=self.model,
                 params=self._best_params,
                 scorer=self.scorer,
-                X_train=X_full,
-                y_train=y_full,
-                X_test=X_test,
-                y_test=y_test,
+                X_train=final_X_train,
+                y_train=final_y_train,
+                X_test=final_X_test,
+                y_test=final_y_test,
+                dataset_train=final_dataset_train,
+                dataset_test=dataset_test,
                 metrics=self.metrics,
                 tracker=self.tracker,
                 log_model=True,
@@ -189,12 +234,20 @@ class GridSearchSelector(BaseMlModelSelector):
                     "params": self._best_params,
                 },
                 manual_metrics=(self._best_metrics, "val"),
+                **kwargs,
             )
 
         else:
             self._best_model = self.model.clone()
             self._best_model.set_params(**self._best_params)
-            self._best_model = self._best_model.fit(X_full, y_full)
+            if final_dataset_train is not None:
+                self._best_model = self._best_model.fit(
+                    dataset=final_dataset_train, **kwargs
+                )
+            else:
+                self._best_model = self._best_model.fit(
+                    final_X_train, final_y_train, **kwargs
+                )
 
         return self
 

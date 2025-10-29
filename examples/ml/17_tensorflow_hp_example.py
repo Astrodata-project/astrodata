@@ -1,13 +1,13 @@
-import torch
+import keras as K
+import tensorflow as tf
 from hyperopt import hp
 from sklearn.datasets import load_iris
 from sklearn.metrics import accuracy_score, f1_score, log_loss
 from sklearn.model_selection import train_test_split
-from torch import nn, optim
 
 from astrodata.ml.metrics import SklearnMetric
 from astrodata.ml.model_selection import HyperOptSelector
-from astrodata.ml.models import PytorchModel
+from astrodata.ml.models import TensorflowModel
 
 if __name__ == "__main__":
     X, y = load_iris(return_X_y=True)
@@ -15,30 +15,29 @@ if __name__ == "__main__":
         X, y, test_size=0.2, random_state=42
     )
 
-    dataset = torch.utils.data.TensorDataset(
-        torch.tensor(X_train, dtype=torch.float32),
-        torch.tensor(y_train, dtype=torch.long),
+    dataset = tf.data.Dataset.from_tensor_slices(
+        (X_train.astype("float32"), y_train.astype("int32"))
     )
 
-    dataset_val = torch.utils.data.TensorDataset(
-        torch.tensor(X_val, dtype=torch.float32), torch.tensor(y_val, dtype=torch.long)
+    dataset_val = tf.data.Dataset.from_tensor_slices(
+        (X_val.astype("float32"), y_val.astype("int32"))
     )
 
-    class IrisNet(nn.Module):
-        def __init__(self, input_layers, output_layers):
-            super().__init__()
-            self.layers = nn.Sequential(
-                nn.Linear(input_layers, 16), nn.ReLU(), nn.Linear(16, output_layers)
-            )
+    def create_iris_model(input_dim, output_dim):
+        """Create a simple Keras model for iris classification."""
+        model = K.Sequential(
+            [
+                K.layers.Dense(16, activation="relu", input_shape=(input_dim,)),
+                K.layers.Dense(output_dim, activation="softmax"),
+            ]
+        )
+        return model
 
-        def forward(self, x):
-            return self.layers(x)
-
-    model = PytorchModel(
-        model_class=IrisNet,
-        loss_fn=nn.CrossEntropyLoss,
-        optimizer=optim.AdamW,
-        device="cpu",
+    model = TensorflowModel(
+        model_class=create_iris_model,
+        loss_fn=K.losses.SparseCategoricalCrossentropy,
+        optimizer=K.optimizers.Adam,
+        device=None,  # TensorFlow handles device automatically
     )
 
     print(model)
@@ -46,9 +45,9 @@ if __name__ == "__main__":
     param_grid = {
         "model": hp.choice("model", [model]),
         "model_params": hp.choice(
-            "model_params", [{"input_layers": X.shape[1], "output_layers": 3}]
+            "model_params", [{"input_dim": X.shape[1], "output_dim": 3}]
         ),
-        "optimizer_params": {"lr": hp.uniform("lr", 1e-4, 1e-2)},
+        "optimizer_params": {"learning_rate": hp.uniform("learning_rate", 1e-4, 1e-2)},
         "batch_size": hp.choice("batch_size", [32, 64]),
         "epochs": hp.choice("epochs", [5, 10, 15]),
     }

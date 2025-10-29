@@ -3,13 +3,14 @@ import pickle
 import random
 from typing import Any, Dict, List, Optional
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 from safetensors.torch import load_file as safetensors_load
 from safetensors.torch import save_file as safetensors_save
 from torch.nn import Module
 from torch.optim import Optimizer
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader, Dataset, TensorDataset
 from tqdm import trange
 
 from astrodata.ml.metrics.BaseMetric import BaseMetric
@@ -65,7 +66,7 @@ class PytorchModel(BaseMlModel):
         self,
         X: Optional[Any] = None,
         y: Optional[Any] = None,
-        dataloader: Optional[DataLoader] = None,
+        dataset: Optional[Dataset] = None,
         epochs: Optional[int] = None,
         batch_size: Optional[int] = None,
         device: Optional[str] = None,
@@ -73,22 +74,25 @@ class PytorchModel(BaseMlModel):
         fine_tune: bool = False,
         X_val: Optional[Any] = None,
         y_val: Optional[Any] = None,
+        dataset_val: Optional[Dataset] = None,
         save_every_n_epochs: Optional[int] = None,
         save_folder: Optional[str] = None,
         save_format: str = "torch",
+        shuffle: bool = True,
+        seed: int = None,
         **kwargs,
     ) -> "PytorchModel":
         """
-        Fit the model using the provided data or dataloader.
+        Fit the model using the provided data or dataset.
 
         Parameters
         ----------
         X : array-like or torch.Tensor, optional
-            Training features. Ignored if ``dataloader`` is provided.
+            Training features. Ignored if ``dataset`` is provided.
         y : array-like or torch.Tensor, optional
-            Training labels. Ignored if ``dataloader`` is provided.
-        dataloader : torch.utils.data.DataLoader, optional
-            Pre-built training dataloader yielding ``(inputs, labels)``.
+            Training labels. Ignored if ``dataset`` is provided.
+        dataset : torch.utils.data.Dataset, optional
+            Pre-built training dataset yielding ``(inputs, labels)``.
         epochs : int, optional
             Number of training epochs. Defaults to the instance value.
         batch_size : int, optional
@@ -116,11 +120,14 @@ class PytorchModel(BaseMlModel):
             The fitted model instance.
         """
 
+        torch.manual_seed(seed if seed is not None else self.random_state)
         epochs = epochs if epochs is not None else self.epochs
         batch_size = batch_size if batch_size is not None else self.batch_size
         self.metrics_history_ = []
         self._val_metrics_history_ = (
-            [] if X_val is not None and y_val is not None else None
+            []
+            if (X_val is not None and y_val is not None) or dataset_val is not None
+            else None
         )
 
         if epochs <= 0:
@@ -128,20 +135,17 @@ class PytorchModel(BaseMlModel):
         if batch_size <= 0:
             raise ValueError("Batch size must be greater than 0.")
 
-        if (X is None and y is None) and dataloader is None:
-            raise ValueError("Either X and y or dataloader must be provided.")
+        if (X is None and y is None) and dataset is None:
+            raise ValueError("Either X and y or dataset must be provided.")
 
-        if dataloader is None:
-            if not isinstance(X, torch.Tensor):
-                X = torch.tensor(X, dtype=torch.float32)
-            if not isinstance(y, torch.Tensor):
-                y = torch.tensor(y, dtype=torch.long)
-            if device is None:
-                device = self.device
-
-            dataset = TensorDataset(X.to(device), y.to(device))
-            dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+        if dataset is None:
+            dataset = self._create_dataset(X, y, device)
         # if a dataloader was passed, we trust it yields tensors on the right device
+
+        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
+
+        if dataset_val is None and X_val is not None and y_val is not None:
+            dataset_val = self._create_dataset(X_val, y_val, device)
 
         if not fine_tune or self.model_ is None:
             self.model_ = self._get_model().to(self.device)
@@ -159,8 +163,7 @@ class PytorchModel(BaseMlModel):
                     loss_fn=self.loss_fn_,
                     training_loader=dataloader,
                     metrics=metrics,
-                    X_val=X_val,
-                    y_val=y_val,
+                    dataset_val=dataset_val,
                     batch_size=batch_size,
                     device=device,
                 )
@@ -184,19 +187,102 @@ class PytorchModel(BaseMlModel):
                     self.save(path, format=save_format)
         return self
 
+    def _train_one_epoch(
+        self,
+        optimizer: Optimizer,
+        epoch_index: int,
+        model: Module,
+        loss_fn,
+        training_loader: torch.utils.data.DataLoader,
+        metrics: Optional[List[BaseMetric]] = None,
+        dataset_val: Optional[Dataset] = None,
+        batch_size: Optional[int] = None,
+        device: Optional[str] = None,
+    ) -> float:
+
+        for i, data in enumerate(training_loader):
+            # Each data instance is an input + label pair
+            inputs, labels = data
+            
+            # Move data to device if specified
+            inputs = inputs.to(device or self.device)
+            labels = labels.to(device or self.device)
+
+            # Zero the gradients
+            optimizer.zero_grad()
+
+            # Forward pass
+            outputs = model(inputs)
+
+            # Backward and optimize
+            loss = loss_fn(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+        # Compute predictions for metrics without toggling eval mode
+        with torch.no_grad():
+            if outputs.dim() > 1 and outputs.shape[-1] > 1:
+                preds = outputs.detach().argmax(dim=1).cpu().numpy()
+            else:
+                preds = outputs.detach().cpu().squeeze().numpy()
+
+        if metrics is not None:
+            y_true = labels.detach().cpu().numpy()
+            for metric in metrics:
+                self.metrics_history_.append(
+                    (f"{metric.get_name()}_epoch", metric(y_true, preds))
+                )
+            self.metrics_history_.append(("loss_epoch", loss.item()))
+
+        # Epoch-level validation metrics
+        if metrics is not None and dataset_val is not None:
+            val_scores = self.get_metrics(
+                dataset=dataset_val,
+                metrics=metrics,
+                batch_size=batch_size or self.batch_size or 32,
+                device=device or self.device,
+            )
+            for name, value in val_scores.items():
+                self._val_metrics_history_.append((f"{name}_epoch", value))
+
+            val_loss_acc = []
+            for i, data in enumerate(
+                DataLoader(
+                    dataset_val,
+                    batch_size=batch_size or self.batch_size or 32,
+                    shuffle=False,
+                )
+            ):
+                inputs, labels = data
+                
+                # Move data to device if specified
+                if device:
+                    inputs = inputs.to(device or self.device)
+                    labels = labels.to(device or self.device)
+
+                # Forward pass
+                outputs = model(inputs)
+                val_loss_acc.append(loss_fn(outputs, labels).item())
+
+            self._val_metrics_history_.append(
+                ("loss_epoch", sum(val_loss_acc) / len(val_loss_acc))
+            )
+
+        return loss.item()
+
     def predict(
-        self, X, batch_size: int, device: Optional[str] = None, **kwargs
+        self, data, batch_size: int = 32, device: Optional[str] = None, **kwargs
     ) -> Any:
         """
         Predict outputs for input ``X``.
 
         Parameters
         ----------
-        X : array-like, torch.Tensor, or DataLoader
-            Features to predict. If a DataLoader is provided, it should yield
+        data : array-like, torch.Tensor, or Dataset
+            Features to predict. If a Dataset is provided, it should yield
             feature tensors only.
         batch_size : int
-            Batch size used when ``X`` is not a DataLoader.
+            Batch size.
         device : str, optional
             Device to use for inference. Defaults to instance device.
 
@@ -210,21 +296,21 @@ class PytorchModel(BaseMlModel):
         RuntimeError
             If the model is not fitted yet.
         """
-        return self._predict(X, batch_size, device, use_proba=False)
+        return self._predict(data, batch_size, device, use_proba=False)
 
     def predict_proba(
-        self, X, batch_size: int, device: Optional[str] = None, **kwargs
+        self, data, batch_size: int, device: Optional[str] = None, **kwargs
     ) -> Any:
         """
         Predict class probabilities for input ``X``.
 
         Parameters
         ----------
-        X : array-like, torch.Tensor, or DataLoader
-            Features to predict. If a DataLoader is provided, it should yield
+        data : array-like, torch.Tensor, or Dataset
+            Features to predict. If a Dataset is provided, it should yield
             feature tensors only.
         batch_size : int
-            Batch size used when ``X`` is not a DataLoader.
+            Batch size used when ``X`` is not a Dataset.
         device : str, optional
             Device to use for inference. Defaults to instance device.
 
@@ -238,7 +324,7 @@ class PytorchModel(BaseMlModel):
         RuntimeError
             If the model is not fitted yet.
         """
-        return self._predict(X, batch_size, device, use_proba=True)
+        return self._predict(data, batch_size, device, use_proba=True)
 
     def _predict(
         self, X, batch_size: int, device: Optional[str], use_proba: bool
@@ -249,19 +335,16 @@ class PytorchModel(BaseMlModel):
         device = device or self.device
         self.model_.eval()
 
-        if not isinstance(X, torch.Tensor) and not isinstance(X, DataLoader):
+        if not isinstance(X, Dataset):
             X = torch.tensor(X, dtype=torch.float32)
+            X = TensorDataset(X)
 
-        dataloader = (
-            DataLoader(X, batch_size=batch_size, shuffle=False)
-            if not isinstance(X, DataLoader)
-            else X
-        )
+        dataloader = DataLoader(dataset=X, batch_size=batch_size, shuffle=False)
         outputs = []
 
         with torch.no_grad():
             for batch_X in dataloader:
-                batch_X = batch_X.to(device)
+                batch_X = batch_X[0].to(device)
                 out = self.model_(batch_X)
                 try:
                     outputs.append(out.cpu())
@@ -282,11 +365,77 @@ class PytorchModel(BaseMlModel):
             return outputs.numpy().ravel()
         return outputs.argmax(dim=1).numpy()
 
-    def score(self):
-        pass
+    def score(
+        self,
+        dataset=None,
+        X=None,
+        y=None,
+        device=None,
+        batch_size=None,
+    ):
+        """
+        Compute the average loss on the given data.
+
+        Parameters
+        ----------
+        dataset : torch.utils.data.Dataset, optional
+            Pre-built dataset yielding ``(inputs, labels)``.
+        X : array-like or torch.Tensor, optional
+            Features. Ignored if ``dataset`` is provided.
+        y : array-like or torch.Tensor, optional
+            Labels. Ignored if ``dataset`` is provided.
+        device : str, optional
+            Device to use for inference. Defaults to instance device.
+        batch_size : int, optional
+            Batch size when ``X`` and ``y`` are provided.
+
+        Returns
+        -------
+        float
+            Average loss over the dataset.
+
+        Raises
+        ------
+        RuntimeError
+            If the model is not fitted yet.
+        ValueError
+            If neither dataset nor (X, y) are provided.
+        """
+        if self.model_ is None:
+            raise RuntimeError("Model is not fitted yet.")
+
+        if dataset is None and (X is None or y is None):
+            raise ValueError("Either dataset or both X and y must be provided.")
+
+        if dataset is None and (X is not None and y is not None):
+            dataset = self._create_dataset(X, y, device=device)
+
+        dataloader = DataLoader(
+            dataset, batch_size=batch_size or self.batch_size or 32, shuffle=False
+        )
+
+        device = device or self.device
+        self.model_.eval()
+        loss_fn = self.loss_fn()
+
+        total_loss = 0.0
+        num_batches = 0
+
+        with torch.no_grad():
+            for inputs, labels in dataloader:
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+
+                outputs = self.model_(inputs)
+                loss = loss_fn(outputs, labels)
+
+                total_loss += loss.item()
+                num_batches += 1
+
+        return total_loss / num_batches if num_batches > 0 else 0.0
 
     def get_scorer_metric(self):
-        pass
+        return self.loss_fn
 
     def save(self, filepath: str, format: str = "torch", **kwargs) -> None:
         """
@@ -375,8 +524,9 @@ class PytorchModel(BaseMlModel):
 
     def get_metrics(
         self,
-        X,
-        y,
+        X=None,
+        y=None,
+        dataset=None,
         metrics: List[BaseMetric] = None,
         batch_size: int = 32,
         device: Optional[str] = None,
@@ -386,14 +536,16 @@ class PytorchModel(BaseMlModel):
 
         Parameters
         ----------
-        X : array-like, torch.Tensor, or DataLoader
-            Features.
-        y : array-like or torch.Tensor
-            Labels.
+        X : array-like or torch.Tensor, optional
+            Features. Ignored if ``dataset`` is provided.
+        y : array-like or torch.Tensor, optional
+            Labels. Ignored if ``dataset`` is provided.
+        dataset : torch.utils.data.Dataset, optional
+            Pre-built dataset yielding ``(inputs, labels)``.
         metrics : list of BaseMetric
             Metrics to compute.
         batch_size : int, default 32
-            Batch size when ``X`` is not a DataLoader.
+            Batch size when ``X`` and ``y`` are provided.
         device : str, optional
             Device to use for inference.
 
@@ -401,20 +553,66 @@ class PytorchModel(BaseMlModel):
         -------
         dict
             Mapping from metric names to values.
+
+        Raises
+        ------
+        ValueError
+            If neither dataset nor (X, y) are provided.
         """
-        y_pred = self.predict(X, batch_size, device)
-        try:
-            y_pred_proba = self.predict_proba(X, batch_size, device)
-        except ValueError:
-            y_pred_proba = None
+        if (X is None or y is None) and dataset is None:
+            raise ValueError("Either dataset or both X and y must be provided.")
+
+        if dataset is None:
+            dataset = self._create_dataset(X, y, device=device)
+
+        dataloader = DataLoader(
+            dataset, batch_size=batch_size or self.batch_size or 32, shuffle=False
+        )
+
+        # Collect all predictions and true labels
+        all_y_true = []
+        all_y_pred = []
+        all_y_pred_proba = []
+
+        device = device or self.device
+        self.model_.eval()
+
+        with torch.no_grad():
+            for inputs, labels in dataloader:
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+
+                # Get predictions
+                outputs = self.model_(inputs)
+
+                # Convert to predictions
+                if outputs.dim() > 1 and outputs.shape[-1] > 1:
+                    preds = outputs.argmax(dim=1)
+                    # Get probabilities
+                    probs = torch.nn.functional.softmax(outputs, dim=1)
+                else:
+                    preds = outputs.squeeze()
+                    # Get probabilities for binary case
+                    probs = torch.sigmoid(outputs)
+                    if probs.dim() == 1:
+                        probs = torch.stack([1 - probs, probs], dim=1)
+
+                # Collect results
+                all_y_true.append(labels.cpu().numpy())
+                all_y_pred.append(preds.cpu().numpy())
+                all_y_pred_proba.append(probs.cpu().numpy())
+
+        # Concatenate all results
+        y_true = np.concatenate(all_y_true)
+        y_pred = np.concatenate(all_y_pred)
+        y_pred_proba = np.concatenate(all_y_pred_proba)
 
         results = {}
-
         for metric in metrics:
             try:
-                score = metric(y, y_pred_proba)
-            except ValueError:
-                score = metric(y, y_pred)
+                score = metric(y_true, y_pred_proba)
+            except (ValueError, TypeError):
+                score = metric(y_true, y_pred)
             results[metric.get_name()] = score
         return results
 
@@ -457,82 +655,6 @@ class PytorchModel(BaseMlModel):
         """
         return f"{self.__class__.__name__}(torch_model={self.model_class.__class__.__name__})"
 
-    def _train_one_epoch(
-        self,
-        optimizer: Optimizer,
-        epoch_index: int,
-        model: Module,
-        loss_fn,
-        training_loader: torch.utils.data.DataLoader,
-        metrics: Optional[List[BaseMetric]] = None,
-        X_val: Optional[Any] = None,
-        y_val: Optional[Any] = None,
-        batch_size: Optional[int] = None,
-        device: Optional[str] = None,
-    ) -> float:
-
-        dataloader_val = None
-
-        if X_val is not None and y_val is not None:
-
-            if not isinstance(X_val, torch.Tensor):
-                X_val = torch.tensor(X_val, dtype=torch.float32)
-            if not isinstance(y_val, torch.Tensor):
-                y_val = torch.tensor(y_val, dtype=torch.long)
-            if device is None:
-                device = self.device
-
-            dataset = TensorDataset(X_val.to(device), y_val.to(device))
-            dataloader_val = DataLoader(dataset, batch_size=len(X_val), shuffle=True)
-
-        for i, data in enumerate(training_loader):
-            # Each data instance is an input + label pair
-            inputs, labels = data
-
-            # Zero the gradients
-            optimizer.zero_grad()
-
-            # Forward pass
-            outputs = model(inputs)
-
-            # Backward and optimize
-            loss = loss_fn(outputs, labels)
-            loss.backward()
-            optimizer.step()
-
-            # Compute predictions for metrics without toggling eval mode
-            with torch.no_grad():
-                if outputs.dim() > 1 and outputs.shape[-1] > 1:
-                    preds = outputs.detach().argmax(dim=1).cpu().numpy()
-                else:
-                    preds = outputs.detach().cpu().squeeze().numpy()
-
-            if metrics is not None:
-                y_true = labels.detach().cpu().numpy()
-                for metric in metrics:
-                    self.metrics_history_.append(
-                        (f"{metric.get_name()}_epoch", metric(y_true, preds))
-                    )
-                self.metrics_history_.append(("loss_epoch", loss.item()))
-
-            # Epoch-level validation metrics
-            if metrics is not None and dataloader_val is not None:
-                X_val, y_val = next(iter(dataloader_val))
-                val_scores = self.get_metrics(
-                    X_val,
-                    y_val,
-                    metrics=metrics,
-                    batch_size=batch_size or self.batch_size or 32,
-                    device=device or self.device,
-                )
-                for name, value in val_scores.items():
-                    self._val_metrics_history_.append((f"{name}_epoch", value))
-                self._val_metrics_history_.append(
-                    ("loss_epoch", loss_fn(model(X_val), y_val).item())
-                )
-
-            return loss.item()
-
     def _get_model(self):
         if isinstance(self.model_class, Module):
             return self.model_class
@@ -544,6 +666,38 @@ class PytorchModel(BaseMlModel):
             return self.optimizer
         else:
             return self.optimizer(model.parameters(), **(self.optimizer_params or {}))
+
+    def _create_dataset(self, X, y, device: Optional[str] = None) -> Dataset:
+        """
+        Create a Dataset from X and y tensors.
+
+        Parameters
+        ----------
+        X : array-like or torch.Tensor
+            Input features.
+        y : array-like or torch.Tensor
+            Target labels.
+        batch_size : int
+            Batch size for the Dataset.
+        device : str, optional
+            Device to place tensors on. Defaults to self.device.
+        shuffle : bool, default True
+            Whether to shuffle the data.
+
+        Returns
+        -------
+        Dataset
+            A Dataset containing the input data.
+        """
+        if not isinstance(X, torch.Tensor):
+            X = torch.tensor(X, dtype=torch.float32)
+        if not isinstance(y, torch.Tensor):
+            y = torch.tensor(y, dtype=torch.long)
+        if device is None:
+            device = self.device
+
+        dataset = TensorDataset(X.to(device), y.to(device))
+        return dataset
 
     def clone(self) -> "PytorchModel":
         """

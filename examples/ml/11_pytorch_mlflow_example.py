@@ -1,3 +1,4 @@
+import torch
 import torch.nn.functional as F
 from sklearn.datasets import load_breast_cancer
 from sklearn.metrics import accuracy_score, f1_score, log_loss
@@ -10,13 +11,25 @@ from astrodata.tracking.MLFlowTracker import PytorchMLflowTracker
 
 if __name__ == "__main__":
     X, y = load_breast_cancer(return_X_y=True)
-    # First split: train+val vs test
-    X_train_full, X_test, y_train_full, y_test = train_test_split(
+    X_train, X_val, y_train, y_val = train_test_split(
         X, y, test_size=0.2, random_state=42
     )
-    # Second split: train vs val
-    X_train, X_val, y_train, y_val = train_test_split(
-        X_train_full, y_train_full, test_size=0.2, random_state=42
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_train, y_train, test_size=0.1, random_state=42
+    )
+
+    dataset = torch.utils.data.TensorDataset(
+        torch.tensor(X_train, dtype=torch.float32),
+        torch.tensor(y_train, dtype=torch.long),
+    )
+
+    dataset_val = torch.utils.data.TensorDataset(
+        torch.tensor(X_val, dtype=torch.float32), torch.tensor(y_val, dtype=torch.long)
+    )
+
+    dataset_test = torch.utils.data.TensorDataset(
+        torch.tensor(X_test, dtype=torch.float32),
+        torch.tensor(y_test, dtype=torch.long),
     )
 
     class SimpleClassifier(nn.Module):
@@ -63,24 +76,20 @@ if __name__ == "__main__":
 
     tracked_model = tracker.wrap_fit(
         model,
-        X_test=X_test,
-        y_test=y_test,
-        X_val=X_val,
-        y_val=y_val,
+        dataset_val=dataset_val,
+        dataset_test=dataset_test,
         metrics=metrics,
         log_model=True,
     )
 
-    tracked_model.fit(
-        X=X_train,
-        y=y_train,
-        X_val=X_val,
-        y_val=y_val,
-    )
+    tracked_model.fit(dataset_train=dataset)
 
     y_pred = tracked_model.predict(
         X=X_test,
         batch_size=32,
     )
 
-    print("Test metrics:", tracked_model.get_metrics(X_test, y_test, metrics))
+    print(
+        "Test metrics:",
+        tracked_model.get_metrics(dataset=dataset_test, metrics=metrics),
+    )

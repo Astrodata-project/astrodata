@@ -184,17 +184,142 @@ Refer to the examples below for end-to-end usage patterns including MLflow track
 
 ## `TensorflowModel`
 
-```{attention}
-To be implemented in future releases.
+A lightweight wrapper around TensorFlow/Keras models providing a unified training and prediction interface consistent with the rest of `astrodata`. It accepts either an instantiated `keras.Model` or a model class with `model_params`, and exposes convenience helpers for metric computation, training history tracking, saving/loading, and validation monitoring.
+
+### Initializing
+
+```python
+import keras as K
+from astrodata.ml.models import TensorflowModel
+
+class SimpleClassifier(K.Model):
+    def __init__(self, input_dim, output_dim):
+        super().__init__()
+        self.fc1 = K.layers.Dense(64, activation='relu')
+        self.fc2 = K.layers.Dense(output_dim, activation='softmax')
+
+    def call(self, x):
+        x = self.fc1(x)
+        return self.fc2(x)
+
+model = TensorflowModel(
+    model_class=SimpleClassifier,
+    model_params={"input_dim": X_train.shape[1], "output_dim": n_classes},
+    loss_fn=K.losses.SparseCategoricalCrossentropy,
+    optimizer=K.optimizers.Adam,
+    optimizer_params={"learning_rate": 1e-3},
+    epochs=10,
+    batch_size=32,
+    device=None,  # TensorFlow handles device automatically
+)
+```
+
+### Training
+
+Train from arrays/tensors:
+
+```python
+model.fit(X=X_train, y=y_train)
+```
+
+Alternatively, use a custom `tf.data.Dataset` for full control over batching and transforms:
+
+```python
+import tensorflow as tf
+
+train_ds = tf.data.Dataset.from_tensor_slices((X_train, y_train))
+train_ds = train_ds.shuffle(1000).batch(32)
+model.fit(dataset=train_ds)
+```
+
+### Validation metrics (per-epoch)
+
+Optionally pass validation data and metrics to track validation performance at the end of each epoch:
+
+```python
+from sklearn.metrics import accuracy_score, f1_score, log_loss
+from astrodata.ml.metrics import SklearnMetric
+
+metrics = [
+    SklearnMetric(accuracy_score, greater_is_better=True),
+    SklearnMetric(f1_score, average="micro"),
+    SklearnMetric(log_loss),
+]
+
+model.fit(
+    X=X_train,
+    y=y_train,
+    X_val=X_val,
+    y_val=y_val,
+    metrics=metrics,
+)
+```
+
+### Predicting
+
+```python
+y_pred = model.predict(X_test, batch_size=32)
+y_proba = model.predict_proba(X_test, batch_size=32)
+```
+
+### Computing metrics
+
+```python
+scores = model.get_metrics(X=X_test, y=y_test, metrics=metrics)
+# Or with a dataset
+scores = model.get_metrics(dataset=test_dataset, metrics=metrics)
+```
+
+### Freezing layers (fine-tuning)
+
+```python
+model.freeze_layers(["fc2"])  # unfreezes only selected layer names
+model.fit(X=X_train, y=y_train, fine_tune=True)  # fine-tune with frozen layers
+```
+
+### Saving and loading
+
+```python
+model.save("model.keras", format="tensorflow")    # or "h5" or "savedmodel"
+model.load("model.keras", format="tensorflow")
+```
+
+```{note}
+TensorflowModel works seamlessly with both `SklearnMetric` and `TensorflowMetric` objects for evaluation.
 ```
 
 ## Examples
 
+### SklearnModel Examples
 - [Basic `SkLearnModel` usage](<project:../python_examples/ml/1_sklearn_example.rst>)
 - [Multi `SkLearnModel` model training through `for` loops](<project:../python_examples/ml/2_multimodel_example.rst>)
+
+### GridSearch Examples
+- [Basic GridSearch usage](<project:../python_examples/ml/3_gridsearch_example.rst>)
+- [Parallel GridSearch example](<project:../python_examples/ml/3_1_gridsearch_parallel_example.rst>)
+- [Parallel GridSearch comparison](<project:../python_examples/ml/3_2_gridsearch_parallel_comparison.rst>)
+
+### HyperOpt Examples
+- [Basic HyperOpt usage](<project:../python_examples/ml/4_hyperopt_example.rst>)
+- [Parallel HyperOpt example](<project:../python_examples/ml/4_1_hyperopt_parallel_example.rst>)
+
+### MLflow Examples
+- [Simple MLflow example](<project:../python_examples/ml/5_mlflow_simple_example.rst>)
+- [MLflow + GridSearch](<project:../python_examples/ml/6_mlflow_gs_example.rst>)
+- [MLflow + HyperOpt](<project:../python_examples/ml/7_mlflow_hp_example.rst>)
+
+### PytorchModel Examples
 - [Basic `PytorchModel` usage](<project:../python_examples/ml/8_pytorch_example.rst>)
 - [`PytorchModel` + GridSearch](<project:../python_examples/ml/9_pytorch_gs_example.rst>)
 - [`PytorchModel` + HyperOpt](<project:../python_examples/ml/10_pytorch_hp_example.rst>)
 - [`PytorchModel` + MLflow](<project:../python_examples/ml/11_pytorch_mlflow_example.rst>)
 - [`PytorchModel` freeze and fine-tune](<project:../python_examples/ml/12_pytorch_freeze_train.rst>)
 - [`PytorchModel` with ResNet18](<project:../python_examples/ml/13_pytorch_resnet18.rst>)
+- [`PytorchModel` save and load](<project:../python_examples/ml/14_pytorch_save_example.rst>)
+
+### TensorflowModel Examples
+- [Basic `TensorflowModel` usage](<project:../python_examples/ml/15_tensorflow_example.rst>)
+- [`TensorflowModel` + GridSearch](<project:../python_examples/ml/16_tensorflow_gs_example.rst>)
+- [`TensorflowModel` + HyperOpt](<project:../python_examples/ml/17_tensorflow_hp_example.rst>)
+- [`TensorflowModel` + MLflow](<project:../python_examples/ml/18_tensorflow_mlflow_example.rst>)
+- [`TensorflowModel` freeze and fine-tune](<project:../python_examples/ml/19_tensorflow_freeze_train.rst>)

@@ -25,7 +25,9 @@ def _get_best_metrics_and_params(trials: Trials):
         trial for trial in trials if STATUS_OK == trial["result"]["status"]
     ]
     if not valid_trial_list:
-        raise RuntimeError("Hyperopt trials did not produce any successful evaluations.")
+        raise RuntimeError(
+            "Hyperopt trials did not produce any successful evaluations."
+        )
 
     losses = [float(trial["result"]["loss"]) for trial in valid_trial_list]
     best_index = int(np.argmin(losses))
@@ -99,7 +101,17 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
             return KFold(n_splits=self.cv, shuffle=True, random_state=self.random_state)
         return self.cv
 
-    def _objective(self, params: Dict[str, Any], X, y, X_val=None, y_val=None) -> Dict[str, Any]:
+    def _objective(
+        self,
+        params: Dict[str, Any],
+        X,
+        y,
+        X_val=None,
+        y_val=None,
+        dataset_train=None,
+        dataset_val=None,
+        **kwargs,
+    ) -> Dict[str, Any]:
         params_t = dict(params)
         model_choice = params_t.pop("model")
         model = self._resolve_model(model_choice)
@@ -122,12 +134,30 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
                 tags={"stage": "training", "is_final": False, "params": logged_params},
             )
         else:
-            if X_val is None or y_val is None:
-                X_train, X_val_tmp, y_train, y_val_tmp = train_test_split(
-                    X, y, test_size=self.val_size, random_state=self.random_state
-                )
+            if dataset_train is not None:
+                # Using dataset format
+                if dataset_val is None:
+                    raise ValueError(
+                        "When using dataset_train, dataset_val must also be provided."
+                    )
+                X_train, y_train = None, None
+                X_val_use, y_val_use = None, None
+                dataset_train_use = dataset_train
+                dataset_val_use = dataset_val
             else:
-                X_train, X_val_tmp, y_train, y_val_tmp = X, X_val, y, y_val
+                # Using X,y format
+                if X_val is None or y_val is None:
+                    X_train, X_val_use, y_train, y_val_use = train_test_split(
+                        X,
+                        y,
+                        test_size=self.val_size,
+                        random_state=self.random_state,
+                    )
+                else:
+                    X_train, y_train = X, y
+                    X_val_use, y_val_use = X_val, y_val
+                dataset_train_use = None
+                dataset_val_use = None
 
             _, metrics, score = fit_model_score(
                 model=model,
@@ -135,17 +165,25 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
                 scorer=self.scorer,
                 X_train=X_train,
                 y_train=y_train,
-                X_val=X_val_tmp,
-                y_val=y_val_tmp,
+                X_val=X_val_use,
+                y_val=y_val_use,
+                dataset_train=dataset_train_use,
+                dataset_val=dataset_val_use,
                 metrics=self.metrics,
                 tracker=self.tracker,
                 log_model=self.log_all_models,
                 tags={"stage": "training", "is_final": False, "params": logged_params},
+                **kwargs,
             )
 
         greater_is_better = self.scorer.greater_is_better if self.scorer else True
         loss = -score if greater_is_better else score
-        return {"loss": loss, "status": STATUS_OK, "metrics": metrics, "params": logged_params}
+        return {
+            "loss": loss,
+            "status": STATUS_OK,
+            "metrics": metrics,
+            "params": logged_params,
+        }
 
     def _ensure_mongo_ready(self):
         os_name = platform.system()
@@ -155,7 +193,9 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
             elif os_name == "Linux":
                 subprocess.run(["systemctl", "start", "mongod"], check=False)
             elif os_name == "Darwin":
-                subprocess.run(["brew", "services", "start", "mongodb-community"], check=False)
+                subprocess.run(
+                    ["brew", "services", "start", "mongodb-community"], check=False
+                )
         except Exception as exc:
             logger.warning("Unable to ensure MongoDB service is running: %s", exc)
 
@@ -169,7 +209,9 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
             try:
                 if platform.system() == "Windows":
                     creationflags = 0
-                    if not self.show_worker_terminal and hasattr(subprocess, "CREATE_NO_WINDOW"):
+                    if not self.show_worker_terminal and hasattr(
+                        subprocess, "CREATE_NO_WINDOW"
+                    ):
                         creationflags = subprocess.CREATE_NO_WINDOW
                     subprocess.Popen(
                         ["cmd", "/c", " ".join(worker_cmd)],
@@ -200,19 +242,62 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
 
     def fit(
         self,
-        X,
-        y,
+        X=None,
+        y=None,
         X_val=None,
         y_val=None,
         X_test=None,
         y_test=None,
+        dataset_train=None,
+        dataset_val=None,
+        dataset_test=None,
         *args,
         **kwargs,
     ) -> "HyperOptSelectorParallel":
+        """
+        Run hyperparameter optimization using hyperopt.
+
+        Parameters
+        ----------
+        X : array-like, optional
+            Training data features. Ignored if dataset_train is provided.
+        y : array-like, optional
+            Training data targets. Ignored if dataset_train is provided.
+        X_val : array-like, optional
+            Validation data features. If None and dataset_val is None, a random split is performed.
+        y_val : array-like, optional
+            Validation data targets. If None and dataset_val is None, a random split is performed.
+        X_test : array-like, optional
+            Test data features for tracking/logging (not used in selection).
+        y_test : array-like, optional
+            Test data targets for tracking/logging (not used in selection).
+        dataset_train : Dataset, optional
+            Training dataset. If provided, X and y are ignored.
+        dataset_val : Dataset, optional
+            Validation dataset. If provided, X_val and y_val are ignored.
+        dataset_test : Dataset, optional
+            Test dataset for tracking/logging (not used in selection).
+
+        Returns
+        -------
+        self : object
+            Fitted selector.
+
+        Raises
+        ------
+        ValueError
+            If neither (X, y) nor dataset_train is provided.
+        """
+        # Validate input format
+        if (X is None or y is None) and dataset_train is None:
+            raise ValueError("Either (X, y) or dataset_train must be provided.")
+
         trials = self._prepare_trials()
 
         fmin(
-            fn=lambda params: self._objective(params, X, y, X_val, y_val),
+            fn=lambda params: self._objective(
+                params, X, y, X_val, y_val, dataset_train, dataset_val, **kwargs
+            ),
             space=self.param_space,
             algo=tpe.suggest,
             max_evals=self.max_evals,
@@ -220,18 +305,32 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
             rstate=np.random.default_rng(self.random_state),
         )
 
+        # Evaluate best to get metrics
         if self.use_cv:
-            X_full, y_full = X, y
-        else:
-            if X_val is not None and y_val is not None:
-                try:
-                    X_full = pd.concat([X, X_val])
-                    y_full = pd.concat([y, y_val])
-                except TypeError:
-                    X_full = np.concatenate([np.asarray(X), np.asarray(X_val)])
-                    y_full = np.concatenate([np.asarray(y), np.asarray(y_val)])
+            if dataset_train is not None:
+                # For CV with datasets, we can't easily split, so use original dataset
+                X_full, y_full = None, None
+                final_dataset_train = dataset_train
             else:
                 X_full, y_full = X, y
+                final_dataset_train = None
+        else:
+            if dataset_train is not None:
+                # For dataset format, use original training dataset
+                X_full, y_full = None, None
+                final_dataset_train = dataset_train
+            else:
+                # For X,y format, combine train and val if val was provided
+                if X_val is not None and y_val is not None:
+                    try:
+                        X_full = pd.concat([X, X_val])
+                        y_full = pd.concat([y, y_val])
+                    except TypeError:
+                        X_full = np.concatenate([np.asarray(X), np.asarray(X_val)])
+                        y_full = np.concatenate([np.asarray(y), np.asarray(y_val)])
+                else:
+                    X_full, y_full = X, y
+                final_dataset_train = None
 
         self._best_metrics, best_params_raw = _get_best_metrics_and_params(trials)
 
@@ -250,6 +349,8 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
                 y_train=y_full,
                 X_test=X_test,
                 y_test=y_test,
+                dataset_train=final_dataset_train,
+                dataset_test=dataset_test,
                 metrics=self.metrics,
                 tracker=self.tracker,
                 log_model=True,
@@ -259,11 +360,17 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
                     "params": best_params_raw,
                 },
                 manual_metrics=(self._best_metrics, "val"),
+                **kwargs,
             )
         else:
             self._best_model = model.clone()
             self._best_model.set_params(**fit_params)
-            self._best_model = self._best_model.fit(X_full, y_full)
+            if final_dataset_train is not None:
+                self._best_model = self._best_model.fit(
+                    dataset=final_dataset_train, **kwargs
+                )
+            else:
+                self._best_model = self._best_model.fit(X_full, y_full, **kwargs)
 
         best_params_for_user = dict(best_params_raw)
         best_params_for_user["model"] = model.clone()
@@ -272,15 +379,47 @@ class HyperOptSelectorParallel(BaseMlModelSelector):
         return self
 
     def get_best_model(self) -> Optional[BaseMlModel]:
+        """
+        Get the best model fitted on all data using the best found parameters.
+
+        Returns
+        -------
+        BaseMlModel
+            The best fitted model.
+        """
         return self._best_model
 
     def get_best_params(self) -> Optional[dict]:
+        """
+        Get the best parameter combination found during hyperparameter optimization.
+
+        Returns
+        -------
+        dict
+            Best parameters.
+        """
         return self._best_params
 
     def get_best_metrics(self) -> Optional[Dict[str, Any]]:
+        """
+        Get the metrics for the best model.
+
+        Returns
+        -------
+        dict or None
+            Metrics for the best model, or None if no metrics were specified.
+        """
         return self._best_metrics
 
     def get_params(self, **kwargs) -> Dict[str, Any]:
+        """
+        Get parameters of this selector instance.
+
+        Returns
+        -------
+        dict
+            Parameters used to initialize this object.
+        """
         return {
             "param_space": self.param_space,
             "scorer": self.scorer,

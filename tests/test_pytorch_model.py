@@ -75,7 +75,7 @@ def test_pytorch_model_fit_predict_and_history(tmp_path):
     )
 
     # get_metrics works
-    res = m.get_metrics(X, y, metrics=metrics, batch_size=16, device="cpu")
+    res = m.get_metrics(X=X, y=y, metrics=metrics, batch_size=16, device="cpu")
     assert "accuracy_score" in res
 
     # Training metric history (per step) and validation metric history (per epoch)
@@ -85,8 +85,9 @@ def test_pytorch_model_fit_predict_and_history(tmp_path):
     val_hist = m.get_metrics_history(split="val")
     # Present when X_val/y_val were provided
     assert val_hist is not None
-    # Key suffixed with _val_epoch exists for validation metric
-    assert any(k.endswith("_epoch") for k in val_hist.keys())
+    # Validation metrics also end with _epoch
+    assert "accuracy_score_epoch" in val_hist
+    assert "loss_epoch" in val_hist
 
     # Save/load roundtrip (torch format)
     path = tmp_path / "model.pt"

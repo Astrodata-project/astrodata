@@ -90,9 +90,13 @@ def parse_args() -> argparse.Namespace:
     if args.toy_size is not None and args.toy_size <= 0:
         raise ValueError("toy_size must be a positive integer when provided.")
     if args.toy_size is not None and args.toy_features < 4:
-        raise ValueError("toy_features must be at least 4 when generating synthetic data.")
+        raise ValueError(
+            "toy_features must be at least 4 when generating synthetic data."
+        )
     if args.toy_size is not None and args.toy_classes < 2:
-        raise ValueError("toy_classes must be at least 2 when generating synthetic data.")
+        raise ValueError(
+            "toy_classes must be at least 2 when generating synthetic data."
+        )
     return args
 
 

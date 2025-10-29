@@ -107,7 +107,7 @@ class XGBoostModel(BaseMlModel):
         """
         self.model_ = joblib.load(filepath, **kwargs)
 
-    def fit(self, X, y, **fit_params) -> BaseMlModel:
+    def fit(self, X, y, X_val=None, y_val=None, **fit_params) -> BaseMlModel:
         """
         Fit the XGBoost model.
 
@@ -117,6 +117,8 @@ class XGBoostModel(BaseMlModel):
             Training features.
         y : array-like
             Training targets.
+        X_val and y_val:
+            are added to the init just to catch the value in the selectors.
         **fit_params
             Additional parameters to pass to model.fit(). If "eval_set"
             is not provided, it will default to the training data.
