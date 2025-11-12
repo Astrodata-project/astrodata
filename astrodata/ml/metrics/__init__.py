@@ -1,3 +1,7 @@
 from .BaseMetric import BaseMetric
 from .SklearnMetric import SklearnMetric
-from .TensorflowMetric import TensorflowMetric
+
+try:
+    from .TensorflowMetric import TensorflowMetric
+except (ImportError, ModuleNotFoundError):
+    TensorflowMetric = None

@@ -85,7 +85,7 @@ if __name__ == "__main__":
     tracked_model.fit(dataset_train=dataset)
 
     y_pred = tracked_model.predict(
-        X=X_test,
+        data=X_test,
         batch_size=32,
     )
 

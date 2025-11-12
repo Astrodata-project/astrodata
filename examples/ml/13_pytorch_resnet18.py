@@ -42,16 +42,18 @@ if __name__ == "__main__":
         
     y_true = [242, 0]
 
-    dataloader_img_list = DataLoader(img_list, batch_size=1)
-    pred = model.predict(dataloader_img_list, 1)
+    img_dataset = torch.utils.data.TensorDataset(
+        torch.stack(img_list), torch.tensor(y_true, dtype=torch.long)
+    )
+    pred = model.predict(data=img_dataset, batch_size=1)
 
     dataset_val = torch.utils.data.TensorDataset(
         torch.stack(img_list), torch.tensor(y_true, dtype=torch.long)
     )
 
-    pred = model.predict(dataset_val, 1)
+    pred = model.predict(data=img_dataset, batch_size=1)
 
-    print(model.get_metrics(dataset=dataset_val, metrics=metrics))
+    print(model.get_metrics(dataset=img_dataset, metrics=metrics))
 
     print(pred)
 

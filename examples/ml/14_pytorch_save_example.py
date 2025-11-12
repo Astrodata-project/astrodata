@@ -53,7 +53,7 @@ if __name__ == "__main__":
     )
 
     # Evaluate on test set
-    y_pred = model.predict(X=X_test, batch_size=32)
+    y_pred = model.predict(data=X_test, batch_size=32)
 
     # Define metrics
     accuracy = SklearnMetric(accuracy_score, greater_is_better=True)
@@ -62,10 +62,10 @@ if __name__ == "__main__":
     metrics = [accuracy, f1, logloss]
 
     # Print results
-    print(model.get_metrics(X_test, y_test, metrics))
+    print(model.get_metrics(X=X_test, y=y_test, metrics=metrics))
 
     # Load last checkpoint and evaluate
     ckpt_path = os.path.join(checkpoint_dir, "checkpoint_8.pt")
     print("Loading checkpoint from", ckpt_path)
     model.load(ckpt_path)
-    print("Checkpoint model metrics:", model.get_metrics(X_test, y_test, metrics))
+    print("Checkpoint model metrics:", model.get_metrics(X=X_test, y=y_test, metrics=metrics))

@@ -290,8 +290,8 @@ class PytorchMLflowTracker(MlflowBaseTracker):
         y_test=None,
         X_val=None,
         y_val=None,
-        dataloader_test=None,
-        dataloader_val=None,
+        dataset_test=None,
+        dataset_val=None,
         metrics: Optional[List[BaseMetric]] = None,
         log_model: bool = False,
         tags: Dict[str, Any] = {},
@@ -309,7 +309,7 @@ class PytorchMLflowTracker(MlflowBaseTracker):
             self,
             X=None,
             y=None,
-            dataloader_train=None,
+            dataset_train=None,
             epochs=None,
             batch_size=None,
             device=None,
@@ -334,7 +334,7 @@ class PytorchMLflowTracker(MlflowBaseTracker):
                     self,
                     X=X,
                     y=y,
-                    dataloader=dataloader_train,
+                    dataset=dataset_train,
                     epochs=epochs,
                     batch_size=batch_size,
                     device=device,
@@ -342,7 +342,7 @@ class PytorchMLflowTracker(MlflowBaseTracker):
                     fine_tune=fine_tune,
                     X_val=X_val,
                     y_val=y_val,
-                    dataloader_val=dataloader_val,
+                    dataset_val=dataset_val,
                     save_every_n_epochs=save_every_n_epochs,
                     save_folder=save_folder,
                     save_format=save_format,
@@ -353,7 +353,7 @@ class PytorchMLflowTracker(MlflowBaseTracker):
                 # Optionally log model
                 if log_model:
                     try:
-                        # For PyTorch models with dataloaders, we need sample data for signature
+                        # For PyTorch models with datasets, we need sample data for signature
                         if X is not None:
                             sample_input = X[:5] if hasattr(X, "__getitem__") else None
                             sample_output = y[:5] if hasattr(y, "__getitem__") else None
@@ -378,27 +378,27 @@ class PytorchMLflowTracker(MlflowBaseTracker):
                 # Log metrics for different splits
                 if X is not None and y is not None:
                     _log_metrics_and_loss_pytorch(X, y, None, self, metrics, "train")
-                elif dataloader_train is not None:
+                elif dataset_train is not None:
                     _log_metrics_and_loss_pytorch(
-                        None, None, dataloader_train, self, metrics, "train"
+                        None, None, dataset_train, self, metrics, "train"
                     )
 
                 if X_test is not None and y_test is not None:
                     _log_metrics_and_loss_pytorch(
                         X_test, y_test, None, self, metrics, "test"
                     )
-                elif dataloader_test is not None:
+                elif dataset_test is not None:
                     _log_metrics_and_loss_pytorch(
-                        None, None, dataloader_test, self, metrics, "test"
+                        None, None, dataset_test, self, metrics, "test"
                     )
 
                 if X_val is not None and y_val is not None:
                     _log_metrics_and_loss_pytorch(
                         X_val, y_val, None, self, metrics, "val"
                     )
-                elif dataloader_val is not None:
+                elif dataset_val is not None:
                     _log_metrics_and_loss_pytorch(
-                        None, None, dataloader_val, self, metrics, "val"
+                        None, None, dataset_val, self, metrics, "val"
                     )
 
                 if manual_metrics is not None:
@@ -683,7 +683,7 @@ def _log_metrics_and_loss_sklearn(
 def _log_metrics_and_loss_pytorch(
     X_split,
     y_split,
-    dataloader_split,
+    dataset_split,
     model: PytorchModel,
     metrics: BaseMetric,
     split_name: str,
@@ -691,7 +691,7 @@ def _log_metrics_and_loss_pytorch(
     """
     Log metrics and loss curves for a PyTorch model split.
 
-    Supports both X/y arrays and dataloaders as input.
+    Supports both X/y arrays and datasets as input.
 
     Parameters
     ----------
@@ -699,8 +699,8 @@ def _log_metrics_and_loss_pytorch(
         Features for the split.
     y_split : array-like, optional
         Labels for the split.
-    dataloader_split : torch.utils.data.DataLoader, optional
-        Dataloader for the split.
+    dataset_split : torch.utils.data.dataset, optional
+        dataset for the split.
     model : PytorchModel
         The fitted PyTorch model.
     metrics : list of BaseMetric
@@ -710,11 +710,11 @@ def _log_metrics_and_loss_pytorch(
     """
     # Determine if we have data to evaluate
     has_array_data = X_split is not None and y_split is not None
-    has_dataloader = dataloader_split is not None
+    has_dataset = dataset_split is not None
 
-    if (has_array_data or has_dataloader) and hasattr(model, "get_metrics"):
-        if has_dataloader:
-            scores = model.get_metrics(dataloader=dataloader_split, metrics=metrics)
+    if (has_array_data or has_dataset) and hasattr(model, "get_metrics"):
+        if has_dataset:
+            scores = model.get_metrics(dataset=dataset_split, metrics=metrics)
         else:
             scores = model.get_metrics(X=X_split, y=y_split, metrics=metrics)
 
