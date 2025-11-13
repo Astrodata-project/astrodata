@@ -3,10 +3,14 @@ from typing import Any, Dict, Tuple
 
 import numpy as np
 import torch
-from astropy.io import fits
 from pydantic import BaseModel
 from torch.utils.data import DataLoader, Dataset
 from torchvision.io import decode_image
+from astrodata.data.utils import (
+    VALID_IMAGE_EXTS,
+    gather_paths_and_labels,
+    decode_fits,
+)
 
 
 class TorchRawData(BaseModel):
@@ -118,22 +122,13 @@ class TorchImageDataset(Dataset):
         if not self.image_dir.exists():
             raise ValueError(f"Directory {self.image_dir} does not exist")
 
-        class_dirs = [d for d in self.image_dir.iterdir() if d.is_dir()]
-        class_dirs.sort()
+        paths, labels, class_names, class_to_idx = gather_paths_and_labels(
+            self.image_dir, valid_exts=VALID_IMAGE_EXTS, return_type="path"
+        )
 
-        self.class_to_idx = {
-            cls_dir.name: idx for idx, cls_dir in enumerate(class_dirs)
-        }
-
-        valid_extensions = {".jpg", ".jpeg", ".png"}
-
-        for class_dir in class_dirs:
-            class_idx = self.class_to_idx[class_dir.name]
-
-            for img_path in class_dir.iterdir():
-                if img_path.suffix.lower() in valid_extensions:
-                    self.image_paths.append(img_path)
-                    self.labels.append(class_idx)
+        self.image_paths = paths
+        self.labels = labels
+        self.class_to_idx = class_to_idx
 
     def __len__(self) -> int:
         """Return the number of samples in the dataset."""
@@ -182,20 +177,12 @@ class TorchFITSDataset(Dataset):
 
     def _load_image_paths(self):
         """Load FITS image paths and create class mappings."""
-
-        class_dirs = [d for d in self.image_dir.iterdir() if d.is_dir()]
-        class_dirs.sort()
-
-        self.class_to_idx = {
-            cls_dir.name: idx for idx, cls_dir in enumerate(class_dirs)
-        }
-
-        for class_dir in class_dirs:
-            class_idx = self.class_to_idx[class_dir.name]
-
-            for img_path in class_dir.iterdir():
-                self.image_paths.append(img_path)
-                self.labels.append(class_idx)
+        paths, labels, class_names, class_to_idx = gather_paths_and_labels(
+            self.image_dir, valid_exts=None, return_type="path"
+        )
+        self.image_paths = paths
+        self.labels = labels
+        self.class_to_idx = class_to_idx
 
     def __len__(self) -> int:
         """Return the number of samples in the dataset."""
@@ -214,35 +201,9 @@ class TorchFITSDataset(Dataset):
         img_path = self.image_paths[idx]
         label = self.labels[idx]
 
-        with fits.open(str(img_path)) as hdul:
-            hdu = next((h for h in hdul if getattr(h, "data", None) is not None), None)
-            if hdu is None:
-                raise ValueError(f"No image data found in FITS file: {img_path}")
-
-            data = hdu.data
-
-            data_native = np.array(data, dtype=np.float32, copy=True)
-
-            if data_native.ndim == 2:
-                # [H, W] -> [1, H, W]
-                tensor = torch.from_numpy(data_native).unsqueeze(0)
-            elif data_native.ndim == 3:
-                shape = data_native.shape
-                if shape[0] <= 4:
-                    # [C, H, W]
-                    tensor = torch.from_numpy(data_native)
-                elif shape[-1] <= 4:
-                    # [H, W, C] -> [C, H, W]
-                    data_native = np.moveaxis(data_native, -1, 0)
-                    tensor = torch.from_numpy(data_native)
-                else:
-                    raise ValueError(
-                        f"3D FITS data does not look like multi-channel image "
-                        f"(shape {shape}) in {img_path}"
-                    )
-            else:
-                raise ValueError(
-                    f"Expected 2D or 3D FITS image, got shape {data_native.shape} in {img_path}"
-                )
+        # Read FITS image as H, W, C float32 and convert to CHW tensor
+        data_hwc = decode_fits(str(img_path))
+        data_chw = np.moveaxis(data_hwc, -1, 0)  # H,W,C -> C,H,W
+        tensor = torch.from_numpy(data_chw)
 
         return tensor, label

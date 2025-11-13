@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow as tf
 from astropy.io import fits
 from pydantic import BaseModel
+from astrodata.data.utils import gather_paths_and_labels, decode_fits
 
 
 class KerasData(BaseModel):
@@ -131,52 +132,15 @@ class KerasFITSDataset:
         self.batch_size = batch_size
 
     def _gather(self) -> Tuple[List[str], List[int], List[str], Dict[str, int]]:
-        class_dirs = [d for d in self.image_dir.iterdir() if d.is_dir()]
-        class_dirs.sort()
-        class_names = [d.name for d in class_dirs]
-        class_to_idx = {name: idx for idx, name in enumerate(class_names)}
-
-        paths = []
-        labels = []
-        for d in class_dirs:
-            files = [p for p in d.iterdir() if p.is_file()]
-            files.sort()
-            for f in files:
-                paths.append(str(f))
-                labels.append(class_to_idx[d.name])
-
+        paths, labels, class_names, class_to_idx = gather_paths_and_labels(
+            self.image_dir, valid_exts=None, return_type="str"
+        )
         return paths, labels, class_names, class_to_idx
 
     @staticmethod
     def _read_fits(path_bytes: bytes) -> np.ndarray:
         path = path_bytes.decode("utf-8")
-        with fits.open(path) as hdul:
-            hdu = next((h for h in hdul if getattr(h, "data", None) is not None), None)
-            if hdu is None or hdu.data is None:
-                raise ValueError(f"No image data found in FITS file: {path}")
-
-            data = np.array(hdu.data, dtype=np.float32, copy=True)
-
-            if data.ndim == 2:
-                # [H, W] -> [H, W, 1]
-                data = np.expand_dims(data, -1)
-            elif data.ndim == 3:
-                # Accept H,W,C or C,H,W
-                if data.shape[0] <= 4:
-                    data = np.moveaxis(data, 0, -1)  # C,H,W -> H,W,C
-                elif data.shape[-1] <= 4:
-                    pass  # already H,W,C
-                else:
-                    raise ValueError(
-                        f"3D FITS data does not look like multi-channel image "
-                        f"(shape {data.shape}) in {path}"
-                    )
-            else:
-                raise ValueError(
-                    f"Expected 2D or 3D FITS image, got shape {data.shape} in {path}"
-                )
-
-            return data  # H, W, C
+        return decode_fits(path)
 
     def _map_function(self, path, label):
         img = tf.numpy_function(self._read_fits, [path], tf.float32)
