@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from astropy.utils.data import download_file
@@ -88,6 +87,8 @@ if __name__ == "__main__":
     print(f"CIFAR10 test  class_to_idx: {cifar_data.get_dataset('test').class_to_idx}")
 
     # Create DataLoader wrapper (shared config, could be tuned per section)
+    # This step is optional, as the PytorchModule already implements dataloader
+    # creation internally. However, this shows how to use the wrapper.
     dataloader_wrapper = TorchDataLoaderWrapper(
         batch_size=32,
         num_workers=0,

@@ -215,24 +215,34 @@ class TorchFITSDataset(Dataset):
         label = self.labels[idx]
 
         with fits.open(str(img_path)) as hdul:
-            data = hdul[0].data
-
-            if data is None:
+            hdu = next((h for h in hdul if getattr(h, "data", None) is not None), None)
+            if hdu is None:
                 raise ValueError(f"No image data found in FITS file: {img_path}")
 
-            if data.ndim == 2:
-                data_native = np.asarray(data, dtype=np.float32)
+            data = hdu.data
+
+            data_native = np.array(data, dtype=np.float32, copy=True)
+
+            if data_native.ndim == 2:
+                # [H, W] -> [1, H, W]
                 tensor = torch.from_numpy(data_native).unsqueeze(0)
-            elif data.ndim == 3:
-                if data.shape[0] > 4:
+            elif data_native.ndim == 3:
+                shape = data_native.shape
+                if shape[0] <= 4:
+                    # [C, H, W]
+                    tensor = torch.from_numpy(data_native)
+                elif shape[-1] <= 4:
+                    # [H, W, C] -> [C, H, W]
+                    data_native = np.moveaxis(data_native, -1, 0)
+                    tensor = torch.from_numpy(data_native)
+                else:
                     raise ValueError(
-                        f"Expected 2D or 3D FITS image with channel first, got shape {data.shape} in {img_path}"
+                        f"3D FITS data does not look like multi-channel image "
+                        f"(shape {shape}) in {img_path}"
                     )
-                data_native = np.asarray(data, dtype=np.float32)
-                tensor = torch.from_numpy(data_native)
             else:
                 raise ValueError(
-                    f"Expected 2D or 3D FITS image, got shape {data.shape} in {img_path}"
+                    f"Expected 2D or 3D FITS image, got shape {data_native.shape} in {img_path}"
                 )
 
         return tensor, label
