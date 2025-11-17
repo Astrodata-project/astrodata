@@ -5,6 +5,11 @@ try:
         TorchProcessedData,
         TorchRawData,
     )
+    from .tensorflow import (
+        TensorflowData,
+        TensorflowFITSDataset,
+        TensorflowImageDataset,
+    )
 except Exception:
     HAS_VISION = False
 else:

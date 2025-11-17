@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from astrodata.data.loaders.keras_loader import KerasLoader
+from astrodata.data.loaders.tensorflow_loader import TensorflowLoader
 
 
 def describe_dataset(name, ds):
@@ -22,18 +22,11 @@ if __name__ == "__main__":
     fits_dir = "../../testdata/torch/fits"
 
     # Initialize loader
-    loader = KerasLoader()
+    loader = TensorflowLoader()
     print("KerasLoader initialized.")
 
     print("Loading CIFAR10 directory-structured dataset with Keras...")
-    cifar_data = loader.load(
-        cifar_dir,
-        image_size=(32, 32),
-        batch_size=32,
-        color_mode="rgb",
-        shuffle=True,
-        seed=42,
-    )
+    cifar_data = loader.load(cifar_dir, image_size=(32, 32))
     print("Loaded CIFAR10 KerasData.")
 
     # Class mappings (from train split)

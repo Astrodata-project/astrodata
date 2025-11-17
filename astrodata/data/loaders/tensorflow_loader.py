@@ -2,16 +2,16 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from astrodata.data.loaders.base import BaseLoader
-from astrodata.data.schemas.vision.keras import (
-    KerasData,
-    KerasFITSDataset,
-    KerasImageDataset,
+from astrodata.data.schemas.vision.tensorflow import (
+    TensorflowData,
+    TensorflowFITSDataset,
+    TensorflowImageDataset,
 )
 
 
-class KerasLoader(BaseLoader):
+class TensorflowLoader(BaseLoader):
     """
-    Keras data loader for image datasets with train/validation/test splits.
+    Tensorflow data loader for image datasets with train/validation/test splits.
 
     Expected directory structure:
     data_root/
@@ -38,10 +38,10 @@ class KerasLoader(BaseLoader):
     def _set_dataset_type(self, dataset_type: str) -> None:
         if dataset_type == "image":
             self.dataset_type = "image"
-            self.dataset_class = KerasImageDataset
+            self.dataset_class = TensorflowImageDataset
         elif dataset_type == "fits":
             self.dataset_type = "fits"
-            self.dataset_class = KerasFITSDataset
+            self.dataset_class = TensorflowFITSDataset
 
     def _infer_dataset_type(self, split_dir: Path) -> None:
         """
@@ -71,17 +71,17 @@ class KerasLoader(BaseLoader):
         elif has_fits:
             self._set_dataset_type("fits")
 
-    def load(self, path: str, **dataset_kwargs: Any) -> KerasData:
+    def load(self, path: str, **dataset_kwargs: Any) -> TensorflowData:
         """
-        Load Keras datasets from directory structure.
+        Load Tensorflow datasets from directory structure.
 
         Args:
             path: Root directory containing train/val/test folders
-            **dataset_kwargs: Extra keyword args forwarded to KerasImageDataset
+            **dataset_kwargs: Extra keyword args forwarded to TensorflowImageDataset
                               (e.g., image_size, batch_size, color_mode, shuffle, seed, etc.)
 
         Returns:
-            KerasData object containing the loaded datasets
+            TensorflowData object containing the loaded datasets
         """
         root_path = Path(path)
 
@@ -128,4 +128,4 @@ class KerasLoader(BaseLoader):
             val_ds, _ = val_builder.build()
             datasets["val"] = val_ds
 
-        return KerasData(source=root_path, data=datasets, metadata=metadata)
+        return TensorflowData(source=root_path, data=datasets, metadata=metadata)

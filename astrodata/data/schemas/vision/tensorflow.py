@@ -3,12 +3,11 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import tensorflow as tf
-from astropy.io import fits
 from pydantic import BaseModel
 from astrodata.data.utils import gather_paths_and_labels, decode_fits
 
 
-class KerasData(BaseModel):
+class TensorflowData(BaseModel):
 
     source: Path | str
     data: Dict[str, tf.data.Dataset]
@@ -37,21 +36,21 @@ class KerasData(BaseModel):
         return self.data[split]
 
 
-class KerasImageDataset:
+class TensorflowImageDataset:
     """
-    Wrapper around keras.utils.image_dataset_from_directory.
+    Wrapper around tensorflow.utils.image_dataset_from_directory.
     """
 
     def __init__(
         self,
         image_dir: str | Path,
+        image_size: Tuple[int, int],
         *,
         labels: str | None | List[int] = "inferred",
         label_mode: str | None = "int",
         class_names: Optional[List[str]] = None,
         color_mode: str = "rgb",
-        batch_size: Optional[int] = 32,
-        image_size: Tuple[int, int] = (256, 256),
+        batch_size: Optional[int] = None,
         shuffle: bool = True,
         seed: Optional[int] = None,
         validation_split: Optional[float] = None,
@@ -91,7 +90,7 @@ class KerasImageDataset:
 
     def _build(self) -> tf.data.Dataset:
         """
-        Create a tf.data.Dataset using Keras directory loader.
+        Create a tf.data.Dataset using Tensorflow directory loader.
         """
         ds = tf.keras.utils.image_dataset_from_directory(**self.kwargs)
         return ds
@@ -117,7 +116,7 @@ class KerasImageDataset:
         return ds, meta
 
 
-class KerasFITSDataset:
+class TensorflowFITSDataset:
     """
     FITS dataset builder for folders like:
       root/
