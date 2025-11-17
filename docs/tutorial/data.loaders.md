@@ -60,6 +60,9 @@ Astrodata provides support for PyTorch-like image datasets (classic RGB images a
   * Consumes a `TorchRawData` object.
   * Builds PyTorch `DataLoader` instances for each split with uniform settings (batch size, workers, pin_memory).
   * Returns a `TorchProcessedData` object.
+```{note}:
+This wrapper is optional; ML modules can consume `TorchRawData` directly, as they define their own `DataLoader` settings.
+```
 
 - **`TorchImageDataset`**  
   Underlying `torch.utils.data.Dataset` for standard image formats (`.png`, `.jpg`, `.jpeg`):
@@ -110,7 +113,10 @@ root = "path/to/dataset_root"
 
 loader = TorchLoader()
 raw = loader.load(root)
+train_dataset = raw.get_dataset("train")
+test_dataset = raw.get_dataset("test")
 
+# Optional
 wrapper = TorchDataLoaderWrapper(batch_size=32, num_workers=0, pin_memory=False)
 processed = wrapper.create_dataloaders(raw)
 
