@@ -1,16 +1,15 @@
 import glob
 import json
 
-from sklearn.metrics import accuracy_score
-
 import torch
 import torchvision
+from sklearn.metrics import accuracy_score
 from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchvision.models import resnet18
 
-from astrodata.ml.models import PytorchModel
 from astrodata.ml.metrics import SklearnMetric
+from astrodata.ml.models import PytorchModel
 
 if __name__ == "__main__":
     classes = json.load(open("testdata/imagenet_ex/imagenet_class_index.json"))
@@ -39,7 +38,7 @@ if __name__ == "__main__":
 
     for image_path in img_paths:
         img_list.append(transform(torchvision.io.read_image(image_path)))
-        
+
     y_true = [242, 0]
 
     img_dataset = torch.utils.data.TensorDataset(

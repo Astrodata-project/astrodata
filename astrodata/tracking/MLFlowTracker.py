@@ -175,6 +175,8 @@ class SklearnMLflowTracker(MlflowBaseTracker):
         y_test=None,
         X_val=None,
         y_val=None,
+        dataset_test=None,
+        dataset_val=None,
         metrics: Optional[List[BaseMetric]] = None,
         log_model: bool = False,
         tags: Dict[str, Any] = {},
@@ -216,7 +218,13 @@ class SklearnMLflowTracker(MlflowBaseTracker):
         metrics = metrics or []
 
         @functools.wraps(orig_class.fit)
-        def fit_with_tracking(self, X, y, *args, **kwargs):
+        def fit_with_tracking(
+            self,
+            X=None,
+            y=None,
+            *args,
+            **kwargs,
+        ):
             """
             Fit method replacement that logs parameters, metrics, and model to MLflow.
 

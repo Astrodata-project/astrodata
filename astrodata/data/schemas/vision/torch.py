@@ -6,11 +6,8 @@ import torch
 from pydantic import BaseModel
 from torch.utils.data import DataLoader, Dataset
 from torchvision.io import decode_image
-from astrodata.data.utils import (
-    VALID_IMAGE_EXTS,
-    gather_paths_and_labels,
-    decode_fits,
-)
+
+from astrodata.data.utils import VALID_IMAGE_EXTS, decode_fits, gather_paths_and_labels
 
 
 class TorchRawData(BaseModel):

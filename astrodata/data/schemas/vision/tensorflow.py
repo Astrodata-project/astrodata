@@ -4,7 +4,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 import tensorflow as tf
 from pydantic import BaseModel
-from astrodata.data.utils import gather_paths_and_labels, decode_fits
+
+from astrodata.data.utils import decode_fits, gather_paths_and_labels
 
 
 class TensorflowData(BaseModel):

@@ -76,7 +76,7 @@ if __name__ == "__main__":
         tracker=tracker,
     )
 
-    hos.fit(X_train, y_train, X_test=X_test, y_test=y_test)
+    hos.fit(X=X_train, y=y_train, X_test=X_test, y_test=y_test)
 
     print("Best parameters found: ", hos.get_best_params())
     print("Best metrics: ", hos.get_best_metrics())

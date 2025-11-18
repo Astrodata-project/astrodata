@@ -203,7 +203,7 @@ class PytorchModel(BaseMlModel):
         for i, data in enumerate(training_loader):
             # Each data instance is an input + label pair
             inputs, labels = data
-            
+
             # Move data to device if specified
             inputs = inputs.to(device or self.device)
             labels = labels.to(device or self.device)
@@ -254,7 +254,7 @@ class PytorchModel(BaseMlModel):
                 )
             ):
                 inputs, labels = data
-                
+
                 # Move data to device if specified
                 if device:
                     inputs = inputs.to(device or self.device)

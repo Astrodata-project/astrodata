@@ -81,7 +81,9 @@ if __name__ == "__main__":
 
         model2.freeze_layers(["fc2"])
         model2.fit(X=X_train, y=y_train, fine_tune=True)
-        print("Model 2 metrics: ", model2.get_metrics(X=X_test, y=y_test, metrics=metrics))
+        print(
+            "Model 2 metrics: ", model2.get_metrics(X=X_test, y=y_test, metrics=metrics)
+        )
 
     finally:
         os.remove(tmp_path)

@@ -68,4 +68,7 @@ if __name__ == "__main__":
     ckpt_path = os.path.join(checkpoint_dir, "checkpoint_8.pt")
     print("Loading checkpoint from", ckpt_path)
     model.load(ckpt_path)
-    print("Checkpoint model metrics:", model.get_metrics(X=X_test, y=y_test, metrics=metrics))
+    print(
+        "Checkpoint model metrics:",
+        model.get_metrics(X=X_test, y=y_test, metrics=metrics),
+    )
