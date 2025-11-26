@@ -157,7 +157,8 @@ def test_pytorch_model_fine_tune_reuses_weights():
     assert m.model_ is first_model_ref
 
     # Freezing layers unfreezes only selected
-    m.freeze_layers(["net.2"])  # unfreeze last linear only
+    m.freeze_layers("all")
+    m.unfreeze_layers(["net.2"])  
     # All others should be frozen
     for name, param in m.model_.named_parameters():
         if name.startswith("net.2"):

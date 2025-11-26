@@ -96,6 +96,7 @@ model_phase1 = tracker.wrap_fit(
     dataset_test=galaxymnist_test,
     metrics=metrics,
     log_model=True,
+    run_name = "phase_1",
 )
 
 model_phase1.unfreeze_layers("all")
@@ -156,6 +157,7 @@ model_phase2.fit(
     dataset_val=galaxymnist_val,
     metrics=metrics,
     fine_tune=True,
+    run_name = "phase_2",
 )
 
 # Evaluate Phase 2

@@ -181,6 +181,7 @@ class SklearnMLflowTracker(MlflowBaseTracker):
         log_model: bool = False,
         tags: Dict[str, Any] = {},
         manual_metrics: Tuple[Dict[str, Any], str] = None,
+        run_name: Optional[str] = None,
     ) -> BaseMlModel:
         """
         Wrap a BaseMlModel's fit method to perform MLflow logging.
@@ -205,6 +206,8 @@ class SklearnMLflowTracker(MlflowBaseTracker):
             Any additional tags that should be added to the model. By default the tag "is_final" is set as equal to log_model so that
             any logged model is considered as a candidate for production (for register_best_model) unless specified otherwise
             (e.g. in the model selectors for intermediate steps)
+        run_name: Optional[str] = None,
+            Name for the MLflow run. If None, uses tracker's run_name.
 
         Returns
         -------
@@ -245,7 +248,7 @@ class SklearnMLflowTracker(MlflowBaseTracker):
                 Fitted model instance.
             """
             mlflow.set_experiment(tracker.experiment_name)
-            with mlflow.start_run(run_name=tracker.run_name):
+            with mlflow.start_run(run_name=run_name or tracker.run_name):
                 mlflow.set_tags({**tags, **tracker.extra_tags})
                 try:
                     params = self.get_params()
@@ -304,6 +307,7 @@ class PytorchMLflowTracker(MlflowBaseTracker):
         log_model: bool = False,
         tags: Dict[str, Any] = {},
         manual_metrics: Tuple[Dict[str, Any], str] = None,
+        run_name: Optional[str] = None,
     ) -> PytorchModel:
         orig_class = model.__class__
         if "is_final" not in tags.keys():
@@ -328,7 +332,7 @@ class PytorchMLflowTracker(MlflowBaseTracker):
             seed=None,
         ):
             mlflow.set_experiment(tracker.experiment_name)
-            with mlflow.start_run(run_name=tracker.run_name):
+            with mlflow.start_run(run_name=run_name or tracker.run_name):
                 mlflow.set_tags({**tags, **tracker.extra_tags})
                 try:
                     params = self.get_params()
@@ -450,6 +454,7 @@ class TensorflowMLflowTracker(MlflowBaseTracker):
         log_model: bool = False,
         tags: Dict[str, Any] = {},
         manual_metrics: Tuple[Dict[str, Any], str] = None,
+        run_name: Optional[str] = None,
     ) -> TensorflowModel:
         """
         Wrap a TensorflowModel's fit method to perform MLflow logging.
@@ -550,6 +555,8 @@ class TensorflowMLflowTracker(MlflowBaseTracker):
                 Random seed for reproducibility.
             **kwargs
                 Additional arguments for the fit method.
+            run_name: Optional[str] = None,
+                Name for the MLflow run. If None, uses tracker's run_name.
 
             Returns
             -------
@@ -557,7 +564,7 @@ class TensorflowMLflowTracker(MlflowBaseTracker):
                 Fitted model instance.
             """
             mlflow.set_experiment(tracker.experiment_name)
-            with mlflow.start_run(run_name=tracker.run_name):
+            with mlflow.start_run(run_name=run_name or tracker.run_name):
                 mlflow.set_tags({**tags, **tracker.extra_tags})
                 try:
                     params = self.get_params()
