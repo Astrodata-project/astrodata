@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Dict, Callable, Literal
 
 from astrodata.data.loaders.base import BaseLoader
 from astrodata.data.schemas import TorchFITSDataset, TorchImageDataset, TorchRawData
@@ -26,9 +27,12 @@ class TorchLoader(BaseLoader):
     It can auto-detect dataset type by file extensions or you can provide it.
     """
 
-    def __init__(self):
+    def __init__(
+        self, transform_dict: Dict[Literal["train", "val", "test"], Callable] = None
+    ):
         self.dataset_type = None
         self.dataset_class = None
+        self.transform_dict = transform_dict or {}
 
     def _set_dataset_type(self, dataset_type: str) -> None:
         if dataset_type == "image":
@@ -96,12 +100,17 @@ class TorchLoader(BaseLoader):
             )
 
         datasets = {}
-        datasets["train"] = self.dataset_class(train_dir)
-        datasets["test"] = self.dataset_class(test_dir)
+        datasets["train"] = self.dataset_class(
+            train_dir, transform=self.transform_dict.get("train")
+        )
+        datasets["test"] = self.dataset_class(
+            test_dir, transform=self.transform_dict.get("test")
+        )
 
         if val_dir.exists():
-            datasets["val"] = self.dataset_class(val_dir)
-
+            datasets["val"] = self.dataset_class(
+                val_dir, transform=self.transform_dict.get("val")
+            )
         metadata = {
             "root_path": str(root_path),
             "dataset_type": self.dataset_type,

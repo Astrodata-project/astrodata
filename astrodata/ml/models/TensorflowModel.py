@@ -62,7 +62,7 @@ class TensorflowModel(BaseMlModel):
         self.optimizer_ = None
         self.loss_fn_ = None
         self.metrics_history_ = None
-        self._val_metrics_history_ = None
+        self.val_metrics_history_ = None
 
     def fit(
         self,
@@ -137,7 +137,7 @@ class TensorflowModel(BaseMlModel):
 
         batch_size = batch_size if batch_size is not None else self.batch_size
         self.metrics_history_ = []
-        self._val_metrics_history_ = (
+        self.val_metrics_history_ = (
             []
             if (X_val is not None and y_val is not None) or dataset_val is not None
             else None
@@ -290,7 +290,7 @@ class TensorflowModel(BaseMlModel):
             If the model is not fitted yet.
         """
         if self.model_ is None:
-            raise ValueError("Model is not fitted yet.")
+            raise ValueError("Model is not fitted.")
 
         raw_predictions = self.model_.predict(
             X.batch(batch_size) if isinstance(X, tf.data.Dataset) else X,
@@ -377,7 +377,7 @@ class TensorflowModel(BaseMlModel):
             If the model is not fitted yet or unknown format is specified.
         """
         if self.model_ is None:
-            raise ValueError("Model is not fitted yet.")
+            raise ValueError("Model is not fitted.")
 
         if format == "tensorflow":
             # Save as Keras native format (.keras)
@@ -579,9 +579,14 @@ class TensorflowModel(BaseMlModel):
             Mapping from metric names to values.
         """
         if dataset is not None:
-            X = dataset.map(lambda x, y: x)
-            y = dataset.map(lambda x, y: y)
-            y = tf.stack(list(y), axis=0).numpy()
+            # Extract features and labels from dataset properly
+            X_batches = []
+            y_batches = []
+            for x_batch, y_batch in dataset:
+                X_batches.append(x_batch)
+                y_batches.append(y_batch)
+            X = tf.concat(X_batches, axis=0)
+            y = tf.concat(y_batches, axis=0).numpy()
 
         y_pred = self.predict(X, batch_size=batch_size)
 

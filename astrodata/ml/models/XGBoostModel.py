@@ -39,7 +39,7 @@ class XGBoostModel(BaseMlModel):
         self.model_params = model_params
         self.model_ = None
         self.random_state = random_state
-        self._evals_result = None
+        self.evals_result_ = None
 
     def get_params(self, **kwargs) -> dict:
         """
@@ -117,8 +117,12 @@ class XGBoostModel(BaseMlModel):
             Training features.
         y : array-like
             Training targets.
-        X_val and y_val:
-            are added to the init just to catch the value in the selectors.
+        X_val : array-like, optional
+            Validation data features. Accepted for compatibility with model selectors
+            but not used unless explicitly specified in eval_set.
+        y_val : array-like, optional
+            Validation data targets. Accepted for compatibility with model selectors
+            but not used unless explicitly specified in eval_set.
         **fit_params
             Additional parameters to pass to model.fit(). If "eval_set"
             is not provided, it will default to the training data.
@@ -132,7 +136,7 @@ class XGBoostModel(BaseMlModel):
             fit_params["eval_set"] = [(X, y)]
         self.model_ = self.model_class(**self.model_params)
         self.model_.fit(X, y, verbose=False, **fit_params)
-        self._evals_result = self.model_.evals_result()
+        self.evals_result_ = self.model_.evals_result()
         return self
 
     def predict(self, X, **predict_params) -> pd.Series:
@@ -157,7 +161,7 @@ class XGBoostModel(BaseMlModel):
             If the model is not fitted yet.
         """
         if self.model_ is None:
-            raise RuntimeError("Model is not fitted yet.")
+            raise RuntimeError("Model is not fitted.")
         return pd.Series(self.model_.predict(X, **predict_params))
 
     def score(self, X, y, **kwargs) -> float:
@@ -184,7 +188,7 @@ class XGBoostModel(BaseMlModel):
             If the model is not fitted yet.
         """
         if self.model_ is None:
-            raise RuntimeError("Model is not fitted yet.")
+            raise RuntimeError("Model is not fitted.")
         return self.model_.score(X, y, **kwargs)
 
     def get_scorer_metric(self) -> SklearnMetric:
@@ -250,10 +254,10 @@ class XGBoostModel(BaseMlModel):
         AttributeError
             If no loss history is available.
         """
-        if self._evals_result is not None:
-            train_key = list(self._evals_result.keys())[0]
-            metric_key = list(self._evals_result[train_key].keys())[0]
-            return self._evals_result[train_key][metric_key]
+        if self.evals_result_ is not None:
+            train_key = list(self.evals_result_.keys())[0]
+            metric_key = list(self.evals_result_[train_key].keys())[0]
+            return self.evals_result_[train_key][metric_key]
         raise AttributeError("No loss curve available. Make sure fit() was called.")
 
     def get_loss_history_metrics(
@@ -286,7 +290,7 @@ class XGBoostModel(BaseMlModel):
             If no loss history is available.
         """
         if self.model_ is None:
-            raise RuntimeError("Model is not fitted yet.")
+            raise RuntimeError("Model is not fitted.")
 
         results = {}
 
@@ -325,7 +329,7 @@ class XGBoostModel(BaseMlModel):
         bool
             True if loss history is available, False otherwise.
         """
-        return self._evals_result is not None
+        return self.evals_result_ is not None
 
     def __repr__(self) -> str:
         """
@@ -337,3 +341,19 @@ class XGBoostModel(BaseMlModel):
             String representation of the object.
         """
         return f"{self.__class__.__name__}({self.model_class.__name__})"
+    
+    def clone(self) -> "XGBoostModel":
+        """
+        Create a (shallow) clone of this model instance.
+
+        Returns
+        -------
+        BaseMlModel
+            Cloned model instance.
+        """
+        new_instance = self.__class__(model_class=self.model_class, **self.model_params)
+        # Copy over any callable attributes (e.g., decorated methods)
+        for attr, value in self.__dict__.items():
+            if callable(value):
+                setattr(new_instance, attr, value)
+        return new_instance

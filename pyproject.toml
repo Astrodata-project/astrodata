@@ -35,7 +35,7 @@ dev = [
     "pytest>=8.4.1",
 ]
 tests = [
-    "pytest>=8.3.5",
+    "pytest>=8.4.2",
 ]
 
 [tool.uv]

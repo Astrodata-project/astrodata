@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 from pydantic import BaseModel
 
-from astrodata.data.utils import decode_fits, gather_paths_and_labels
+from astrodata.data.utils import FITS_EXTS, decode_fits, gather_paths_and_labels
 
 
 class TensorflowData(BaseModel):
@@ -133,7 +133,7 @@ class TensorflowFITSDataset:
 
     def _gather(self) -> Tuple[List[str], List[int], List[str], Dict[str, int]]:
         paths, labels, class_names, class_to_idx = gather_paths_and_labels(
-            self.image_dir, valid_exts=None, return_type="str"
+            self.image_dir, valid_exts=FITS_EXTS, return_type="str"
         )
         return paths, labels, class_names, class_to_idx
 

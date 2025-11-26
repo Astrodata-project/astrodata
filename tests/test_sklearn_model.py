@@ -84,3 +84,46 @@ def test_save_and_load_roundtrip(tmp_path):
     yhat1 = m.predict(X)
     yhat2 = m2.predict(X)
     assert np.allclose(yhat1.values, yhat2.values)
+
+
+def test_get_set_params():
+    m = SklearnModel(
+        LogisticRegression, solver="liblinear", max_iter=100, random_state=42
+    )
+    params = m.get_params()
+    assert params["max_iter"] == 100
+    assert params["random_state"] == 42
+    assert params["model_class"] == LogisticRegression
+
+    m.set_params(max_iter=200, C=0.5)
+    updated_params = m.get_params()
+    assert updated_params["max_iter"] == 200
+    assert updated_params["C"] == 0.5
+
+
+def test_clone():
+    m = SklearnModel(
+        LogisticRegression, solver="liblinear", max_iter=100, random_state=42
+    )
+    m_clone = m.clone()
+    assert m_clone is not m
+    assert m_clone.model_class == m.model_class
+    assert m_clone.model_params == m.model_params
+    assert m_clone.random_state == m.random_state
+
+
+def test_score_with_unfitted_model():
+    X, y = _toy_classification()
+    m = SklearnModel(LogisticRegression, solver="liblinear")
+    with pytest.raises(RuntimeError):
+        m.score(X, y)
+
+
+def test_predict_proba_without_support():
+    from sklearn.svm import LinearSVC
+
+    X, y = _toy_classification()
+    m = SklearnModel(LinearSVC, random_state=0)
+    m.fit(X, y)
+    with pytest.raises(AttributeError):
+        m.predict_proba(X)
