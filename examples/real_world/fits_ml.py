@@ -1,40 +1,79 @@
 import hyperopt.hp as hp
+import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split
 from sklearn.svm import SVR
+from astropy.io import fits
 
+from astrodata.data import BaseLoader, DataPipeline, AbstractProcessor, RawData
+from astrodata.preml import PremlPipeline, TrainTestSplitter
 from astrodata.ml.metrics import SklearnMetric
 from astrodata.ml.model_selection import HyperOptSelector
 from astrodata.ml.models import SklearnModel
 from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
-from testdata import download_and_load_fits
+from testdata import download_fits
 
-df = download_and_load_fits()
+file_path = download_fits()
 SEED = 42
-
-# Let's ingore some columns, identify the target columns, use the rest as features
-ignore = ["specObjID", "objid", "ra", "dec", "targetObjID", "zErr"]
-target = "z"
-features = [col for col in df.columns if col not in ignore + [target]]
+config_path = "./config.yaml"
 
 
-# Filter out negative values in features
-objinthecatalog = df.shape[0]
-df = df[(df[features] >= 0).all(axis=1)]
-remainingobj = df.shape[0]
+# First, let's define a custom loader for FITS files
+# Astrodata provides loaders for common formats like CSV and Parquet,
+# but FITS files require a custom implementation.
+class FitsLoader(BaseLoader):
+    def load(self, path: str):
+        with fits.open(path) as hdul:
+            data = hdul[1].data
+            df = pd.DataFrame(data.tolist(), columns=data.names)
+        return RawData(source=path, format="fits", data=df)
 
-print("from ", objinthecatalog, "intial objects we have now", remainingobj)
-print("object discarded:", objinthecatalog - remainingobj)
 
-df_sampled = df.sample(frac=0.2, random_state=SEED).reset_index(drop=True)
+# Then, we define a custom processor to handle FITS data
+# This processor will filter out invalid data and prepare the dataset for modeling.
+class FitsProcessor(AbstractProcessor):
+    def process(self, raw):
+        objin = raw.data.shape[0]
+        # Let's ingore some columns, identify the target columns, use the rest as features
+        ignore = ["specObjID", "objid", "ra", "dec", "targetObjID", "zErr"]
+        features = [col for col in raw.data.columns if col not in ignore]
+        # Filter out negative values in features
+        raw.data = raw.data[(raw.data[features] >= 0).all(axis=1)]
+        objout = raw.data.shape[0]
+        print("from ", objin, "intial objects we have now", objout)
+        print("object discarded:", objin - objout)
+        raw.data = raw.data.sample(frac=0.2, random_state=SEED).reset_index(drop=True)
+        return raw
 
-train_size = 0.2
 
-X_train, X_test, y_train, y_test = train_test_split(
-    df_sampled[features], df_sampled[target], train_size=train_size, random_state=SEED
+loader = FitsLoader()
+processor = FitsProcessor()
+
+# Define the data pipeline with the config file, loader and processors.
+data_pipeline = DataPipeline(
+    config_path=config_path,
+    loader=loader,
+    processors=[processor],
+)
+# Run the data pipeline to load and process the FITS data.
+# This results in a ProcessedData object, ready for further preprocessing.
+data = data_pipeline.run(file_path, dump_output=False)
+
+tts = TrainTestSplitter(
+    targets=["z"],
+    train_size=0.2,
+    random_state=SEED,
+)
+# Define the PremlPipeline with the TrainTestSplitter processor.
+preml_pipeline = PremlPipeline(
+    config_path=config_path,
+    processors=[tts],
 )
 
+# Run the PremlPipeline to split the data into training and testing sets.
+preml_data = preml_pipeline.run(data, dump_output=False)
+
+X_train, X_test, y_train, y_test = preml_data.dump_supervised_ML_format()
 print(f"Training set: {X_train.shape[0]} samples")
 print(f"Test set: {X_test.shape[0]} samples")
 

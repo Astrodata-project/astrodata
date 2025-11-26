@@ -81,13 +81,13 @@ def test_pytorch_model_fit_predict_and_history(tmp_path):
     # Training metric history (per step) and validation metric history (per epoch)
     train_hist = m.get_metrics_history(split="train")
     assert "accuracy_score_epoch" in train_hist
-    assert "loss_epoch" in train_hist
+    assert "loss" in train_hist
     val_hist = m.get_metrics_history(split="val")
     # Present when X_val/y_val were provided
     assert val_hist is not None
     # Validation metrics also end with _epoch
     assert "accuracy_score_epoch" in val_hist
-    assert "loss_epoch" in val_hist
+    assert "loss" in val_hist
 
     # Save/load roundtrip (torch format)
     path = tmp_path / "model.pt"
@@ -158,7 +158,7 @@ def test_pytorch_model_fine_tune_reuses_weights():
 
     # Freezing layers unfreezes only selected
     m.freeze_layers("all")
-    m.unfreeze_layers(["net.2"])  
+    m.unfreeze_layers(["net.2"])
     # All others should be frozen
     for name, param in m.model_.named_parameters():
         if name.startswith("net.2"):

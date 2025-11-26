@@ -320,16 +320,21 @@ class PytorchMLflowTracker(MlflowBaseTracker):
             self,
             X=None,
             y=None,
-            dataset_train=None,
+            dataset=None,
             epochs=None,
             batch_size=None,
             device=None,
-            fine_tune=False,
+            metrics=None,
+            fine_tune=None,
+            X_val=None,
+            y_val=None,
+            dataset_val=None,
             save_every_n_epochs=None,
             save_folder=None,
-            save_format="torch",
-            shuffle=True,
+            save_format=None,
+            shuffle=None,
             seed=None,
+            **kwargs,
         ):
             mlflow.set_experiment(tracker.experiment_name)
             with mlflow.start_run(run_name=run_name or tracker.run_name):
@@ -344,7 +349,7 @@ class PytorchMLflowTracker(MlflowBaseTracker):
                     self,
                     X=X,
                     y=y,
-                    dataset=dataset_train,
+                    dataset=dataset,
                     epochs=epochs,
                     batch_size=batch_size,
                     device=device,
@@ -388,9 +393,9 @@ class PytorchMLflowTracker(MlflowBaseTracker):
                 # Log metrics for different splits
                 if X is not None and y is not None:
                     _log_metrics_and_loss_pytorch(X, y, None, self, metrics, "train")
-                elif dataset_train is not None:
+                elif dataset is not None:
                     _log_metrics_and_loss_pytorch(
-                        None, None, dataset_train, self, metrics, "train"
+                        None, None, dataset, self, metrics, "train"
                     )
 
                 if X_test is not None and y_test is not None:

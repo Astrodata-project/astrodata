@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, Tuple
+from typing import Any, Callable, Dict, Tuple, Optional
 
 import numpy as np
 import torch
@@ -98,6 +98,7 @@ class TorchImageDataset(Dataset):
     def __init__(
         self,
         image_dir: str,
+        transform: Optional[Callable] = None,
     ):
         """
         Initialize the dataset.
@@ -111,6 +112,7 @@ class TorchImageDataset(Dataset):
         self.image_paths = []
         self.labels = []
         self.class_to_idx = {}
+        self.transform = transform
 
         self._load_image_paths()
 
@@ -147,6 +149,9 @@ class TorchImageDataset(Dataset):
         # Load image
         image = decode_image(str(img_path))
 
+        if self.transform:
+            image = self.transform(image)
+
         return image, label
 
 
@@ -157,7 +162,7 @@ class TorchFITSDataset(Dataset):
     Expects images organized in class folders under a split directory.
     """
 
-    def __init__(self, image_dir: str):
+    def __init__(self, image_dir: str, transform: Optional[Callable] = None):
         """
         Initialize the dataset.
 

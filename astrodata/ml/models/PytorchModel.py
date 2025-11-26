@@ -55,6 +55,7 @@ class PytorchModel(BaseMlModel):
         self.device = (
             device if device else "cuda" if torch.cuda.is_available() else "cpu"
         )
+        self.with_weight_init = with_weight_init
 
         self.model_ = None if not with_weight_init else self._get_model()
         self.optimizer_ = None
@@ -78,7 +79,6 @@ class PytorchModel(BaseMlModel):
         save_every_n_epochs: Optional[int] = None,
         save_folder: Optional[str] = None,
         save_format: str = "torch",
-        shuffle: bool = True,
         seed: int = None,
         **kwargs,
     ) -> "PytorchModel":
@@ -123,6 +123,7 @@ class PytorchModel(BaseMlModel):
         torch.manual_seed(seed if seed is not None else self.random_state)
         epochs = epochs if epochs is not None else self.epochs
         batch_size = batch_size if batch_size is not None else self.batch_size
+        device = self.device if device is None else device
         self.metrics_history_ = []
         self._val_metrics_history_ = (
             []
@@ -140,19 +141,19 @@ class PytorchModel(BaseMlModel):
 
         if dataset is None:
             dataset = self._create_dataset(X, y, device)
-        # if a dataloader was passed, we trust it yields tensors on the right device
 
-        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
+        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
         if dataset_val is None and X_val is not None and y_val is not None:
             dataset_val = self._create_dataset(X_val, y_val, device)
 
         if not fine_tune or self.model_ is None:
-            self.model_ = self._get_model().to(self.device)
-            self.optimizer_ = self._get_optimizer(self.model_)
+            self.model_ = self._get_model()
+
+        self.optimizer_ = self._get_optimizer(self.model_)
         self.loss_fn_ = self.loss_fn()
 
-        self.model_.train()
+        self.model_.to(self.device).train()
 
         with trange(epochs, desc="Epochs", position=2) as t:
             for epoch in t:
@@ -205,8 +206,8 @@ class PytorchModel(BaseMlModel):
             inputs, labels = data
 
             # Move data to device if specified
-            inputs = inputs.to(device or self.device)
-            labels = labels.to(device or self.device)
+            inputs = inputs.to(device)
+            labels = labels.to(device)
 
             # Zero the gradients
             optimizer.zero_grad()
@@ -232,7 +233,7 @@ class PytorchModel(BaseMlModel):
                 self.metrics_history_.append(
                     (f"{metric.get_name()}_epoch", metric(y_true, preds))
                 )
-            self.metrics_history_.append(("loss_epoch", loss.item()))
+            self.metrics_history_.append(("loss", loss.item()))
 
         # Epoch-level validation metrics
         if metrics is not None and dataset_val is not None:
@@ -240,7 +241,7 @@ class PytorchModel(BaseMlModel):
                 dataset=dataset_val,
                 metrics=metrics,
                 batch_size=batch_size or self.batch_size or 32,
-                device=device or self.device,
+                device=device,
             )
             for name, value in val_scores.items():
                 self._val_metrics_history_.append((f"{name}_epoch", value))
@@ -257,15 +258,15 @@ class PytorchModel(BaseMlModel):
 
                 # Move data to device if specified
                 if device:
-                    inputs = inputs.to(device or self.device)
-                    labels = labels.to(device or self.device)
+                    inputs = inputs.to(device)
+                    labels = labels.to(device)
 
                 # Forward pass
                 outputs = model(inputs)
                 val_loss_acc.append(loss_fn(outputs, labels).item())
 
             self._val_metrics_history_.append(
-                ("loss_epoch", sum(val_loss_acc) / len(val_loss_acc))
+                ("loss", sum(val_loss_acc) / len(val_loss_acc))
             )
 
         return loss.item()
@@ -296,6 +297,8 @@ class PytorchModel(BaseMlModel):
         RuntimeError
             If the model is not fitted yet.
         """
+        device = self.device if device is None else device
+
         return self._predict(data, batch_size, device, use_proba=False)
 
     def predict_proba(
@@ -332,7 +335,7 @@ class PytorchModel(BaseMlModel):
         if self.model_ is None:
             raise RuntimeError("Model is not fitted yet.")
 
-        device = device or self.device
+        device = device
         self.model_.eval()
 
         if not isinstance(X, Dataset):
@@ -401,6 +404,8 @@ class PytorchModel(BaseMlModel):
         ValueError
             If neither dataset nor (X, y) are provided.
         """
+        device = self.device if device is None else device
+
         if self.model_ is None:
             raise RuntimeError("Model is not fitted yet.")
 
@@ -414,7 +419,6 @@ class PytorchModel(BaseMlModel):
             dataset, batch_size=batch_size or self.batch_size or 32, shuffle=False
         )
 
-        device = device or self.device
         self.model_.eval()
         loss_fn = self.loss_fn()
 
@@ -617,6 +621,9 @@ class PytorchModel(BaseMlModel):
         ValueError
             If neither dataset nor (X, y) are provided.
         """
+
+        device = self.device if device is None else device
+
         if (X is None or y is None) and dataset is None:
             raise ValueError("Either dataset or both X and y must be provided.")
 
@@ -632,7 +639,6 @@ class PytorchModel(BaseMlModel):
         all_y_pred = []
         all_y_pred_proba = []
 
-        device = device or self.device
         self.model_.eval()
 
         with torch.no_grad():
@@ -693,6 +699,7 @@ class PytorchModel(BaseMlModel):
             "epochs": self.epochs,
             "batch_size": self.batch_size,
             "random_state": self.random_state,
+            "with_weight_init": self.with_weight_init,
         }
 
     def set_params(self, **kwargs) -> None:
@@ -739,8 +746,6 @@ class PytorchModel(BaseMlModel):
             Batch size for the Dataset.
         device : str, optional
             Device to place tensors on. Defaults to self.device.
-        shuffle : bool, default True
-            Whether to shuffle the data.
 
         Returns
         -------
@@ -777,6 +782,7 @@ class PytorchModel(BaseMlModel):
             epochs=self.epochs,
             batch_size=self.batch_size,
             random_state=self.random_state,
+            with_weight_init=self.with_weight_init,
         )
 
         # Copy over any callable attributes (e.g., decorated methods)
