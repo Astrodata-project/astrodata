@@ -1,5 +1,4 @@
 import hyperopt.hp as hp
-from data import download_and_load_fits
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
@@ -9,6 +8,7 @@ from astrodata.ml.metrics import SklearnMetric
 from astrodata.ml.model_selection import HyperOptSelector
 from astrodata.ml.models import SklearnModel
 from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
+from testdata import download_and_load_fits
 
 df = download_and_load_fits()
 SEED = 42

@@ -54,6 +54,7 @@ class TensorflowMetric(Metric, BaseMetric):
         float
             The computed score.
         """
+        self._metric.reset_state()
         return self._metric(y_true, y_pred, **kwargs).numpy()
 
     def get_name(self) -> str:
@@ -121,3 +122,6 @@ class TensorflowMetric(Metric, BaseMetric):
 
     def __repr__(self):
         return f"TensorflowMetric(metric={self._metric}, name='{self._metric.name}', greater_is_better={self._greater_is_better})"
+
+    def get_tf_metric(self):
+        return self._metric

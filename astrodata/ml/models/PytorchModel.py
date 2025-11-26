@@ -1,7 +1,7 @@
 import os
 import pickle
 import random
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 import torch
@@ -504,19 +504,77 @@ class PytorchModel(BaseMlModel):
             raise ValueError(f"Unknown format {format}")
         return self
 
-    def freeze_layers(self, layer_names: List[str]) -> None:
+    def freeze_layers(self, layer_names: Union[List[str], str] = None) -> None:
         """
-        Freeze all layers except those included in ``layer_names``.
+        Freeze specified layers or all layers.
 
         Parameters
         ----------
-        layer_names : list of str
-            Names of modules to unfreeze.
+        layer_names : list of str or str, optional
+            Names of modules to freeze. If "all", freeze all layers.
+            If None or empty list, no layers are frozen.
+
+        Raises
+        ------
+        RuntimeError
+            If the model is not fitted yet.
         """
-        # freeze all
-        for param in self.model_.parameters():
-            param.requires_grad = False
-        # unfreeze selected
+        if self.model_ is None:
+            raise RuntimeError("Model is not fitted yet.")
+
+        # Handle "all" parameter
+        if layer_names == "all":
+            for param in self.model_.parameters():
+                param.requires_grad = False
+            return
+
+        # Handle None or empty list
+        if layer_names is None or len(layer_names) == 0:
+            return
+
+        # Ensure layer_names is a list
+        if isinstance(layer_names, str):
+            layer_names = [layer_names]
+
+        # Freeze specified layers
+        for name, module in self.model_.named_modules():
+            if name in layer_names:
+                for param in module.parameters():
+                    param.requires_grad = False
+
+    def unfreeze_layers(self, layer_names: Union[List[str], str] = None) -> None:
+        """
+        Unfreeze specified layers or all layers.
+
+        Parameters
+        ----------
+        layer_names : list of str or str, optional
+            Names of modules to unfreeze. If "all", unfreeze all layers.
+            If None or empty list, no layers are unfrozen.
+
+        Raises
+        ------
+        RuntimeError
+            If the model is not fitted yet.
+        """
+        if self.model_ is None:
+            raise RuntimeError("Model is not fitted yet.")
+
+        # Handle "all" parameter
+        if layer_names == "all":
+            for param in self.model_.parameters():
+                param.requires_grad = True
+            return
+
+        # Handle None or empty list
+        if layer_names is None or len(layer_names) == 0:
+            return
+
+        # Ensure layer_names is a list
+        if isinstance(layer_names, str):
+            layer_names = [layer_names]
+
+        # Unfreeze specified layers
         for name, module in self.model_.named_modules():
             if name in layer_names:
                 for param in module.parameters():

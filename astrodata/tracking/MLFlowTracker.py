@@ -305,7 +305,6 @@ class PytorchMLflowTracker(MlflowBaseTracker):
         tags: Dict[str, Any] = {},
         manual_metrics: Tuple[Dict[str, Any], str] = None,
     ) -> PytorchModel:
-
         orig_class = model.__class__
         if "is_final" not in tags.keys():
             tags["is_final"] = log_model
@@ -328,7 +327,6 @@ class PytorchMLflowTracker(MlflowBaseTracker):
             shuffle=True,
             seed=None,
         ):
-
             mlflow.set_experiment(tracker.experiment_name)
             with mlflow.start_run(run_name=tracker.run_name):
                 mlflow.set_tags({**tags, **tracker.extra_tags})
@@ -503,12 +501,17 @@ class TensorflowMLflowTracker(MlflowBaseTracker):
             epochs=None,
             batch_size=None,
             device=None,
-            fine_tune=False,
+            metrics=None,
+            fine_tune=None,
+            X_val=None,
+            y_val=None,
+            dataset_val=None,
             save_every_n_epochs=None,
             save_folder=None,
-            save_format="tensorflow",
-            shuffle=True,
+            save_format=None,
+            shuffle=None,
             seed=None,
+            **kwargs,
         ):
             """
             Fit method replacement that logs parameters, metrics, and model to MLflow.

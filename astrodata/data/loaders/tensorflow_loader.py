@@ -110,7 +110,9 @@ class TensorflowLoader(BaseLoader):
         datasets["train"] = train_ds
 
         # Test
-        test_builder = self.dataset_class(test_dir, **dataset_kwargs)
+        test_builder = self.dataset_class(
+            test_dir, shuffle=False, **dataset_kwargs
+        )  # Comment by Tom: No shuffling for test set otherwise it won't work.
         test_ds, _ = test_builder.build()
         datasets["test"] = test_ds
 

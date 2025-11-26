@@ -56,6 +56,7 @@ class TensorflowModel(BaseMlModel):
         self.device = device
         self.epochs = epochs
         self.batch_size = batch_size
+        self.with_weight_init = with_weight_init
 
         self.model_ = None if not with_weight_init else self._get_model()
         self.optimizer_ = None
@@ -158,6 +159,8 @@ class TensorflowModel(BaseMlModel):
 
         if not fine_tune or self.model_ is None:
             self.model_ = self._get_model()
+
+        if not fine_tune or self.optimizer_ is None:
             self.optimizer_ = self._get_optimizer()
 
         self.model_.compile(
@@ -437,29 +440,109 @@ class TensorflowModel(BaseMlModel):
         self.optimizer_ = self._get_optimizer()
         return self
 
-    def freeze_layers(self, layer_names: List[str]) -> None:
+    def freeze_layers(
+        self,
+        layer_names: Union[List[str], str] = None,
+        parent_layer: Optional[Union[K.layers.Layer, str]] = None,
+    ) -> None:
         """
-        Freeze all layers except those included in ``layer_names``.
+        Freeze specified layers or all layers.
 
         Parameters
         ----------
-        layer_names : list of str
-            Names of layers to unfreeze.
+        layer_names : list of str or str, optional
+            Names of layers to freeze. If "all", freeze all layers.
+            If None or empty list, no layers are frozen.
+        parent_layer : keras.layers.Layer or str, optional
+            Parent layer or layer name to search within for sub-layers.
+            If provided, only layers within this parent will be considered.
 
         Raises
         ------
         ValueError
-            If the model is not fitted yet.
+            If the model is not fitted yet or parent_layer not found.
         """
         if self.model_ is None:
             raise ValueError("Model is not fitted yet.")
 
-        # Freeze all layers first
-        for layer in self.model_.layers:
-            layer.trainable = False
+        # Resolve parent layer if string name is provided
+        search_layers = self.model_.layers
+        if parent_layer is not None:
+            if isinstance(parent_layer, str):
+                parent_layer = self._find_layer_by_name(parent_layer)
+                if parent_layer is None:
+                    raise ValueError(f"Parent layer '{parent_layer}' not found.")
+            search_layers = self._get_all_layers(parent_layer)
 
-        # Unfreeze selected layers
-        for layer in self.model_.layers:
+        # Handle "all" parameter
+        if layer_names == "all":
+            for layer in search_layers:
+                layer.trainable = False
+            return
+
+        # Handle None or empty list
+        if layer_names is None or len(layer_names) == 0:
+            return
+
+        # Ensure layer_names is a list
+        if isinstance(layer_names, str):
+            layer_names = [layer_names]
+
+        # Freeze specified layers
+        for layer in search_layers:
+            if layer.name in layer_names:
+                layer.trainable = False
+
+    def unfreeze_layers(
+        self,
+        layer_names: Union[List[str], str] = None,
+        parent_layer: Optional[Union[K.layers.Layer, str]] = None,
+    ) -> None:
+        """
+        Unfreeze specified layers or all layers.
+
+        Parameters
+        ----------
+        layer_names : list of str or str, optional
+            Names of layers to unfreeze. If "all", unfreeze all layers.
+            If None or empty list, no layers are unfrozen.
+        parent_layer : keras.layers.Layer or str, optional
+            Parent layer or layer name to search within for sub-layers.
+            If provided, only layers within this parent will be considered.
+
+        Raises
+        ------
+        ValueError
+            If the model is not fitted yet or parent_layer not found.
+        """
+        if self.model_ is None:
+            raise ValueError("Model is not fitted yet.")
+
+        # Resolve parent layer if string name is provided
+        search_layers = self.model_.layers
+        if parent_layer is not None:
+            if isinstance(parent_layer, str):
+                parent_layer = self._find_layer_by_name(parent_layer)
+                if parent_layer is None:
+                    raise ValueError(f"Parent layer '{parent_layer}' not found.")
+            search_layers = self._get_all_layers(parent_layer)
+
+        # Handle "all" parameter
+        if layer_names == "all":
+            for layer in search_layers:
+                layer.trainable = True
+            return
+
+        # Handle None or empty list
+        if layer_names is None or len(layer_names) == 0:
+            return
+
+        # Ensure layer_names is a list
+        if isinstance(layer_names, str):
+            layer_names = [layer_names]
+
+        # Unfreeze specified layers
+        for layer in search_layers:
             if layer.name in layer_names:
                 layer.trainable = True
 
@@ -537,9 +620,11 @@ class TensorflowModel(BaseMlModel):
             "optimizer": self.optimizer,
             "model_params": self.model_params,
             "optimizer_params": self.optimizer_params,
+            "device": self.device,
             "epochs": self.epochs,
             "batch_size": self.batch_size,
             "random_state": self.random_state,
+            "with_weight_init": self.with_weight_init,
         }
 
     def set_params(self, **kwargs) -> None:
@@ -576,6 +661,78 @@ class TensorflowModel(BaseMlModel):
             return self.optimizer
         else:
             return self.optimizer(**(self.optimizer_params or {}))
+
+    def _find_layer_by_name(self, layer_name: str) -> Optional[K.layers.Layer]:
+        """
+        Find a layer by name in the model.
+
+        Parameters
+        ----------
+        layer_name : str
+            Name of the layer to find.
+
+        Returns
+        -------
+        keras.layers.Layer or None
+            The layer if found, None otherwise.
+        """
+        for layer in self.model_.layers:
+            if layer.name == layer_name:
+                return layer
+            # Check sub-layers recursively
+            if hasattr(layer, "layers"):
+                for sublayer in layer.layers:
+                    found = self._find_layer_in_hierarchy(sublayer, layer_name)
+                    if found is not None:
+                        return found
+        return None
+
+    def _find_layer_in_hierarchy(
+        self, layer: K.layers.Layer, layer_name: str
+    ) -> Optional[K.layers.Layer]:
+        """
+        Recursively search for a layer by name in the layer hierarchy.
+
+        Parameters
+        ----------
+        layer : keras.layers.Layer
+            Current layer to check.
+        layer_name : str
+            Name of the layer to find.
+
+        Returns
+        -------
+        keras.layers.Layer or None
+            The layer if found, None otherwise.
+        """
+        if layer.name == layer_name:
+            return layer
+        if hasattr(layer, "layers"):
+            for sublayer in layer.layers:
+                found = self._find_layer_in_hierarchy(sublayer, layer_name)
+                if found is not None:
+                    return found
+        return None
+
+    def _get_all_layers(self, parent_layer: K.layers.Layer) -> List[K.layers.Layer]:
+        """
+        Recursively get all layers within a parent layer, including nested sub-layers.
+
+        Parameters
+        ----------
+        parent_layer : keras.layers.Layer
+            The parent layer to search within.
+
+        Returns
+        -------
+        list of keras.layers.Layer
+            All layers found within the parent layer, including the parent itself.
+        """
+        layers = [parent_layer]
+        if hasattr(parent_layer, "layers"):
+            for sublayer in parent_layer.layers:
+                layers.extend(self._get_all_layers(sublayer))
+        return layers
 
     def _create_dataset(self, X, y) -> tf.data.Dataset:
         """
