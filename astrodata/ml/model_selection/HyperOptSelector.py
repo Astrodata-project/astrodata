@@ -12,10 +12,6 @@ from astrodata.ml.model_selection._utils import fit_model_score, fit_model_score
 from astrodata.ml.model_selection.BaseMlModelSelector import BaseMlModelSelector
 from astrodata.ml.models.BaseMlModel import BaseMlModel
 from astrodata.tracking.ModelTracker import ModelTracker
-from astrodata.utils.logger import setup_logger
-
-logger = setup_logger(__name__)
-
 
 class HyperOptSelector(BaseMlModelSelector):
     """

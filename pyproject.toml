@@ -35,7 +35,7 @@ dev = [
     "pytest>=8.4.1",
 ]
 tests = [
-    "pytest>=8.3.5",
+    "pytest>=8.4.2",
 ]
 
 [tool.uv]
@@ -52,6 +52,11 @@ omit = [
     # omit pytorch-generated files in /tmp
     "/tmp/*",
 ]
+
+[tool.pytest.ini_options]
+# Disable output capturing to prevent I/O errors with tqdm and pytest
+# See: https://github.com/tqdm/tqdm/issues/1000
+addopts = "-s --tb=short"
 
 [project.optional-dependencies]
 

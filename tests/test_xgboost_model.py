@@ -51,3 +51,62 @@ def test_xgboost_classifier_fit_predict_and_history(tmp_path):
     model2.load(p)
     yhat2 = model2.predict(X)
     assert np.allclose(yhat.values, yhat2.values)
+
+
+def test_xgboost_get_set_params():
+    xgb = pytest.importorskip("xgboost", reason="xgboost missing")
+    model = XGBoostModel(
+        xgb.XGBClassifier, n_estimators=10, max_depth=3, use_label_encoder=False
+    )
+    params = model.get_params()
+    assert params["n_estimators"] == 10
+    assert params["max_depth"] == 3
+    assert params["model_class"] == xgb.XGBClassifier
+
+    model.set_params(n_estimators=20, max_depth=5)
+    updated_params = model.get_params()
+    assert updated_params["n_estimators"] == 20
+    assert updated_params["max_depth"] == 5
+
+
+def test_xgboost_clone():
+    xgb = pytest.importorskip("xgboost", reason="xgboost missing")
+    model = XGBoostModel(
+        xgb.XGBClassifier, n_estimators=10, max_depth=3, use_label_encoder=False
+    )
+    model_clone = model.clone()
+    assert model_clone is not model
+    assert model_clone.model_class == model.model_class
+    assert model_clone.model_params == model.model_params
+
+
+def test_xgboost_score():
+    xgb = pytest.importorskip("xgboost", reason="xgboost missing")
+    X, y = _toy_classification()
+    model = XGBoostModel(
+        xgb.XGBClassifier, n_estimators=10, max_depth=2, use_label_encoder=False
+    )
+    model.fit(X, y)
+    score = model.score(X, y)
+    assert isinstance(score, float)
+    assert 0 <= score <= 1  # For classifiers, score is typically accuracy
+
+
+def test_xgboost_regressor():
+    xgb = pytest.importorskip("xgboost", reason="xgboost missing")
+    from sklearn.datasets import make_regression
+
+    X, y = make_regression(n_samples=80, n_features=6, random_state=123)
+    X = pd.DataFrame(X)
+    y = pd.Series(y)
+
+    model = XGBoostModel(xgb.XGBRegressor, n_estimators=10, max_depth=2)
+    model.fit(X, y)
+
+    yhat = model.predict(X)
+    assert isinstance(yhat, pd.Series)
+    assert len(yhat) == len(y)
+
+    # Regressor should use r2_score as default scorer
+    scorer = model.get_scorer_metric()
+    assert scorer.get_name() == "r2_score"

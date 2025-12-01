@@ -291,6 +291,37 @@ class SklearnMLflowTracker(MlflowBaseTracker):
 
 
 class PytorchMLflowTracker(MlflowBaseTracker):
+    """
+    MLflow tracker for PyTorch models. Wraps the fit() method of PytorchModel
+    to automatically log parameters, metrics, training history, and optionally
+    the trained model to MLflow tracking server.
+    
+    This tracker handles PyTorch-specific features like:
+    - Training and validation loss tracking per epoch
+    - Custom metrics evaluation on train/val/test splits
+    - PyTorch model serialization (torch, pkl, safetensors formats)
+    - Dataset support for both array-like and torch.utils.data.Dataset
+    
+    Examples
+    --------
+    >>> import torch.nn as nn
+    >>> from astrodata.ml.models import PytorchModel
+    >>> from astrodata.tracking.MLFlowTracker import PytorchMLflowTracker
+    >>> 
+    >>> model = PytorchModel(
+    ...     model_class=nn.Sequential,
+    ...     model_params={"modules": [nn.Linear(10, 64), nn.ReLU(), nn.Linear(64, 2)]},
+    ...     loss_fn=nn.CrossEntropyLoss,
+    ...     optimizer=torch.optim.Adam,
+    ...     optimizer_params={"lr": 0.001},
+    ...     epochs=10
+    ... )
+    >>> 
+    >>> tracker = PytorchMLflowTracker(run_name="pytorch_exp", experiment_name="experiments")
+    >>> tracked_model = tracker.wrap_fit(model, X_test=X_test, y_test=y_test, log_model=True)
+    >>> tracked_model.fit(X_train, y_train)
+    """
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -309,6 +340,43 @@ class PytorchMLflowTracker(MlflowBaseTracker):
         manual_metrics: Tuple[Dict[str, Any], str] = None,
         run_name: Optional[str] = None,
     ) -> PytorchModel:
+        """
+        Wrap a PytorchModel's fit method to perform MLflow logging.
+
+        Parameters
+        ----------
+        model : PytorchModel
+            The PyTorch model to wrap.
+        X_test : array-like, optional
+            Test data for metric logging.
+        y_test : array-like, optional
+            Test labels for metric logging.
+        X_val : array-like, optional
+            Validation data for metric logging.
+        y_val : array-like, optional
+            Validation labels for metric logging.
+        dataset_test : torch.utils.data.Dataset, optional
+            Test dataset for metric logging.
+        dataset_val : torch.utils.data.Dataset, optional
+            Validation dataset for metric logging.
+        metrics : list of BaseMetric, optional
+            Metrics to log. If missing, a default loss metric is added.
+        log_model : bool, default False
+            If True, log the fitted model as an MLflow artifact.
+        tags : Dict[str, Any], default {}
+            Any additional tags that should be added to the model. By default the tag "is_final" is set as equal to log_model so that
+            any logged model is considered as a candidate for production (for register_best_model) unless specified otherwise
+            (e.g. in the model selectors for intermediate steps).
+        manual_metrics : Tuple[Dict[str, Any], str], optional
+            Manual metrics to log with a split name.
+        run_name : str, optional
+            Name for the MLflow run. If None, uses tracker's run_name.
+
+        Returns
+        -------
+        PytorchModel
+            The wrapped model with MLflow-enabled fit method.
+        """
         orig_class = model.__class__
         if "is_final" not in tags.keys():
             tags["is_final"] = log_model
@@ -433,9 +501,34 @@ class PytorchMLflowTracker(MlflowBaseTracker):
 
 class TensorflowMLflowTracker(MlflowBaseTracker):
     """
-    Tracker for TensorFlow/Keras models with MLflow integration.
-
-    Provides run lifecycle, parameter logging, metric logging, and optional model logging.
+    MLflow tracker for TensorFlow/Keras models. Wraps the fit() method of TensorflowModel
+    to automatically log parameters, metrics, training history, and optionally
+    the trained model to MLflow tracking server.
+    
+    This tracker handles TensorFlow-specific features like:
+    - Training and validation loss tracking per epoch
+    - Custom metrics evaluation on train/val/test splits
+    - TensorFlow model serialization (keras, h5, savedmodel formats)
+    - Dataset support for both array-like and tf.data.Dataset
+    
+    Examples
+    --------
+    >>> import keras as K
+    >>> from astrodata.ml.models import TensorflowModel
+    >>> from astrodata.tracking.MLFlowTracker import TensorflowMLflowTracker
+    >>> 
+    >>> model = TensorflowModel(
+    ...     model_class=K.Sequential,
+    ...     model_params={"layers": [K.layers.Dense(64, activation='relu'), K.layers.Dense(2)]},
+    ...     loss_fn=K.losses.SparseCategoricalCrossentropy,
+    ...     optimizer=K.optimizers.Adam,
+    ...     optimizer_params={"learning_rate": 0.001},
+    ...     epochs=10
+    ... )
+    >>> 
+    >>> tracker = TensorflowMLflowTracker(run_name="tf_exp", experiment_name="experiments")
+    >>> tracked_model = tracker.wrap_fit(model, X_test=X_test, y_test=y_test, log_model=True)
+    >>> tracked_model.fit(X_train, y_train)
     """
 
     def __init__(self, *args, **kwargs):
@@ -482,14 +575,18 @@ class TensorflowMLflowTracker(MlflowBaseTracker):
             Validation dataset for metric logging.
         metrics : list of BaseMetric, optional
             Metrics to log. If missing, a default loss metric is added.
-        log_model : bool, optional
+        log_model : bool, default False
             If True, log the fitted model as an MLflow artifact.
-        tags: Dict[str, Any] default {}
+        tags : Dict[str, Any], default {}
             Any additional tags that should be added to the model. By default the tag "is_final" is set as equal to log_model so that
             any logged model is considered as a candidate for production (for register_best_model) unless specified otherwise
-            (e.g. in the model selectors for intermediate steps)
+            (e.g. in the model selectors for intermediate steps).
         manual_metrics : Tuple[Dict[str, Any], str], optional
-            Manual metrics to log.
+            Manual metrics to log with a split name.
+        run_name : str, optional
+            Name for the MLflow run. If None, uses tracker's run_name.with a split name.
+        run_name : str, optional
+            Name for the MLflow run. If None, uses tracker's run_name.
 
         Returns
         -------

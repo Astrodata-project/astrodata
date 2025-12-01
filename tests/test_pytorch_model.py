@@ -165,3 +165,175 @@ def test_pytorch_model_fine_tune_reuses_weights():
             assert param.requires_grad is True
         else:
             assert param.requires_grad is False
+
+
+def test_pytorch_model_score():
+    torch = pytest.importorskip("torch", reason="torch missing")
+    nn = torch.nn
+    optim = torch.optim
+
+    class TinyNet(nn.Module):
+        def __init__(self, in_features=5, hidden=8, num_classes=2):
+            super().__init__()
+            self.net = nn.Sequential(
+                nn.Linear(in_features, hidden),
+                nn.ReLU(),
+                nn.Linear(hidden, num_classes),
+            )
+
+        def forward(self, x):
+            return self.net(x)
+
+    X, y = _make_tiny_dataset(n=64, d=5, seed=7)
+
+    m = PytorchModel(
+        model_class=TinyNet,
+        loss_fn=nn.CrossEntropyLoss,
+        optimizer=optim.SGD,
+        model_params={"in_features": 5, "hidden": 8, "num_classes": 2},
+        optimizer_params={"lr": 0.05},
+        device="cpu",
+        epochs=2,
+        batch_size=16,
+    )
+    m.fit(X=X, y=y, epochs=2, batch_size=16, device="cpu")
+
+    # Score should return average loss
+    score = m.score(X=X, y=y, batch_size=16, device="cpu")
+    assert isinstance(score, float)
+    assert score >= 0
+
+
+def test_pytorch_model_get_set_params():
+    torch = pytest.importorskip("torch", reason="torch missing")
+    nn = torch.nn
+    optim = torch.optim
+
+    class TinyNet(nn.Module):
+        def __init__(self, in_features=5, hidden=8, num_classes=2):
+            super().__init__()
+            self.net = nn.Sequential(
+                nn.Linear(in_features, hidden),
+                nn.ReLU(),
+                nn.Linear(hidden, num_classes),
+            )
+
+        def forward(self, x):
+            return self.net(x)
+
+    m = PytorchModel(
+        model_class=TinyNet,
+        loss_fn=nn.CrossEntropyLoss,
+        optimizer=optim.SGD,
+        model_params={"in_features": 5, "hidden": 8, "num_classes": 2},
+        optimizer_params={"lr": 0.05},
+        device="cpu",
+        epochs=5,
+        batch_size=32,
+    )
+
+    params = m.get_params()
+    assert params["epochs"] == 5
+    assert params["batch_size"] == 32
+    assert params["model_params"]["hidden"] == 8
+
+    m.set_params(epochs=10, batch_size=64)
+    assert m.epochs == 10
+    assert m.batch_size == 64
+
+
+def test_pytorch_model_clone():
+    torch = pytest.importorskip("torch", reason="torch missing")
+    nn = torch.nn
+    optim = torch.optim
+
+    class TinyNet(nn.Module):
+        def __init__(self, in_features=5, hidden=8, num_classes=2):
+            super().__init__()
+            self.net = nn.Sequential(
+                nn.Linear(in_features, hidden),
+                nn.ReLU(),
+                nn.Linear(hidden, num_classes),
+            )
+
+        def forward(self, x):
+            return self.net(x)
+
+    m = PytorchModel(
+        model_class=TinyNet,
+        loss_fn=nn.CrossEntropyLoss,
+        optimizer=optim.SGD,
+        model_params={"in_features": 5, "hidden": 8, "num_classes": 2},
+        optimizer_params={"lr": 0.05},
+        device="cpu",
+        epochs=5,
+        batch_size=32,
+    )
+
+    m_clone = m.clone()
+    assert m_clone is not m
+    assert m_clone.epochs == m.epochs
+    assert m_clone.batch_size == m.batch_size
+    assert m_clone.model_params == m.model_params
+
+
+def test_pytorch_model_save_formats(tmp_path):
+    torch = pytest.importorskip("torch", reason="torch missing")
+    nn = torch.nn
+    optim = torch.optim
+
+    class TinyNet(nn.Module):
+        def __init__(self, in_features=5, hidden=8, num_classes=2):
+            super().__init__()
+            self.net = nn.Sequential(
+                nn.Linear(in_features, hidden),
+                nn.ReLU(),
+                nn.Linear(hidden, num_classes),
+            )
+
+        def forward(self, x):
+            return self.net(x)
+
+    X, y = _make_tiny_dataset(n=32, d=5, seed=8)
+
+    m = PytorchModel(
+        model_class=TinyNet,
+        loss_fn=nn.CrossEntropyLoss,
+        optimizer=optim.SGD,
+        model_params={"in_features": 5, "hidden": 8, "num_classes": 2},
+        optimizer_params={"lr": 0.05},
+        device="cpu",
+        epochs=1,
+        batch_size=16,
+    )
+    m.fit(X=X, y=y, epochs=1, batch_size=16, device="cpu")
+
+    # Test torch format
+    path_torch = tmp_path / "model.pt"
+    m.save(str(path_torch), format="torch")
+    m2 = PytorchModel(
+        model_class=TinyNet,
+        loss_fn=nn.CrossEntropyLoss,
+        optimizer=optim.SGD,
+        model_params={"in_features": 5, "hidden": 8, "num_classes": 2},
+        optimizer_params={"lr": 0.05},
+        device="cpu",
+    )
+    m2.load(str(path_torch), format="torch")
+    yhat2 = m2.predict(X, batch_size=16, device="cpu")
+    assert yhat2.shape[0] == X.shape[0]
+
+    # Test pkl format
+    path_pkl = tmp_path / "model.pkl"
+    m.save(str(path_pkl), format="pkl")
+    m3 = PytorchModel(
+        model_class=TinyNet,
+        loss_fn=nn.CrossEntropyLoss,
+        optimizer=optim.SGD,
+        model_params={"in_features": 5, "hidden": 8, "num_classes": 2},
+        optimizer_params={"lr": 0.05},
+        device="cpu",
+    )
+    m3.load(str(path_pkl), format="pkl")
+    yhat3 = m3.predict(X, batch_size=16, device="cpu")
+    assert yhat3.shape[0] == X.shape[0]

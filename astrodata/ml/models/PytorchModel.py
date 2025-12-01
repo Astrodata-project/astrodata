@@ -61,7 +61,7 @@ class PytorchModel(BaseMlModel):
         self.optimizer_ = None
         self.loss_fn_ = None
         self.metrics_history_ = None
-        self._val_metrics_history_ = None
+        self.val_metrics_history_ = None
 
     def fit(
         self,
@@ -113,6 +113,10 @@ class PytorchModel(BaseMlModel):
             Directory path where checkpoints will be saved.
         save_format : {"torch","pkl","safetensors"}, default "torch"
             Serialization format for checkpoints.
+        seed : int, optional
+            Random seed for reproducibility. If not provided, uses instance random_state.
+        **kwargs
+            Additional training parameters.
 
         Returns
         -------
@@ -125,7 +129,7 @@ class PytorchModel(BaseMlModel):
         batch_size = batch_size if batch_size is not None else self.batch_size
         device = self.device if device is None else device
         self.metrics_history_ = []
-        self._val_metrics_history_ = (
+        self.val_metrics_history_ = (
             []
             if (X_val is not None and y_val is not None) or dataset_val is not None
             else None
@@ -244,7 +248,7 @@ class PytorchModel(BaseMlModel):
                 device=device,
             )
             for name, value in val_scores.items():
-                self._val_metrics_history_.append((f"{name}_epoch", value))
+                self.val_metrics_history_.append((f"{name}_epoch", value))
 
             val_loss_acc = []
             for i, data in enumerate(
@@ -265,7 +269,7 @@ class PytorchModel(BaseMlModel):
                 outputs = model(inputs)
                 val_loss_acc.append(loss_fn(outputs, labels).item())
 
-            self._val_metrics_history_.append(
+            self.val_metrics_history_.append(
                 ("loss", sum(val_loss_acc) / len(val_loss_acc))
             )
 
@@ -302,7 +306,7 @@ class PytorchModel(BaseMlModel):
         return self._predict(data, batch_size, device, use_proba=False)
 
     def predict_proba(
-        self, data, batch_size: int, device: Optional[str] = None, **kwargs
+        self, data, batch_size: int = 32, device: Optional[str] = None, **kwargs
     ) -> Any:
         """
         Predict class probabilities for input ``X``.
@@ -312,7 +316,7 @@ class PytorchModel(BaseMlModel):
         data : array-like, torch.Tensor, or Dataset
             Features to predict. If a Dataset is provided, it should yield
             feature tensors only.
-        batch_size : int
+        batch_size : int, default 32
             Batch size used when ``X`` is not a Dataset.
         device : str, optional
             Device to use for inference. Defaults to instance device.
@@ -333,7 +337,7 @@ class PytorchModel(BaseMlModel):
         self, X, batch_size: int, device: Optional[str], use_proba: bool
     ) -> Any:
         if self.model_ is None:
-            raise RuntimeError("Model is not fitted yet.")
+            raise RuntimeError("Model is not fitted.")
 
         device = device
         self.model_.eval()
@@ -407,7 +411,7 @@ class PytorchModel(BaseMlModel):
         device = self.device if device is None else device
 
         if self.model_ is None:
-            raise RuntimeError("Model is not fitted yet.")
+            raise RuntimeError("Model is not fitted.")
 
         if dataset is None and (X is None or y is None):
             raise ValueError("Either dataset or both X and y must be provided.")
@@ -521,10 +525,10 @@ class PytorchModel(BaseMlModel):
         Raises
         ------
         RuntimeError
-            If the model is not fitted yet.
+            If the model is not fitted.
         """
         if self.model_ is None:
-            raise RuntimeError("Model is not fitted yet.")
+            raise RuntimeError("Model is not fitted.")
 
         # Handle "all" parameter
         if layer_names == "all":
@@ -559,10 +563,10 @@ class PytorchModel(BaseMlModel):
         Raises
         ------
         RuntimeError
-            If the model is not fitted yet.
+            If the model is not fitted.
         """
         if self.model_ is None:
-            raise RuntimeError("Model is not fitted yet.")
+            raise RuntimeError("Model is not fitted.")
 
         # Handle "all" parameter
         if layer_names == "all":
@@ -742,8 +746,6 @@ class PytorchModel(BaseMlModel):
             Input features.
         y : array-like or torch.Tensor
             Target labels.
-        batch_size : int
-            Batch size for the Dataset.
         device : str, optional
             Device to place tensors on. Defaults to self.device.
 
@@ -755,7 +757,15 @@ class PytorchModel(BaseMlModel):
         if not isinstance(X, torch.Tensor):
             X = torch.tensor(X, dtype=torch.float32)
         if not isinstance(y, torch.Tensor):
-            y = torch.tensor(y, dtype=torch.long)
+            # Detect dtype based on y's characteristics
+            if hasattr(y, 'dtype'):
+                # If y is numpy array or pandas, check if it's integer or float
+                y_dtype = torch.long if np.issubdtype(y.dtype, np.integer) else torch.float32
+            else:
+                # For lists or other iterables, try to infer from first element
+                y_array = np.asarray(y)
+                y_dtype = torch.long if np.issubdtype(y_array.dtype, np.integer) else torch.float32
+            y = torch.tensor(y, dtype=y_dtype)
         if device is None:
             device = self.device
 
@@ -810,7 +820,7 @@ class PytorchModel(BaseMlModel):
         history = (
             self.metrics_history_
             if split == "train"
-            else self._val_metrics_history_ if split == "val" else None
+            else self.val_metrics_history_ if split == "val" else None
         )
         d = {}
         if history is None:
