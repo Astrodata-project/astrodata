@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import tensorflow as tf
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from astrodata.data.utils import FITS_EXTS, decode_fits, gather_paths_and_labels
 
@@ -14,8 +14,7 @@ class TensorflowData(BaseModel):
     data: Dict[str, tf.data.Dataset]
     metadata: Dict[str, Any]
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def get_dataset(self, split: str):
         """

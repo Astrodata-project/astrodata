@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Optional
 
 import pandas as pd
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RawData(BaseModel):
@@ -19,8 +19,7 @@ class RawData(BaseModel):
     format: str
     data: pd.DataFrame
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class ProcessedData(BaseModel):
@@ -35,8 +34,7 @@ class ProcessedData(BaseModel):
     data: pd.DataFrame
     metadata: Optional[dict] = {}
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def dump_parquet(self, path: Path):
         """

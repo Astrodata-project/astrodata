@@ -53,6 +53,11 @@ omit = [
     "/tmp/*",
 ]
 
+[tool.pytest.ini_options]
+# Disable output capturing to prevent I/O errors with tqdm and pytest
+# See: https://github.com/tqdm/tqdm/issues/1000
+addopts = "-s --tb=short"
+
 [project.optional-dependencies]
 
 tensorflow = [

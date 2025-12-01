@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, Tuple, Optional
 
 import numpy as np
 import torch
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from torch.utils.data import DataLoader, Dataset
 from torchvision.io import decode_image
 
@@ -27,8 +27,7 @@ class TorchRawData(BaseModel):
     data: Dict[str, Dataset]
     metadata: Dict[str, Any]
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def get_dataset(self, split: str):
         """
@@ -64,8 +63,7 @@ class TorchProcessedData(BaseModel):
     dataloaders: Dict[str, DataLoader]  # Dictionary of DataLoader objects
     metadata: Dict[str, Any]
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def get_dataloader(self, split: str):
         """
