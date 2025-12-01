@@ -128,7 +128,7 @@ def fit_model_score(
     else:
         m.fit(X_train, y_train_mod, X_val=X_val, y_val=y_val_mod, **kwargs)
 
-    if dataset_train is not None:
+    if dataset_val is not None:
         if scorer:
             score = m.get_metrics(dataset=dataset_val, metrics=[scorer])[
                 scorer.get_name()
