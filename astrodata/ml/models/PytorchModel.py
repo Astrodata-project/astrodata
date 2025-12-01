@@ -269,7 +269,7 @@ class PytorchModel(BaseMlModel):
                 outputs = model(inputs)
                 val_loss_acc.append(loss_fn(outputs, labels).item())
 
-            self.val_metrics_history_.append(
+            self._val_metrics_history_.append(
                 ("loss", sum(val_loss_acc) / len(val_loss_acc))
             )
 
