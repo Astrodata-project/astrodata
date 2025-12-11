@@ -23,7 +23,14 @@ def extract_format(path: str) -> str:
 
 def convert_to_processed_data(data: RawData) -> ProcessedData:
     """
-    Convert RawData to ProcessedData using specified feature and target columns.
+    Convert RawData to ProcessedData.
+
+    Parameters:
+        data: RawData instance containing data and metadata.
+
+    Returns:
+        ProcessedData with the same data payload and a metadata dict containing
+        "source" and "format" copied from the RawData.
     """
 
     return ProcessedData(
@@ -52,6 +59,30 @@ def gather_paths_and_labels(
     valid_exts: Optional[Iterable[str]] = None,
     return_type: str = "str",  # "str" | "path"
 ) -> Tuple[List, List[int], List[str], Dict[str, int]]:
+    """
+    Traverse class directories and collect file paths and labels.
+
+    Assumes a structure:
+      image_dir/
+        class_a/
+          file1...
+        class_b/
+          file2...
+
+    Parameters:
+        image_dir: Root directory containing class subdirectories.
+        valid_exts: Optional iterable of allowed file extensions (lowercased, including leading dot).
+        return_type: "str" to return string paths, "path" to return Path objects.
+
+    Returns:
+        - paths: List of file paths (str or Path based on return_type).
+        - labels: List of integer class indices aligned with paths.
+        - class_names: List of class names.
+        - class_to_idx: Mapping from class name to index.
+
+    Notes:
+        Files are sorted per class directory; classes are sorted by name.
+    """
     class_dirs = list_class_dirs(image_dir)
     class_names, class_to_idx = build_class_index(class_dirs)
 
@@ -74,9 +105,21 @@ def gather_paths_and_labels(
 
 def decode_fits(path: str) -> np.ndarray:
     """
-    Read a FITS file and return image data as float32 numpy array in HWC layout.
-    - 2D -> [H, W, 1]
-    - 3D: supports [C, H, W] (C<=4) or [H, W, C] (C<=4)
+    Load image data from a FITS file as a float32 NumPy array in HWC layout.
+
+    Shapes handled:
+        - 2D: [H, W] -> returns [H, W, 1]
+        - 3D: [C, H, W] (C <= 4) -> returns [H, W, C]
+        - 3D: [H, W, C] (C <= 4) -> returns as-is
+
+    Parameters:
+        path: Path to a FITS file.
+
+    Returns:
+        NumPy array of shape [H, W, C] with dtype float32.
+
+    Raises:
+        ValueError: If no image data is found or shape is unsupported.
     """
     with fits.open(path) as hdul:
         hdu = next((h for h in hdul if getattr(h, "data", None) is not None), None)

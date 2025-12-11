@@ -11,24 +11,27 @@ from astrodata.data.schemas.vision.tensorflow import (
 
 class TensorflowLoader(BaseLoader):
     """
-    Tensorflow data loader for image datasets with train/validation/test splits.
+    TensorFlow data loader for image or FITS datasets organized into
+    train/validation/test directory splits.
 
-    Expected directory structure:
-    data_root/
-    ├── train/
-    │   ├── class1/
-    │   ├── class2/
-    │   └── ...
-    ├── val/  --optional
-    │   ├── class1/
-    │   ├── class2/
-    │   └── ...
-    └── test/
-        ├── class1/
-        ├── class2/
-        └── ...
+    Directory structure:
+      root/
+      ├── train/
+      │   ├── class1/
+      │   ├── class2/
+      │   └── ...
+      ├── val/        (optional)
+      │   ├── class1/
+      │   ├── class2/
+      │   └── ...
+      └── test/
+          ├── class1/
+          ├── class2/
+          └── ...
 
-    It auto-detects dataset type by file extensions (currently supports images).
+    The dataset type is auto-detected by scanning file extensions in the train split.
+    Supports image files (.png, .jpg, .jpeg) and FITS files (.fits). Mixed types
+    within the same dataset are not allowed.
     """
 
     def __init__(self) -> None:
@@ -73,15 +76,21 @@ class TensorflowLoader(BaseLoader):
 
     def load(self, path: str, **dataset_kwargs: Any) -> TensorflowData:
         """
-        Load Tensorflow datasets from directory structure.
+        Load TensorFlow datasets from a directory structure with train/test
+        (and optional val) splits.
 
         Args:
-            path: Root directory containing train/val/test folders
-            **dataset_kwargs: Extra keyword args forwarded to TensorflowImageDataset
-                              (e.g., image_size, batch_size, color_mode, shuffle, seed, etc.)
+            path: Root directory containing the dataset splits.
+            **dataset_kwargs: Extra keyword arguments forwarded to the selected
+                dataset builder (TensorflowImageDataset or TensorflowFITSDataset),
+                e.g., image_size, batch_size, color_mode, shuffle, seed, etc.
 
         Returns:
-            TensorflowData object containing the loaded datasets
+            TensorflowData: Object containing built tf.data.Datasets and metadata.
+
+        Raises:
+            ValueError: If the root directory does not exist or train/test are missing.
+            RuntimeError: If dataset type cannot be inferred or mixed types are found.
         """
         root_path = Path(path)
 

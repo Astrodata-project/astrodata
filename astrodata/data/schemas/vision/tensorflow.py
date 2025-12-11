@@ -18,16 +18,16 @@ class TensorflowData(BaseModel):
 
     def get_dataset(self, split: str):
         """
-        Get a specific dataset split.
+        Return a specific dataset split.
 
         Args:
-            split: The split name ('train', 'val', or 'test')
+            split: Split name, typically "train", "val", or "test".
 
         Returns:
-            The requested dataset
+            tf.data.Dataset for the requested split.
 
         Raises:
-            KeyError: If the split doesn't exist
+            KeyError: If the split is not present in self.data.
         """
         if split not in self.data:
             raise KeyError(
@@ -38,7 +38,9 @@ class TensorflowData(BaseModel):
 
 class TensorflowImageDataset:
     """
-    Wrapper around tensorflow.utils.image_dataset_from_directory.
+    Wrapper around tf.keras.utils.image_dataset_from_directory with convenience
+    parameters for common image classification setups. Supports optional
+    validation splits and propagates class names/indices in metadata.
     """
 
     def __init__(
@@ -101,9 +103,15 @@ class TensorflowImageDataset:
 
     def build(self) -> Tuple[tf.data.Dataset, Dict[str, Any]]:
         """
+        Build the dataset and collect metadata.
+
         Returns:
-            dataset: The created tf.data.Dataset
-            metadata: Dict containing class_names and class_to_idx
+            dataset: The created tf.data.Dataset.
+            metadata: Dict containing:
+              - class_names: Ordered list of class names.
+              - class_to_idx: Mapping from class name to integer index.
+              - image_dir: Source directory.
+              - params: Loader parameters (excluding directory).
         """
         ds = self._build()
         names = getattr(ds, "class_names", []) or []
@@ -118,12 +126,13 @@ class TensorflowImageDataset:
 
 class TensorflowFITSDataset:
     """
-    FITS dataset builder for folders like:
+    TensorFlow FITS dataset builder for directory trees of the form:
       root/
         class_a/*.fits
         class_b/*.fits
 
-    Uses tf.data to stream FITS files with minimal defaults.
+    Streams FITS images via tf.data and numpy_function with minimal defaults,
+    returning (image, label) pairs and class metadata.
     """
 
     def __init__(self, image_dir: str | Path, batch_size: Optional[int] = None):
@@ -146,6 +155,16 @@ class TensorflowFITSDataset:
         return img, tf.cast(label, tf.int32)
 
     def build(self) -> Tuple[tf.data.Dataset, Dict[str, Any]]:
+        """
+        Build a FITS tf.data.Dataset and collect metadata.
+
+        Returns:
+            dataset: Prefetched (and optionally batched) tf.data.Dataset of (image, label).
+            metadata: Dict containing:
+              - class_names: Ordered list of class names.
+              - class_to_idx: Mapping from class name to integer index.
+              - image_dir: Source directory.
+        """
         paths, labels, class_names, class_to_idx = self._gather()
 
         ds = tf.data.Dataset.from_tensor_slices((paths, labels))

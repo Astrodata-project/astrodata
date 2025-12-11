@@ -12,15 +12,15 @@ from astrodata.data.utils import VALID_IMAGE_EXTS, decode_fits, gather_paths_and
 
 class TorchRawData(BaseModel):
     """
-    Represents raw PyTorch datasets loaded from image directories.
+    Represents raw PyTorch datasets loaded from directory trees.
 
-    This schema is specifically designed for PyTorch image datasets
-    organized in train/validation/test splits with class folders.
+    Expects train/validation/test splits under a root, with class subfolders
+    containing image files (PNG/JPG/JPEG) or FITS files, depending on dataset type.
 
     Attributes:
-        source: Root directory containing the datasets
-        data: Dictionary of PyTorch datasets (train/val/test)
-        metadata: Information about classes, splits, etc.
+        source: Root directory containing the datasets.
+        data: Mapping of split name to torch.utils.data.Dataset (e.g., train/val/test).
+        metadata: Information about classes, splits, and class index mapping.
     """
 
     source: Path | str
@@ -53,11 +53,8 @@ class TorchProcessedData(BaseModel):
     """
     Represents processed PyTorch data after transformations and DataLoader creation.
 
-    This schema holds DataLoaders and training-related metadata.
-
-    Attributes:
-        dataloaders: Dictionary of PyTorch DataLoaders
-        metadata: Information about batch size, transforms, etc.
+    Holds DataLoaders per split (e.g., train/val/test) and training-related metadata
+    such as batch size, shuffling, num_workers, and applied transforms.
     """
 
     dataloaders: Dict[str, DataLoader]  # Dictionary of DataLoader objects
@@ -89,8 +86,9 @@ class TorchImageDataset(Dataset):
     """
     Custom PyTorch Dataset for image data with train/validation/test splits.
 
-    This dataset loads images from specified directories.
-    It expects images to be organized in folders by class/label.
+    Loads standard image files and returns tensors suitable for models. Images are
+    expected in class-labeled subdirectories. Optional transform is applied to the
+    decoded image tensor.
     """
 
     def __init__(
@@ -103,6 +101,7 @@ class TorchImageDataset(Dataset):
 
         Args:
             image_dir: Directory containing images organized by class folders
+            transform: Optional transform to apply to each image
         """
         self.image_dir = Path(image_dir)
 
@@ -136,10 +135,14 @@ class TorchImageDataset(Dataset):
         Get a sample from the dataset.
 
         Args:
-            idx: Index of the sample to retrieve
+            idx: Index of the sample to retrieve.
 
         Returns:
-            Tuple of (image_tensor, label)
+            (image_tensor, label):
+              - image_tensor: torch.Tensor with shape [C, H, W] and dtype uint8 by
+                default from torchvision.io.decode_image. If a transform is provided,
+                its output shape/dtype may differ (e.g., float32).
+              - label: int class index.
         """
         img_path = self.image_paths[idx]
         label = self.labels[idx]
@@ -157,7 +160,9 @@ class TorchFITSDataset(Dataset):
     """
     Custom PyTorch Dataset for FITS image data with train/validation/test splits.
 
-    Expects images organized in class folders under a split directory.
+    Expects FITS images organized in class subfolders under a split directory.
+    Decodes FITS to float32 arrays and returns CHW tensors. Optional transform
+    can be applied to the tensor.
     """
 
     def __init__(self, image_dir: str, transform: Optional[Callable] = None):
@@ -196,7 +201,11 @@ class TorchFITSDataset(Dataset):
             idx: Index of the sample to retrieve
 
         Returns:
-            Tuple of (image_tensor, label), where image tensor is shape [C, H, W]
+            (image_tensor, label):
+              - image_tensor: torch.Tensor with shape [C, H, W], dtype inferred from
+                decode_fits (typically float32). If a transform is provided, its output
+                may change shape/dtype.
+              - label: int class index.
         """
         img_path = self.image_paths[idx]
         label = self.labels[idx]
