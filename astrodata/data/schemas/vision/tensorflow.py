@@ -135,9 +135,16 @@ class TensorflowFITSDataset:
     returning (image, label) pairs and class metadata.
     """
 
-    def __init__(self, image_dir: str | Path, batch_size: Optional[int] = None):
+    def __init__(
+        self,
+        image_dir: str | Path,
+        batch_size: Optional[int] = None,
+        shuffle: bool | int = True,
+        **kwargs,
+    ):
         self.image_dir = Path(image_dir)
         self.batch_size = batch_size
+        self.shuffle = shuffle
 
     def _gather(self) -> Tuple[List[str], List[int], List[str], Dict[str, int]]:
         paths, labels, class_names, class_to_idx = gather_paths_and_labels(
@@ -168,12 +175,14 @@ class TensorflowFITSDataset:
         paths, labels, class_names, class_to_idx = self._gather()
 
         ds = tf.data.Dataset.from_tensor_slices((paths, labels))
+        if self.shuffle:
+            buffer_size = self.shuffle if isinstance(self.shuffle, int) else len(paths)
+            ds = ds.shuffle(buffer_size)
         ds = ds.map(self._map_function, num_parallel_calls=tf.data.AUTOTUNE)
         ds = ds.prefetch(tf.data.AUTOTUNE)
 
         if self.batch_size is not None:
             ds = ds.batch(self.batch_size)
-
         meta = {
             "class_names": class_names,
             "class_to_idx": class_to_idx,

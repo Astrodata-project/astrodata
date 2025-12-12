@@ -1,4 +1,5 @@
 import tensorflow as tf
+from utils import setup_datasets
 
 from astrodata.data.loaders.tensorflow_loader import TensorflowLoader
 
@@ -20,6 +21,7 @@ def describe_dataset(name, ds):
 if __name__ == "__main__":
     cifar_dir = "../../testdata/torch/cifar10"
     fits_dir = "../../testdata/torch/fits"
+    setup_datasets(cifar_dir, fits_dir)
 
     # Initialize loader
     loader = TensorflowLoader()
