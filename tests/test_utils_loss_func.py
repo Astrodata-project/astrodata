@@ -22,4 +22,3 @@ def test_get_loss_func_for_xgboost_binary():
     model = xgb.XGBClassifier(objective="binary:logistic", n_estimators=5)
     f = get_loss_func(model)
     assert f is log_loss
-

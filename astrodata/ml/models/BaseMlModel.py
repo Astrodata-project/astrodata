@@ -118,15 +118,15 @@ class BaseMlModel(ABC):
         pass
 
     @abstractmethod
-    def get_metrics(self, X_test: Any, y_test: Any, **kwargs) -> Dict[str, float]:
+    def get_metrics(self, X: Any, y: Any, **kwargs) -> Dict[str, float]:
         """
         Compute and return model metrics on test data.
 
         Parameters
         ----------
-        X_test : Any
+        X : Any
             Test data features.
-        y_test : Any
+        y : Any
             Test data targets.
         **kwargs :
             Additional metrics options.
@@ -169,19 +169,15 @@ class BaseMlModel(ABC):
             If not implemented by the subclass.
         """
         raise NotImplementedError
-
+    
+    @abstractmethod
     def clone(self) -> "BaseMlModel":
         """
-        Create a (shallow) clone of this model instance.
+        Create a deep copy of the model instance.
 
         Returns
         -------
         BaseMlModel
-            Cloned model instance.
+            A deep copy of the model.
         """
-        new_instance = self.__class__(model_class=self.model_class, **self.model_params)
-        # Copy over any callable attributes (e.g., decorated methods)
-        for attr, value in self.__dict__.items():
-            if callable(value):
-                setattr(new_instance, attr, value)
-        return new_instance
+        pass

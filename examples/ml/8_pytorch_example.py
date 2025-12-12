@@ -1,3 +1,4 @@
+import torch
 import torch.nn.functional as F
 from sklearn.datasets import load_breast_cancer
 from sklearn.metrics import accuracy_score, f1_score, log_loss
@@ -10,6 +11,16 @@ from astrodata.ml.models import PytorchModel
 if __name__ == "__main__":
     X, y = load_breast_cancer(return_X_y=True)
     X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+    dataset = torch.utils.data.TensorDataset(
+        torch.tensor(X_train, dtype=torch.float32),
+        torch.tensor(y_train, dtype=torch.long),
+    )
+
+    dataset_test = torch.utils.data.TensorDataset(
+        torch.tensor(X_test, dtype=torch.float32),
+        torch.tensor(y_test, dtype=torch.long),
+    )
 
     class SimpleClassifier(nn.Module):
         def __init__(self, input_layers, output_layers):
@@ -36,20 +47,10 @@ if __name__ == "__main__":
         optimizer_params={"lr": 1e-3},
         epochs=10,
         batch_size=32,
-        device="cpu",
+        device="cuda",
     )
 
     print(model.get_params())
-
-    model.fit(
-        X=X_train,
-        y=y_train,
-    )
-
-    y_pred = model.predict(
-        X=X_test,
-        batch_size=32,
-    )
 
     accuracy = SklearnMetric(accuracy_score, greater_is_better=True)
     f1 = SklearnMetric(f1_score, average="micro")
@@ -57,4 +58,16 @@ if __name__ == "__main__":
 
     metrics = [accuracy, f1, logloss]
 
-    print(model.get_metrics(X_test, y_test, metrics))
+    model.fit(
+        X=X,
+        y=y,
+        metrics=metrics,
+        dataset_val=dataset_test,
+    )
+
+    y_pred = model.predict(
+        data=X_test,
+        batch_size=32,
+    )
+
+    print(model.get_metrics(dataset=dataset_test, metrics=metrics))

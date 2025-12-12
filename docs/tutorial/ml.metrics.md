@@ -80,3 +80,40 @@ y_pred = [0, 0, 0, 1]
 print(f"Accuracy: {accuracy(y_true, y_pred)}")
 print(f"F1 Macro: {f1_macro(y_true, y_pred)}")
 ```
+
+### `TensorflowMetric`
+
+This class allows you to wrap Keras/TensorFlow metric objects while maintaining compatibility with both the Keras metrics interface and the astrodata `BaseMetric` interface:
+
+```python
+from keras.metrics import Accuracy, FBetaScore
+from astrodata.ml.metrics.TensorflowMetric import TensorflowMetric
+import numpy as np
+
+# Wrap a Keras Accuracy metric
+accuracy = TensorflowMetric(metric=Accuracy(), name="accuracy", greater_is_better=True)
+
+# Wrap a Keras FBetaScore metric with specific parameters
+f1_score = TensorflowMetric(metric=FBetaScore(beta=1.0), name="f1_score", greater_is_better=True)
+
+# Example usage with tensor-like data
+y_true = np.array([0, 1, 0, 1])
+y_pred = np.array([[0.9, 0.1], [0.2, 0.8], [0.8, 0.2], [0.3, 0.7]])
+
+print(f"Accuracy: {accuracy(y_true, y_pred)}")
+print(f"F1 Score: {f1_score(y_true, y_pred)}")
+
+# Can also be used as a standard Keras metric
+accuracy.update_state(y_true, y_pred)
+result = accuracy.result()
+print(f"Keras-style result: {result.numpy()}")
+accuracy.reset_state()
+```
+
+```{note}
+`TensorflowMetric` inherits from both `keras.metrics.Metric` and `BaseMetric`, allowing it to be used seamlessly in Keras workflows while providing the astrodata metrics interface.
+```
+
+```{tip}
+When using TensorFlow/Keras metrics, the input data will be automatically converted to tensors. Make sure your data is in a format compatible with TensorFlow operations.
+```

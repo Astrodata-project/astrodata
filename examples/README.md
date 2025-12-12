@@ -32,7 +32,7 @@ pip install git+https://github.com/Astrodata-project/astrodata.git
 ## 1. Preprocessing and PremlPipeline
 
 **File:** `data/2_preml_example.py`  
-**Config Example:** `example_config_params.yaml`
+**Config Example:** `data/example_config_params.yaml`
 
 - Demonstrates how to use `PremlPipeline` for preprocessing tasks.
 - Utilizes processors such as `OHE` (One Hot Encoder), `MissingImputator`, and `TrainTestSplitter`.
@@ -40,7 +40,7 @@ pip install git+https://github.com/Astrodata-project/astrodata.git
 - Shows how to handle missing values, encode categorical features, and split data for machine learning tasks.
 - Outputs the shapes of resulting train/test splits and demonstrates dumping data into a supervised ML format.
 
-**Config sample (`example_config_params.yaml`):**
+**Config sample (`data/example_config_params.yaml`):**
 ```yaml
 preml:
   TrainTestSplitter:
@@ -79,12 +79,11 @@ preml:
 
 ## 4. Grid Search Hyperparameter Tuning
 
-**File:** `ml/3_gridsearch_example.py`
+**Files:**
 
-- Demonstrates hyperparameter tuning with `GridSearchCVSelector`.
-- Uses `SklearnModel` and scikit-learn's `LinearSVC`.
-- Specifies parameter grids and scorer functions.
-- Finds and prints the best parameters and model metrics.
+- `ml/3_gridsearch_example.py` – Demonstrates hyperparameter tuning with `GridSearchCVSelector` on a `LinearSVC`.
+- `ml/3_1_gridsearch_parallel_example.py` – Shows a minimal invocation of the parallel selector for timing comparisons.
+- `ml/3_2_gridsearch_parallel_comparison.py` – Runs serial and parallel selectors side-by-side with identical seeds, asserting that both converge to the same best parameters while letting you vary the training set size.
 
 
 
@@ -127,8 +126,16 @@ preml:
 
 ## 7. Configuration Files
 
-- **`example_config.yaml`**: Sample configuration for train/test splitting.
-- **`example_config_params.yaml`**: Extended config for specifying parameters for all pipeline processors.
+- **`data/example_config.yaml`**: Sample configuration for train/test splitting.
+- **`data/example_config_params.yaml`**: Extended config for specifying parameters for all pipeline processors.
+---
+
+## 8. "Real world" example
+
+The example contained in the `real_world` folder demonstrates a more complete use case of the `astrodata` library, combining data preprocessing, model training, hyperparameter optimization, and MLflow tracking in a cohesive workflow. Astrodata capabilities to version both code and data in-code, are disabled by default for simplicity, but can be enabled by uncommenting the relevant lines in the scripts.
+The requirements for running the example with data and code versioning enabled are:
+- Create a standalone repository for the example, to allow git and DVC to track changes. 
+- Change the config.yaml file with your git credentials, and make sure to include data and files paths in `data` and `code` sections of the config file.
 
 ---
 

@@ -1,40 +1,93 @@
 from pathlib import Path
+from typing import Dict, Callable, Literal
 
 from astrodata.data.loaders.base import BaseLoader
-from astrodata.data.schemas import TorchImageDataset, TorchRawData
+from astrodata.data.schemas import TorchFITSDataset, TorchImageDataset, TorchRawData
 
 
 class TorchLoader(BaseLoader):
     """
-    PyTorch data loader for image datasets with train/validation/test splits.
+    PyTorch data loader for image or FITS datasets organized into
+    train/validation/test directory splits.
 
-    This loader expects a directory structure like:
-    data_root/
-    ├── train/
-    │   ├── class1/
-    │   ├── class2/
-    │   └── ...
-    ├── val/  --optional
-    │   ├── class1/
-    │   ├── class2/
-    │   └── ...
-    └── test/
-        ├── class1/
-        ├── class2/
-        └── ...
+    Directory structure:
+      root/
+      ├── train/
+      │   ├── class1/
+      │   ├── class2/
+      │   └── ...
+      ├── val/        (optional)
+      │   ├── class1/
+      │   ├── class2/
+      │   └── ...
+      └── test/
+          ├── class1/
+          ├── class2/
+          └── ...
+
+    The dataset type is auto-detected by scanning file extensions in the train split.
+    Supports image files (.png, .jpg, .jpeg) and FITS files (.fits). Mixed types
+    within the same dataset are not allowed.
     """
+
+    def __init__(
+        self, transform_dict: Dict[Literal["train", "val", "test"], Callable] = None
+    ):
+        self.dataset_type = None
+        self.dataset_class = None
+        self.transform_dict = transform_dict or {}
+
+    def _set_dataset_type(self, dataset_type: str) -> None:
+        if dataset_type == "image":
+            self.dataset_type = "image"
+            self.dataset_class = TorchImageDataset
+        elif dataset_type == "fits":
+            self.dataset_type = "fits"
+            self.dataset_class = TorchFITSDataset
+
+    def _infer_dataset_type(self, split_dir: Path) -> None:
+        """
+        Infer dataset type by scanning file extensions under the split directory.
+        """
+        image_exts = {".png", ".jpg", ".jpeg"}
+        fits_ext = ".fits"
+
+        has_image = False
+        has_fits = False
+
+        for p in split_dir.rglob("*"):
+            if not p.is_file():
+                continue
+            ext = p.suffix.lower()
+            if ext in image_exts:
+                has_image = True
+            if ext == fits_ext:
+                has_fits = True
+            if has_image and has_fits:
+                raise RuntimeError(
+                    "Mixed file types detected. Astrodata currently supports only a specific data format."
+                )
+
+        if has_image:
+            self._set_dataset_type("image")
+        elif has_fits:
+            self._set_dataset_type("fits")
 
     def load(self, path: str) -> TorchRawData:
         """
-        Load PyTorch datasets from directory structure.
+        Load PyTorch datasets from a directory structure with train/test
+        (and optional val) splits.
 
         Args:
-            path: Root directory containing train/val/test folders
+            path: Root directory containing the dataset splits.
 
         Returns:
-            TorchRawData object containing the loaded datasets
-        """
+            TorchRawData: Object containing the loaded datasets and metadata.
 
+        Raises:
+            ValueError: If the root directory does not exist or train/test are missing.
+            RuntimeError: If dataset type cannot be inferred or mixed types are found.
+        """
         root_path = Path(path)
 
         if not root_path.exists():
@@ -43,22 +96,32 @@ class TorchLoader(BaseLoader):
         train_dir = root_path / "train"
         val_dir = root_path / "val"
         test_dir = root_path / "test"
+
         if not (train_dir.exists() and test_dir.exists()):
-            raise ValueError(f"Expected train/test directories in {root_path}")
+            raise ValueError(f"Expected 'train' and 'test' directories in {root_path}")
+
+        self._infer_dataset_type(train_dir)
+
+        if self.dataset_class is None:
+            raise RuntimeError(
+                "dataset_class could not be determined. Please make sure that the file types are supported and consistent."
+            )
 
         datasets = {}
-
-        datasets["train"] = TorchImageDataset(train_dir)
-        datasets["test"] = TorchImageDataset(test_dir)
+        datasets["train"] = self.dataset_class(
+            train_dir, transform=self.transform_dict.get("train")
+        )
+        datasets["test"] = self.dataset_class(
+            test_dir, transform=self.transform_dict.get("test")
+        )
 
         if val_dir.exists():
-            datasets["val"] = TorchImageDataset(val_dir)
-
+            datasets["val"] = self.dataset_class(
+                val_dir, transform=self.transform_dict.get("val")
+            )
         metadata = {
-            "data_type": "torch_image_dataset",
             "root_path": str(root_path),
+            "dataset_type": self.dataset_type,
         }
 
-        return TorchRawData(
-            source=root_path, format="torch_image", data=datasets, metadata=metadata
-        )
+        return TorchRawData(source=root_path, data=datasets, metadata=metadata)

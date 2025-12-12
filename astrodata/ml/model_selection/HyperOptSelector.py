@@ -12,10 +12,6 @@ from astrodata.ml.model_selection._utils import fit_model_score, fit_model_score
 from astrodata.ml.model_selection.BaseMlModelSelector import BaseMlModelSelector
 from astrodata.ml.models.BaseMlModel import BaseMlModel
 from astrodata.tracking.ModelTracker import ModelTracker
-from astrodata.utils.logger import setup_logger
-
-logger = setup_logger(__name__)
-
 
 class HyperOptSelector(BaseMlModelSelector):
     """
@@ -77,9 +73,16 @@ class HyperOptSelector(BaseMlModelSelector):
         self._best_metrics = None
 
     def _objective(
-        self, params: Dict[str, Any], X, y, X_val=None, y_val=None
+        self,
+        params: Dict[str, Any],
+        X=None,
+        y=None,
+        X_val=None,
+        y_val=None,
+        dataset_train=None,
+        dataset_val=None,
+        **kwargs,
     ) -> Dict[str, Any]:
-        # hyperopt passes numpy floats, so cast where needed
         params_t = params.copy()
         model = params_t.pop("model")
 
@@ -87,7 +90,6 @@ class HyperOptSelector(BaseMlModelSelector):
             raise TypeError(f"{model} is not a BaseMlModel instance")
 
         if self.use_cv:
-
             cv_splitter = KFold(
                 n_splits=self.cv, shuffle=True, random_state=self.random_state
             )
@@ -105,13 +107,30 @@ class HyperOptSelector(BaseMlModelSelector):
                 tags={"stage": "training", "is_final": False, "params": params},
             )
         else:
-            if X_val is None or y_val is None:
-
-                X_train, X_val, y_train, y_val = train_test_split(
-                    X, y, test_size=self.val_size, random_state=self.random_state
-                )
+            if dataset_train is not None:
+                # Using dataset format
+                if dataset_val is None:
+                    raise ValueError(
+                        "When using dataset_train, dataset_val must also be provided."
+                    )
+                X_train, y_train = None, None
+                X_val_use, y_val_use = None, None
+                dataset_train_use = dataset_train
+                dataset_val_use = dataset_val
             else:
-                X_train, y_train = X, y
+                # Using X,y format
+                if X_val is None or y_val is None:
+                    X_train, X_val_use, y_train, y_val_use = train_test_split(
+                        X,
+                        y,
+                        test_size=self.val_size,
+                        random_state=self.random_state,
+                    )
+                else:
+                    X_train, y_train = X, y
+                    X_val_use, y_val_use = X_val, y_val
+                dataset_train_use = None
+                dataset_val_use = None
 
             m, metrics, score = fit_model_score(
                 model,
@@ -119,25 +138,49 @@ class HyperOptSelector(BaseMlModelSelector):
                 self.scorer,
                 X_train,
                 y_train,
-                X_val,
-                y_val,
+                X_val_use,
+                y_val_use,
+                dataset_train=dataset_train_use,
+                dataset_val=dataset_val_use,
                 metrics=self.metrics,
                 tracker=self.tracker,
                 log_model=self.log_all_models,
                 tags={"stage": "training", "is_final": False, "params": params},
+                **kwargs,
             )
 
         greater_is_better = self.scorer.greater_is_better if self.scorer else True
         loss = -score if greater_is_better else score
-        return {"loss": loss, "status": STATUS_OK, "metrics": metrics, "params": params}
+        return {
+            "loss": loss,
+            "status": STATUS_OK,
+            "metrics": metrics,
+            "params": params,
+        }
 
     def fit(
-        self, X, y, X_val=None, y_val=None, X_test=None, y_test=None, *args, **kwargs
+        self,
+        X=None,
+        y=None,
+        X_val=None,
+        y_val=None,
+        X_test=None,
+        y_test=None,
+        dataset_train=None,
+        dataset_val=None,
+        dataset_test=None,
+        *args,
+        **kwargs,
     ) -> "HyperOptSelector":
+        # Validate input format
+        if (X is None or y is None) and dataset_train is None:
+            raise ValueError("Either (X, y) or dataset_train must be provided.")
 
         trials = Trials()
         best_params = fmin(
-            fn=lambda params: self._objective(params, X, y, X_val, y_val),
+            fn=lambda params: self._objective(
+                params, X, y, X_val, y_val, dataset_train, dataset_val, **kwargs
+            ),
             space=self.param_space,
             algo=tpe.suggest,
             max_evals=self.max_evals,
@@ -147,13 +190,26 @@ class HyperOptSelector(BaseMlModelSelector):
 
         # Evaluate best to get metrics
         if self.use_cv:
-            X_full, y_full = X, y
-        else:
-            if X_val is not None and y_val is not None:
-                X_full = pd.concat([X, X_val])
-                y_full = pd.concat([y, y_val])
+            if dataset_train is not None:
+                # For CV with datasets, we can't easily split, so use original dataset
+                X_full, y_full = None, None
+                final_dataset_train = dataset_train
             else:
                 X_full, y_full = X, y
+                final_dataset_train = None
+        else:
+            if dataset_train is not None:
+                # For dataset format, use original training dataset
+                X_full, y_full = None, None
+                final_dataset_train = dataset_train
+            else:
+                # For X,y format, combine train and val if val was provided
+                if X_val is not None and y_val is not None:
+                    X_full = pd.concat([X, X_val])
+                    y_full = pd.concat([y, y_val])
+                else:
+                    X_full, y_full = X, y
+                final_dataset_train = None
 
         # Train best model on all data
         self._best_metrics, self._best_params = _getBestMetricsParamsfromTrials(trials)
@@ -161,7 +217,6 @@ class HyperOptSelector(BaseMlModelSelector):
         best_params_t = self._best_params.copy()
 
         if self.tracker:
-
             self._best_model, _, _ = fit_model_score(
                 model=best_params_t.pop("model"),
                 params=best_params_t,
@@ -170,6 +225,8 @@ class HyperOptSelector(BaseMlModelSelector):
                 y_train=y_full,
                 X_test=X_test,
                 y_test=y_test,
+                dataset_train=final_dataset_train,
+                dataset_test=dataset_test,
                 metrics=self.metrics,
                 tracker=self.tracker,
                 log_model=True,
@@ -179,12 +236,18 @@ class HyperOptSelector(BaseMlModelSelector):
                     "params": self._best_params,
                 },
                 manual_metrics=(self._best_metrics, "val"),
+                **kwargs,
             )
 
         else:
             self._best_model = best_params_t.pop("model").clone()
             self._best_model.set_params(**best_params_t)
-            self._best_model = self._best_model.fit(X_full, y_full)
+            if final_dataset_train is not None:
+                self._best_model = self._best_model.fit(
+                    dataset=final_dataset_train, **kwargs
+                )
+            else:
+                self._best_model = self._best_model.fit(X_full, y_full, **kwargs)
 
         return self
 

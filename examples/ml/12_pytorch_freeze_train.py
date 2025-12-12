@@ -48,7 +48,7 @@ if __name__ == "__main__":
     metrics = [accuracy, f1, logloss]
 
     model.fit(X=X_train, y=y_train)
-    print("Model 1 metrics: ", model.get_metrics(X_test, y_test, metrics))
+    print("Model 1 metrics: ", model.get_metrics(X=X_test, y=y_test, metrics=metrics))
 
     # temporary safetensors file
     tmp_file = tempfile.NamedTemporaryFile(suffix=".safetensors", delete=False)
@@ -75,13 +75,16 @@ if __name__ == "__main__":
         model2.load(tmp_path, format="safetensors")
         print(
             "Is the loaded model equal to the original one?",
-            model2.get_metrics(X_test, y_test, metrics)
-            == model.get_metrics(X_test, y_test, metrics),
+            model2.get_metrics(X=X_test, y=y_test, metrics=metrics)
+            == model.get_metrics(X=X_test, y=y_test, metrics=metrics),
         )
 
-        model2.freeze_layers(["fc2"])
+        model2.freeze_layers("all")
+        model2.unfreeze_layers(["fc2"])
         model2.fit(X=X_train, y=y_train, fine_tune=True)
-        print("Model 2 metrics: ", model2.get_metrics(X_test, y_test, metrics))
+        print(
+            "Model 2 metrics: ", model2.get_metrics(X=X_test, y=y_test, metrics=metrics)
+        )
 
     finally:
         os.remove(tmp_path)

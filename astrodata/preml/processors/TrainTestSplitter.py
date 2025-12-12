@@ -37,18 +37,25 @@ class TrainTestSplitter(PremlProcessor):
         features_df = data.data.drop(columns=targets)
         targets_df = data.data[targets]
 
-        test_size = self.kwargs.get("test_size", 0.2)
+        train_size = self.kwargs.get("train_size", None)
+        test_size = self.kwargs.get("test_size", None)
         random_state = self.kwargs.get("random_state", None)
         validation = self.kwargs.get("validation", {}).get("enabled", False)
 
         if validation:
             val_size = self.kwargs.get("validation", {}).get("size", False)
             X_temp, X_test, y_temp, y_test = train_test_split(
-                features_df, targets_df, test_size=test_size, random_state=random_state
+                features_df,
+                targets_df,
+                test_size=test_size,
+                random_state=random_state,
             )
             val_relative_size = val_size / (1 - test_size)
             X_train, X_val, y_train, y_val = train_test_split(
-                X_temp, y_temp, test_size=val_relative_size, random_state=random_state
+                X_temp,
+                y_temp,
+                test_size=val_relative_size,
+                random_state=random_state,
             )
             return Premldata(
                 train_features=X_train,
@@ -61,7 +68,11 @@ class TrainTestSplitter(PremlProcessor):
             )
         else:
             X_train, X_test, y_train, y_test = train_test_split(
-                features_df, targets_df, test_size=test_size, random_state=random_state
+                features_df,
+                targets_df,
+                train_size=train_size,
+                test_size=test_size,
+                random_state=random_state,
             )
             return Premldata(
                 train_features=X_train,

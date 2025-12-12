@@ -101,7 +101,7 @@ class SklearnModel(BaseMlModel):
         """
         self.model_ = joblib.load(filepath, **kwargs)
 
-    def fit(self, X, y, **fit_params) -> BaseMlModel:
+    def fit(self, X, y, X_val=None, y_val=None, **fit_params) -> BaseMlModel:
         """
         Fit the model to data.
 
@@ -111,6 +111,12 @@ class SklearnModel(BaseMlModel):
             Training data features.
         y : array-like
             Training data targets.
+        X_val : array-like, optional
+            Validation data features. Accepted for compatibility with model selectors
+            but not used by scikit-learn models during training.
+        y_val : array-like, optional
+            Validation data targets. Accepted for compatibility with model selectors
+            but not used by scikit-learn models during training.
         **fit_params
             Additional fit parameters for the underlying model.
 
@@ -145,7 +151,7 @@ class SklearnModel(BaseMlModel):
             If the model is not fitted yet.
         """
         if self.model_ is None:
-            raise RuntimeError("Model is not fitted yet.")
+            raise RuntimeError("Model is not fitted.")
         return pd.Series(self.model_.predict(X, **predict_params))
 
     def predict_proba(self, X, **predict_params) -> pd.DataFrame:
@@ -172,7 +178,7 @@ class SklearnModel(BaseMlModel):
             If the model does not support predict_proba.
         """
         if self.model_ is None:
-            raise RuntimeError("Model is not fitted yet.")
+            raise RuntimeError("Model is not fitted.")
         if hasattr(self.model_, "predict_proba"):
             return pd.DataFrame(self.model_.predict_proba(X, **predict_params))
         raise AttributeError(f"{type(self.model_)} does not support predict_proba.")
@@ -201,7 +207,7 @@ class SklearnModel(BaseMlModel):
             If the model is not fitted yet.
         """
         if self.model_ is None:
-            raise RuntimeError("Model is not fitted yet.")
+            raise RuntimeError("Model is not fitted.")
         return self.model_.score(X, y, **kwargs)
 
     def get_scorer_metric(self) -> SklearnMetric:
@@ -268,7 +274,7 @@ class SklearnModel(BaseMlModel):
             If the model does not have 'train_score_' attribute.
         """
         if self.model_ is None:
-            raise RuntimeError("Model is not fitted yet.")
+            raise RuntimeError("Model is not fitted.")
         if hasattr(self.model_, "train_score_"):
             return self.model_.train_score_
         raise AttributeError(f"{type(self.model_)} does not have 'train_score_'.")
@@ -303,7 +309,7 @@ class SklearnModel(BaseMlModel):
             If the model does not support staged predictions.
         """
         if self.model_ is None:
-            raise RuntimeError("Model is not fitted yet.")
+            raise RuntimeError("Model is not fitted.")
 
         results = {}
 
@@ -311,13 +317,20 @@ class SklearnModel(BaseMlModel):
             for metric in metrics:
                 if X is None or y is None:
                     raise ValueError("X and y required for metric history.")
-                try:
-                    results[f"{metric.get_name()}_step"] = [
-                        metric(y, y_pred)
-                        for y_pred in self.model_.staged_predict_proba(X)
-                    ]
-
-                except (AttributeError, ValueError):
+                
+                # Check if model supports staged_predict_proba for probability-based metrics
+                if hasattr(self.model_, "staged_predict_proba"):
+                    try:
+                        results[f"{metric.get_name()}_step"] = [
+                            metric(y, y_pred)
+                            for y_pred in self.model_.staged_predict_proba(X)
+                        ]
+                    except (AttributeError, ValueError):
+                        # Fallback to staged_predict if metric doesn't accept probabilities
+                        results[f"{metric.get_name()}_step"] = [
+                            metric(y, y_pred) for y_pred in self.model_.staged_predict(X)
+                        ]
+                else:
                     results[f"{metric.get_name()}_step"] = [
                         metric(y, y_pred) for y_pred in self.model_.staged_predict(X)
                     ]
@@ -347,3 +360,19 @@ class SklearnModel(BaseMlModel):
             String representation of the object.
         """
         return f"{self.__class__.__name__}({self.model_class.__name__})"
+    
+    def clone(self) -> "SklearnModel":
+        """
+        Create a (shallow) clone of this model instance.
+
+        Returns
+        -------
+        BaseMlModel
+            Cloned model instance.
+        """
+        new_instance = self.__class__(model_class=self.model_class, random_state=self.random_state, **self.model_params)
+        # Copy over any callable attributes (e.g., decorated methods)
+        for attr, value in self.__dict__.items():
+            if callable(value):
+                setattr(new_instance, attr, value)
+        return new_instance

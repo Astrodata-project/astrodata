@@ -73,18 +73,27 @@ print(f"Greater is better: {precision_metric.greater_is_better}")
 
 The `BaseMlModel` abstract class defines the fundamental operations for any machine learning model in `astrodata`. This allows the `astrodata.ml.model_selection` module to work seamlessly with various model types, whether they are scikit-learn models, XGBoost models, or your own custom implementations.
 
-**`BaseMlModel.py` Abstract Methods:**
+**`BaseMlModel.py` Abstract Methods (must be implemented):**
 
   * `fit(self, X: Any, y: Any, **kwargs) -> "BaseMlModel"`: Trains the model.
   * `predict(self, X: Any, **kwargs) -> Any`: Generates predictions.
   * `score(self, X: Any, y: Any, **kwargs) -> float`: Computes a default score.
-  * `get_metrics(self, X_test: Any, y_test: Any, metrics: List[BaseMetric], **kwargs) -> Dict[str, Any]`: Evaluates multiple metrics.
-  * `get_loss_history_metrics(self, X_test: Any, y_test: Any, metrics: List[BaseMetric], **kwargs) -> Dict[str, Any]`: Retrieves metric history during training (optional, but part of the interface).
+  * `get_scorer_metric(self) -> BaseMetric`: Returns the default metric used by the score method.
+  * `get_metrics(self, X: Any, y: Any, metrics: List[BaseMetric], **kwargs) -> Dict[str, Any]`: Evaluates multiple metrics.
   * `save(self, filepath: str, **kwargs)`: Saves the model.
   * `load(self, filepath: str, **kwargs) -> "BaseMlModel"`: Loads a model.
+  * `clone(self) -> "BaseMlModel"`: Creates a deep copy of the model instance.
+
+**Optional Methods (raise `NotImplementedError` by default):**
+
   * `get_params(self, **kwargs) -> Dict[str, Any]`: Returns model hyperparameters.
   * `set_params(self, **kwargs) -> None`: Sets model hyperparameters.
-  * `clone(self) -> "BaseMlModel"`: Creates a shallow copy.
+
+**Optional Methods for Models with Training History:**
+
+  * `get_loss_history(self) -> Any`: Retrieves training loss history (optional, only for models that track it).
+  * `get_loss_history_metrics(self, X: Any, y: Any, metrics: List[BaseMetric], **kwargs) -> Dict[str, Any]`: Computes metrics at each training stage (optional, only for models with staged predictions).
+  * `has_loss_history` (property): Boolean indicating if loss history is available.
 
 **Example: Creating a Simple Custom Majority Class Classifier Model**
 
@@ -115,22 +124,24 @@ class MajorityClassClassifier(BaseMlModel):
 
     def predict(self, X: Any, **kwargs) -> Any:
         if self.majority_class is None:
-            raise RuntimeError("Model has not been fitted yet.")
+            raise RuntimeError("Model is not fitted.")
         # Predict the majority class for all inputs
         return [self.majority_class] * len(X)
 
-    def score(self, X: Any, y: Any, scorer: Optional[BaseMetric] = None, **kwargs) -> float:
+    def score(self, X: Any, y: Any, **kwargs) -> float:
         if self.majority_class is None:
-            raise RuntimeError("Model has not been fitted yet.")
+            raise RuntimeError("Model is not fitted.")
         predictions = self.predict(X)
-        if scorer is None:
-            # Default scorer
-            scorer = SklearnMetric(metric=accuracy_score, name="accuracy", greater_is_better=True)
+        scorer = self.get_scorer_metric()
         return scorer(y, predictions)
+
+    def get_scorer_metric(self) -> BaseMetric:
+        # Return the default scorer for this model
+        return SklearnMetric(metric=accuracy_score, name="accuracy", greater_is_better=True)
 
     def get_metrics(self, X: Any, y: Any, metrics: List[BaseMetric], **kwargs) -> Dict[str, Any]:
         if self.majority_class is None:
-            raise RuntimeError("Model has not been fitted yet.")
+            raise RuntimeError("Model is not fitted.")
         predictions = self.predict(X)
         results = {}
         for metric in metrics:
@@ -138,8 +149,8 @@ class MajorityClassClassifier(BaseMlModel):
         return results
 
     def get_loss_history_metrics(self, X: Any, y: Any, metrics: List[BaseMetric], **kwargs) -> Dict[str, Any]:
-        # This simple model does not have a loss history, so we'll raise an error or return empty
-        # In a real model, this would track performance over epochs/iterations
+        # This simple model does not have a loss history, so we'll raise an error
+        # In a real model with staged predictions, this would track performance over epochs/iterations
         raise AttributeError("MajorityClassClassifier does not support loss history.")
 
     @property
@@ -177,9 +188,13 @@ model.fit(X_train, y_train)
 predictions = model.predict(X_test)
 print(f"Predictions: {predictions}") # Expected: [0, 0]
 
-accuracy = SklearnMetric(metric=accuracy_score)
-score = model.score(X_test, y_test, scorer=accuracy)
+score = model.score(X_test, y_test)
 print(f"Accuracy: {score}") # Expected: 0.5 (one correct, one incorrect)
+
+# Can also use get_metrics for multiple metrics
+accuracy = SklearnMetric(metric=accuracy_score)
+metrics_results = model.get_metrics(X_test, y_test, metrics=[accuracy])
+print(f"Metrics: {metrics_results}")
 
 model.save("majority_classifier.joblib")
 loaded_model = MajorityClassClassifier().load("majority_classifier.joblib")

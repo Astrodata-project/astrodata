@@ -8,7 +8,7 @@ import mlflow
 from astrodata.ml.metrics._utils import get_loss_func
 from astrodata.ml.metrics.BaseMetric import BaseMetric
 from astrodata.ml.metrics.SklearnMetric import SklearnMetric
-from astrodata.ml.models import BaseMlModel
+from astrodata.ml.models import BaseMlModel, PytorchModel, TensorflowModel
 from astrodata.tracking.ModelTracker import ModelTracker
 from astrodata.utils.logger import setup_logger
 
@@ -175,10 +175,13 @@ class SklearnMLflowTracker(MlflowBaseTracker):
         y_test=None,
         X_val=None,
         y_val=None,
+        dataset_test=None,
+        dataset_val=None,
         metrics: Optional[List[BaseMetric]] = None,
         log_model: bool = False,
         tags: Dict[str, Any] = {},
         manual_metrics: Tuple[Dict[str, Any], str] = None,
+        run_name: Optional[str] = None,
     ) -> BaseMlModel:
         """
         Wrap a BaseMlModel's fit method to perform MLflow logging.
@@ -203,6 +206,8 @@ class SklearnMLflowTracker(MlflowBaseTracker):
             Any additional tags that should be added to the model. By default the tag "is_final" is set as equal to log_model so that
             any logged model is considered as a candidate for production (for register_best_model) unless specified otherwise
             (e.g. in the model selectors for intermediate steps)
+        run_name: Optional[str] = None,
+            Name for the MLflow run. If None, uses tracker's run_name.
 
         Returns
         -------
@@ -216,7 +221,13 @@ class SklearnMLflowTracker(MlflowBaseTracker):
         metrics = metrics or []
 
         @functools.wraps(orig_class.fit)
-        def fit_with_tracking(self, X, y, *args, **kwargs):
+        def fit_with_tracking(
+            self,
+            X=None,
+            y=None,
+            *args,
+            **kwargs,
+        ):
             """
             Fit method replacement that logs parameters, metrics, and model to MLflow.
 
@@ -237,7 +248,7 @@ class SklearnMLflowTracker(MlflowBaseTracker):
                 Fitted model instance.
             """
             mlflow.set_experiment(tracker.experiment_name)
-            with mlflow.start_run(run_name=tracker.run_name):
+            with mlflow.start_run(run_name=run_name or tracker.run_name):
                 mlflow.set_tags({**tags, **tracker.extra_tags})
                 try:
                     params = self.get_params()
@@ -251,14 +262,18 @@ class SklearnMLflowTracker(MlflowBaseTracker):
                 if log_model:
                     try:
                         mlflow.sklearn.log_model(
-                            self, name="model", input_example=X[:5]
+                            self,
+                            name="model",
+                            signature=mlflow.models.infer_signature(
+                                model_input=X[:5], model_output=y[:5]
+                            ),
                         )
                     except Exception as e:
                         logger.error(f"Could not log model: {e}")
 
-                _log_metrics_and_loss(X, y, self, metrics, "train")
-                _log_metrics_and_loss(X_test, y_test, self, metrics, "test")
-                _log_metrics_and_loss(X_val, y_val, self, metrics, "val")
+                _log_metrics_and_loss_sklearn(X, y, self, metrics, "train")
+                _log_metrics_and_loss_sklearn(X_test, y_test, self, metrics, "test")
+                _log_metrics_and_loss_sklearn(X_val, y_val, self, metrics, "val")
 
                 if manual_metrics is not None:
                     _log_metrics_manual(*manual_metrics)
@@ -275,8 +290,478 @@ class SklearnMLflowTracker(MlflowBaseTracker):
         return SklearnMLflowWrappedModel(**model.get_params())
 
 
-# Helper for metrics and loss
-def _log_metrics_and_loss(
+class PytorchMLflowTracker(MlflowBaseTracker):
+    """
+    MLflow tracker for PyTorch models. Wraps the fit() method of PytorchModel
+    to automatically log parameters, metrics, training history, and optionally
+    the trained model to MLflow tracking server.
+    
+    This tracker handles PyTorch-specific features like:
+    - Training and validation loss tracking per epoch
+    - Custom metrics evaluation on train/val/test splits
+    - PyTorch model serialization (torch, pkl, safetensors formats)
+    - Dataset support for both array-like and torch.utils.data.Dataset
+    
+    Examples
+    --------
+    >>> import torch.nn as nn
+    >>> from astrodata.ml.models import PytorchModel
+    >>> from astrodata.tracking.MLFlowTracker import PytorchMLflowTracker
+    >>> 
+    >>> model = PytorchModel(
+    ...     model_class=nn.Sequential,
+    ...     model_params={"modules": [nn.Linear(10, 64), nn.ReLU(), nn.Linear(64, 2)]},
+    ...     loss_fn=nn.CrossEntropyLoss,
+    ...     optimizer=torch.optim.Adam,
+    ...     optimizer_params={"lr": 0.001},
+    ...     epochs=10
+    ... )
+    >>> 
+    >>> tracker = PytorchMLflowTracker(run_name="pytorch_exp", experiment_name="experiments")
+    >>> tracked_model = tracker.wrap_fit(model, X_test=X_test, y_test=y_test, log_model=True)
+    >>> tracked_model.fit(X_train, y_train)
+    """
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def wrap_fit(
+        self,
+        model: PytorchModel,
+        X_test=None,
+        y_test=None,
+        X_val=None,
+        y_val=None,
+        dataset_test=None,
+        dataset_val=None,
+        metrics: Optional[List[BaseMetric]] = None,
+        log_model: bool = False,
+        tags: Dict[str, Any] = {},
+        manual_metrics: Tuple[Dict[str, Any], str] = None,
+        run_name: Optional[str] = None,
+    ) -> PytorchModel:
+        """
+        Wrap a PytorchModel's fit method to perform MLflow logging.
+
+        Parameters
+        ----------
+        model : PytorchModel
+            The PyTorch model to wrap.
+        X_test : array-like, optional
+            Test data for metric logging.
+        y_test : array-like, optional
+            Test labels for metric logging.
+        X_val : array-like, optional
+            Validation data for metric logging.
+        y_val : array-like, optional
+            Validation labels for metric logging.
+        dataset_test : torch.utils.data.Dataset, optional
+            Test dataset for metric logging.
+        dataset_val : torch.utils.data.Dataset, optional
+            Validation dataset for metric logging.
+        metrics : list of BaseMetric, optional
+            Metrics to log. If missing, a default loss metric is added.
+        log_model : bool, default False
+            If True, log the fitted model as an MLflow artifact.
+        tags : Dict[str, Any], default {}
+            Any additional tags that should be added to the model. By default the tag "is_final" is set as equal to log_model so that
+            any logged model is considered as a candidate for production (for register_best_model) unless specified otherwise
+            (e.g. in the model selectors for intermediate steps).
+        manual_metrics : Tuple[Dict[str, Any], str], optional
+            Manual metrics to log with a split name.
+        run_name : str, optional
+            Name for the MLflow run. If None, uses tracker's run_name.
+
+        Returns
+        -------
+        PytorchModel
+            The wrapped model with MLflow-enabled fit method.
+        """
+        orig_class = model.__class__
+        if "is_final" not in tags.keys():
+            tags["is_final"] = log_model
+        tracker = self
+        metrics = metrics or []
+
+        @functools.wraps(orig_class.fit)
+        def fit_with_tracking(
+            self,
+            X=None,
+            y=None,
+            dataset=None,
+            epochs=None,
+            batch_size=None,
+            device=None,
+            fit_metrics=None,
+            fine_tune=None,
+            X_val=None,
+            y_val=None,
+            dataset_val=None,
+            save_every_n_epochs=None,
+            save_folder=None,
+            save_format=None,
+            shuffle=None,
+            seed=None,
+            **kwargs,
+        ):
+            mlflow.set_experiment(tracker.experiment_name)
+            with mlflow.start_run(run_name=run_name or tracker.run_name):
+                mlflow.set_tags({**tags, **tracker.extra_tags})
+                try:
+                    params = self.get_params()
+                    mlflow.log_params(params)
+                except Exception as e:
+                    logger.error(f"Could not log params: {e}")
+
+                result = orig_class.fit(
+                    self,
+                    X=X,
+                    y=y,
+                    dataset=dataset,
+                    epochs=epochs,
+                    batch_size=batch_size,
+                    device=device,
+                    metrics=fit_metrics,
+                    fine_tune=fine_tune,
+                    X_val=X_val,
+                    y_val=y_val,
+                    dataset_val=dataset_val,
+                    save_every_n_epochs=save_every_n_epochs,
+                    save_folder=save_folder,
+                    save_format=save_format,
+                    shuffle=shuffle,
+                    seed=seed,
+                )
+
+                # Optionally log model
+                if log_model:
+                    try:
+                        # For PyTorch models with datasets, we need sample data for signature
+                        if X is not None:
+                            sample_input = X[:5] if hasattr(X, "__getitem__") else None
+                            sample_output = y[:5] if hasattr(y, "__getitem__") else None
+                        else:
+                            sample_input = None
+                            sample_output = None
+
+                        mlflow.pytorch.log_model(
+                            self.model_,
+                            name="model",
+                            signature=(
+                                mlflow.models.infer_signature(
+                                    model_input=sample_input, model_output=sample_output
+                                )
+                                if sample_input is not None
+                                else None
+                            ),
+                        )
+                    except Exception as e:
+                        logger.error(f"Could not log model: {e}")
+
+                # Log metrics for different splits
+                if X is not None and y is not None:
+                    _log_metrics_and_loss_pytorch(X, y, None, self, metrics, "train")
+                elif dataset is not None:
+                    _log_metrics_and_loss_pytorch(
+                        None, None, dataset, self, metrics, "train"
+                    )
+
+                if X_test is not None and y_test is not None:
+                    _log_metrics_and_loss_pytorch(
+                        X_test, y_test, None, self, metrics, "test"
+                    )
+                elif dataset_test is not None:
+                    _log_metrics_and_loss_pytorch(
+                        None, None, dataset_test, self, metrics, "test"
+                    )
+
+                if X_val is not None and y_val is not None:
+                    _log_metrics_and_loss_pytorch(
+                        X_val, y_val, None, self, metrics, "val"
+                    )
+                elif dataset_val is not None:
+                    _log_metrics_and_loss_pytorch(
+                        None, None, dataset_val, self, metrics, "val"
+                    )
+
+                if manual_metrics is not None:
+                    _log_metrics_manual(*manual_metrics)
+
+                return result
+
+        # Dynamically subclass model to override fit
+        class PytorchMLflowWrappedModel(orig_class):
+            pass
+
+        PytorchMLflowWrappedModel.fit = fit_with_tracking
+
+        # Return a new instance with the same parameters as the original model
+        return PytorchMLflowWrappedModel(**model.get_params())
+
+
+class TensorflowMLflowTracker(MlflowBaseTracker):
+    """
+    MLflow tracker for TensorFlow/Keras models. Wraps the fit() method of TensorflowModel
+    to automatically log parameters, metrics, training history, and optionally
+    the trained model to MLflow tracking server.
+    
+    This tracker handles TensorFlow-specific features like:
+    - Training and validation loss tracking per epoch
+    - Custom metrics evaluation on train/val/test splits
+    - TensorFlow model serialization (keras, h5, savedmodel formats)
+    - Dataset support for both array-like and tf.data.Dataset
+    
+    Examples
+    --------
+    >>> import keras as K
+    >>> from astrodata.ml.models import TensorflowModel
+    >>> from astrodata.tracking.MLFlowTracker import TensorflowMLflowTracker
+    >>> 
+    >>> model = TensorflowModel(
+    ...     model_class=K.Sequential,
+    ...     model_params={"layers": [K.layers.Dense(64, activation='relu'), K.layers.Dense(2)]},
+    ...     loss_fn=K.losses.SparseCategoricalCrossentropy,
+    ...     optimizer=K.optimizers.Adam,
+    ...     optimizer_params={"learning_rate": 0.001},
+    ...     epochs=10
+    ... )
+    >>> 
+    >>> tracker = TensorflowMLflowTracker(run_name="tf_exp", experiment_name="experiments")
+    >>> tracked_model = tracker.wrap_fit(model, X_test=X_test, y_test=y_test, log_model=True)
+    >>> tracked_model.fit(X_train, y_train)
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize TensorflowMLflowTracker.
+
+        Parameters are passed to MlflowBaseTracker.
+        """
+        super().__init__(*args, **kwargs)
+
+    def wrap_fit(
+        self,
+        model: TensorflowModel,
+        X_test=None,
+        y_test=None,
+        X_val=None,
+        y_val=None,
+        dataset_test=None,
+        dataset_val=None,
+        metrics: Optional[List[BaseMetric]] = None,
+        log_model: bool = False,
+        tags: Dict[str, Any] = {},
+        manual_metrics: Tuple[Dict[str, Any], str] = None,
+        run_name: Optional[str] = None,
+    ) -> TensorflowModel:
+        """
+        Wrap a TensorflowModel's fit method to perform MLflow logging.
+
+        Parameters
+        ----------
+        model : TensorflowModel
+            The model to wrap.
+        X_test : array-like, optional
+            Test data for metric logging.
+        y_test : array-like, optional
+            Test labels for metric logging.
+        X_val : array-like, optional
+            Validation data for metric logging.
+        y_val : array-like, optional
+            Validation labels for metric logging.
+        dataset_test : tf.data.Dataset, optional
+            Test dataset for metric logging.
+        dataset_val : tf.data.Dataset, optional
+            Validation dataset for metric logging.
+        metrics : list of BaseMetric, optional
+            Metrics to log. If missing, a default loss metric is added.
+        log_model : bool, default False
+            If True, log the fitted model as an MLflow artifact.
+        tags : Dict[str, Any], default {}
+            Any additional tags that should be added to the model. By default the tag "is_final" is set as equal to log_model so that
+            any logged model is considered as a candidate for production (for register_best_model) unless specified otherwise
+            (e.g. in the model selectors for intermediate steps).
+        manual_metrics : Tuple[Dict[str, Any], str], optional
+            Manual metrics to log with a split name.
+        run_name : str, optional
+            Name for the MLflow run. If None, uses tracker's run_name.with a split name.
+        run_name : str, optional
+            Name for the MLflow run. If None, uses tracker's run_name.
+
+        Returns
+        -------
+        TensorflowModel
+            A new instance of the model with an MLflow-logging fit method.
+        """
+        orig_class = model.__class__
+        if "is_final" not in tags.keys():
+            tags["is_final"] = log_model
+        tracker = self
+        metrics = metrics or []
+
+        @functools.wraps(orig_class.fit)
+        def fit_with_tracking(
+            self,
+            X=None,
+            y=None,
+            dataset=None,
+            epochs=None,
+            batch_size=None,
+            device=None,
+            fit_metrics=None,
+            fine_tune=None,
+            X_val=None,
+            y_val=None,
+            dataset_val=None,
+            save_every_n_epochs=None,
+            save_folder=None,
+            save_format=None,
+            shuffle=None,
+            seed=None,
+            **kwargs,
+        ):
+            """
+            Fit method replacement that logs parameters, metrics, and model to MLflow.
+
+            Parameters
+            ----------
+            X : array-like, optional
+                Training features.
+            y : array-like, optional
+                Training targets.
+            dataset : tf.data.Dataset, optional
+                Training dataset.
+            epochs : int, optional
+                Number of training epochs.
+            batch_size : int, optional
+                Batch size.
+            device : str, optional
+                Device to use (compatibility parameter).
+            fine_tune : bool, default False
+                Whether to fine-tune existing model.
+            X_val : array-like, optional
+                Validation features.
+            y_val : array-like, optional
+                Validation targets.
+            dataset_val : tf.data.Dataset, optional
+                Validation dataset.
+            save_every_n_epochs : int, optional
+                Save model every n epochs.
+            save_folder : str, optional
+                Directory path where checkpoints will be saved.
+            save_format : str, default "tensorflow"
+                Serialization format for checkpoints.
+            shuffle : bool, default True
+                Whether to shuffle the training data.
+            seed : int, optional
+                Random seed for reproducibility.
+            **kwargs
+                Additional arguments for the fit method.
+            run_name: Optional[str] = None,
+                Name for the MLflow run. If None, uses tracker's run_name.
+
+            Returns
+            -------
+            self
+                Fitted model instance.
+            """
+            mlflow.set_experiment(tracker.experiment_name)
+            with mlflow.start_run(run_name=run_name or tracker.run_name):
+                mlflow.set_tags({**tags, **tracker.extra_tags})
+                try:
+                    params = self.get_params()
+                    mlflow.log_params(params)
+                except Exception as e:
+                    logger.error(f"Could not log params: {e}")
+
+                result = orig_class.fit(
+                    self,
+                    X=X,
+                    y=y,
+                    dataset=dataset,
+                    epochs=epochs,
+                    batch_size=batch_size,
+                    device=device,
+                    metrics=fit_metrics,
+                    fine_tune=fine_tune,
+                    X_val=X_val,
+                    y_val=y_val,
+                    dataset_val=dataset_val,
+                    save_every_n_epochs=save_every_n_epochs,
+                    save_folder=save_folder,
+                    save_format=save_format,
+                    shuffle=shuffle,
+                    seed=seed,
+                )
+
+                # Optionally log model
+                if log_model:
+                    try:
+                        # For TensorFlow models, we need sample data for signature
+                        if X is not None:
+                            sample_input = X[:5] if hasattr(X, "__getitem__") else None
+                            sample_output = y[:5] if hasattr(y, "__getitem__") else None
+                        else:
+                            sample_input = None
+                            sample_output = None
+
+                        mlflow.tensorflow.log_model(
+                            self.model_,
+                            name="model",
+                            signature=(
+                                mlflow.models.infer_signature(
+                                    model_input=sample_input, model_output=sample_output
+                                )
+                                if sample_input is not None
+                                else None
+                            ),
+                        )
+                    except Exception as e:
+                        logger.error(f"Could not log model: {e}")
+
+                # Log metrics for different splits
+                if X is not None and y is not None:
+                    _log_metrics_and_loss_tensorflow(X, y, None, self, metrics, "train")
+                elif dataset is not None:
+                    _log_metrics_and_loss_tensorflow(
+                        None, None, dataset, self, metrics, "train"
+                    )
+
+                if X_test is not None and y_test is not None:
+                    _log_metrics_and_loss_tensorflow(
+                        X_test, y_test, None, self, metrics, "test"
+                    )
+                elif dataset_test is not None:
+                    _log_metrics_and_loss_tensorflow(
+                        None, None, dataset_test, self, metrics, "test"
+                    )
+
+                if X_val is not None and y_val is not None:
+                    _log_metrics_and_loss_tensorflow(
+                        X_val, y_val, None, self, metrics, "val"
+                    )
+                elif dataset_val is not None:
+                    _log_metrics_and_loss_tensorflow(
+                        None, None, dataset_val, self, metrics, "val"
+                    )
+
+                if manual_metrics is not None:
+                    _log_metrics_manual(*manual_metrics)
+
+                return result
+
+        # Dynamically subclass model to override fit
+        class TensorflowMLflowWrappedModel(orig_class):
+            pass
+
+        TensorflowMLflowWrappedModel.fit = fit_with_tracking
+
+        # Return a new instance with the same parameters as the original model
+        return TensorflowMLflowWrappedModel(**model.get_params())
+
+
+# Helper for metrics and loss for sklearn
+def _log_metrics_and_loss_sklearn(
     X_split, y_split, model: BaseMlModel, metrics: BaseMetric, split_name: str
 ):
     """
@@ -291,6 +776,13 @@ def _log_metrics_and_loss(
     split_name : str
         Name of the split ('train', 'val', 'test').
     """
+    # Add default loss metric if not present
+    loss_func = get_loss_func(model.model_)
+    if loss_func is not None:
+        loss_metric = SklearnMetric(loss_func)
+        if loss_metric.get_name() not in [m.get_name() for m in metrics]:
+            metrics.append(loss_metric)
+
     if X_split is not None and y_split is not None and hasattr(model, "get_metrics"):
         scores = model.get_metrics(X=X_split, y=y_split, metrics=metrics)
         mlflow.log_metrics({f"{k}_{split_name}": v for k, v in scores.items()})
@@ -306,16 +798,116 @@ def _log_metrics_and_loss(
                         step=i,
                     )
 
-    # Add default loss metric if not present
-    loss_func = get_loss_func(model.model_)
-    if loss_func is not None:
-        loss_metric = SklearnMetric(loss_func)
-        if loss_metric.get_name() not in [m.get_name() for m in metrics]:
-            metrics.append(loss_metric)
+
+# Helper for metrics and loss for PyTorch
+def _log_metrics_and_loss_pytorch(
+    X_split,
+    y_split,
+    dataset_split,
+    model: PytorchModel,
+    metrics: BaseMetric,
+    split_name: str,
+):
+    """
+    Log metrics and loss curves for a PyTorch model split.
+
+    Supports both X/y arrays and datasets as input.
+
+    Parameters
+    ----------
+    X_split : array-like, optional
+        Features for the split.
+    y_split : array-like, optional
+        Labels for the split.
+    dataset_split : torch.utils.data.dataset, optional
+        dataset for the split.
+    model : PytorchModel
+        The fitted PyTorch model.
+    metrics : list of BaseMetric
+        Metrics to compute.
+    split_name : str
+        Name of the split ('train', 'val', 'test').
+    """
+    # Determine if we have data to evaluate
+    has_array_data = X_split is not None and y_split is not None
+    has_dataset = dataset_split is not None
+
+    if (has_array_data or has_dataset) and hasattr(model, "get_metrics"):
+        if has_dataset:
+            scores = model.get_metrics(dataset=dataset_split, metrics=metrics)
+        else:
+            scores = model.get_metrics(X=X_split, y=y_split, metrics=metrics)
+
+        mlflow.log_metrics({f"{k}_{split_name}": v for k, v in scores.items()})
+
+        # Loss curve
+        if split_name == "train" or split_name == "val":
+            curves = model.get_metrics_history(split=split_name)
+
+            for key, value in curves.items():
+                for i, loss in enumerate(value):
+                    mlflow.log_metric(
+                        f"{key}_{split_name}",
+                        loss,
+                        step=i,
+                    )
+
+
+# Helper for metrics and loss for TensorFlow
+def _log_metrics_and_loss_tensorflow(
+    X_split,
+    y_split,
+    dataset_split,
+    model: TensorflowModel,
+    metrics: BaseMetric,
+    split_name: str,
+):
+    """
+    Log metrics and loss curves for a TensorFlow model split.
+
+    Supports both X/y arrays and datasets as input.
+
+    Parameters
+    ----------
+    X_split : array-like, optional
+        Features for the split.
+    y_split : array-like, optional
+        Labels for the split.
+    dataset_split : tf.data.Dataset, optional
+        Dataset for the split.
+    model : TensorflowModel
+        The fitted TensorFlow model.
+    metrics : list of BaseMetric
+        Metrics to compute.
+    split_name : str
+        Name of the split ('train', 'val', 'test').
+    """
+    # Determine if we have data to evaluate
+    has_array_data = X_split is not None and y_split is not None
+    has_dataset = dataset_split is not None
+
+    if (has_array_data or has_dataset) and hasattr(model, "get_metrics"):
+        if has_dataset:
+            scores = model.get_metrics(dataset=dataset_split, metrics=metrics)
+        else:
+            scores = model.get_metrics(X=X_split, y=y_split, metrics=metrics)
+
+        mlflow.log_metrics({f"{k}_{split_name}": v for k, v in scores.items()})
+
+        # Loss curve - TensorFlow models store history differently
+        if split_name == "train" or split_name == "val":
+            curves = model.get_metrics_history(split=split_name)
+
+            for key, value in curves.items():
+                for i, loss in enumerate(value):
+                    mlflow.log_metric(
+                        f"{key}_{split_name}",
+                        loss,
+                        step=i,
+                    )
 
 
 # Helper for manual metrics
 def _log_metrics_manual(metrics: Dict[str, Any], split_name: str):
-
     for key, value in metrics.items():
         mlflow.log_metric(f"{key}_{split_name}", value)

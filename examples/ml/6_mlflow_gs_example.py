@@ -17,7 +17,6 @@ from astrodata.tracking.MLFlowTracker import SklearnMLflowTracker
 # and navigating to http://localhost:5000 in your web browser.
 
 if __name__ == "__main__":
-
     # Load the breast cancer dataset
 
     data = load_breast_cancer()

@@ -71,4 +71,3 @@ def test_grid_search_cv_selector():
     assert isinstance(best_metrics, dict) and "accuracy_score" in best_metrics
     yhat = best_model.predict(X)
     assert len(yhat) == len(y)
-

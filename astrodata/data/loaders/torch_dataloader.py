@@ -1,5 +1,3 @@
-from typing import Any, Dict, Optional
-
 from torch.utils.data import DataLoader
 
 from astrodata.data.schemas import TorchProcessedData, TorchRawData
@@ -13,14 +11,11 @@ class TorchDataLoaderWrapper:
     common transforms and configurations.
     """
 
-    # TODO: check gpu/cpu settings
-
     def __init__(
         self,
         batch_size: int = 32,
         num_workers: int = 0,
         pin_memory: bool = False,
-        transform_config: Optional[Dict[str, Any]] = None,
     ):
         """
         Initialize the DataLoader wrapper.
@@ -44,9 +39,6 @@ class TorchDataLoaderWrapper:
         Returns:
             TorchProcessedData object containing DataLoaders
         """
-
-        if raw_data.format != "torch_image":
-            raise ValueError("RawData must have format 'torch_image'")
 
         datasets = raw_data.data
         dataloaders = {}

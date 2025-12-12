@@ -1,3 +1,4 @@
+import torch
 import torch.nn.functional as F
 from sklearn.datasets import load_iris
 from sklearn.metrics import accuracy_score, f1_score, log_loss
@@ -5,11 +6,23 @@ from sklearn.model_selection import train_test_split
 from torch import nn, optim
 
 from astrodata.ml.metrics import SklearnMetric
-from astrodata.ml.models import PytorchModel
 from astrodata.ml.model_selection import GridSearchSelector
+from astrodata.ml.models import PytorchModel
 
 if __name__ == "__main__":
     X, y = load_iris(return_X_y=True)
+    X_train, X_val, y_train, y_val = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+
+    dataset = torch.utils.data.TensorDataset(
+        torch.tensor(X_train, dtype=torch.float32),
+        torch.tensor(y_train, dtype=torch.long),
+    )
+
+    dataset_val = torch.utils.data.TensorDataset(
+        torch.tensor(X_val, dtype=torch.float32), torch.tensor(y_val, dtype=torch.long)
+    )
 
     class IrisNet(nn.Module):
         def __init__(self, input_layers, output_layers):
@@ -52,7 +65,7 @@ if __name__ == "__main__":
         metrics=metrics,
     )
 
-    gss.fit(X, y)
+    gss.fit(dataset_train=dataset, dataset_val=dataset_val)
 
     print(gss.get_best_params())
     print(gss.get_best_metrics())

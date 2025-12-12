@@ -1,8 +1,8 @@
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Optional
 
 import pandas as pd
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RawData(BaseModel):
@@ -11,16 +11,15 @@ class RawData(BaseModel):
 
     Attributes:
         source (str): The source of the data (e.g., file path or URL).
-        format (Literal): The format of the data (e.g., "fits", "hdf5", "csv", "parquet").
+        format (str): The format of the data (e.g., 'csv', 'parquet').
         data (pd.DataFrame): The actual data as a Pandas DataFrame.
     """
 
     source: Path | str
-    format: Literal["fits", "hdf5", "csv", "parquet"]
+    format: str
     data: pd.DataFrame
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class ProcessedData(BaseModel):
@@ -35,8 +34,7 @@ class ProcessedData(BaseModel):
     data: pd.DataFrame
     metadata: Optional[dict] = {}
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def dump_parquet(self, path: Path):
         """

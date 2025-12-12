@@ -22,4 +22,3 @@ def test_sklearn_metric_custom_name_and_kwargs():
     assert mse.get_name() == "mse"
     assert mse.greater_is_better is False
     assert mse(y_true, y_pred) == mean_squared_error(y_true, y_pred)
-
