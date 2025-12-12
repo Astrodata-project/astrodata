@@ -255,6 +255,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../data/1_data_example.html">data/1_data_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/2_preml_example.html">data/2_preml_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/3_torch_data.html">data/3_torch_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/4_tensorflow_data.html">data/4_tensorflow_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/utils.html">data/utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_2_pytorch_hp_example_mlflow.html">ml/10_2_pytorch_hp_example_mlflow.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
@@ -277,6 +280,10 @@
 <li class="toctree-l1"><a class="reference internal" href="7_mlflow_hp_example.html">ml/7_mlflow_hp_example.py</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">ml/8_pytorch_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="9_pytorch_gs_example.html">ml/9_pytorch_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../real_world/fits_ml.html">real_world/fits_ml.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../real_world/pytorch_galaxyMNIST.html">real_world/pytorch_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../real_world/tensorflow_galaxyMNIST.html">real_world/tensorflow_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../real_world/testdata/data_load.html">real_world/testdata/data_load.py</a></li>
 </ul>
 
 </div>
@@ -366,7 +373,7 @@
         <span class="n">optimizer_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">1e-3</span><span class="p">},</span>
         <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-        <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_params</span><span class="p">())</span>

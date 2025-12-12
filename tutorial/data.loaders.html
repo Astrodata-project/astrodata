@@ -255,6 +255,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/1_data_example.html">data/1_data_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/2_preml_example.html">data/2_preml_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/3_torch_data.html">data/3_torch_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/4_tensorflow_data.html">data/4_tensorflow_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/utils.html">data/utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_2_pytorch_hp_example_mlflow.html">ml/10_2_pytorch_hp_example_mlflow.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
@@ -277,6 +280,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/7_mlflow_hp_example.html">ml/7_mlflow_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/8_pytorch_example.html">ml/8_pytorch_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/9_pytorch_gs_example.html">ml/9_pytorch_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/fits_ml.html">real_world/fits_ml.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/pytorch_galaxyMNIST.html">real_world/pytorch_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/tensorflow_galaxyMNIST.html">real_world/tensorflow_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/testdata/data_load.html">real_world/testdata/data_load.py</a></li>
 </ul>
 
 </div>
@@ -373,14 +380,6 @@ High-level loader that:</p>
 <li><p>Returns a <code class="docutils literal notranslate"><span class="pre">TorchRawData</span></code> object containing split-specific <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> instances and metadata.</p></li>
 </ul>
 </li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">TorchDataLoaderWrapper</span></code></strong><br />
-Convenience wrapper that:</p>
-<ul>
-<li><p>Consumes a <code class="docutils literal notranslate"><span class="pre">TorchRawData</span></code> object.</p></li>
-<li><p>Builds PyTorch <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code> instances for each split with uniform settings (batch size, workers, pin_memory).</p></li>
-<li><p>Returns a <code class="docutils literal notranslate"><span class="pre">TorchProcessedData</span></code> object.</p></li>
-</ul>
-</li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">TorchImageDataset</span></code></strong><br />
 Underlying <code class="docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code> for standard image formats (<code class="docutils literal notranslate"><span class="pre">.png</span></code>, <code class="docutils literal notranslate"><span class="pre">.jpg</span></code>, <code class="docutils literal notranslate"><span class="pre">.jpeg</span></code>):</p>
 <ul>
@@ -395,6 +394,19 @@ Dataset for FITS images:</p>
 <li><p>Uses <code class="docutils literal notranslate"><span class="pre">astropy.io.fits</span></code> to read pixel arrays.</p></li>
 </ul>
 </li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">TorchDataLoaderWrapper</span></code></strong><br />
+Convenience wrapper that:</p>
+<ul>
+<li><p>Consumes a <code class="docutils literal notranslate"><span class="pre">TorchRawData</span></code> object.</p></li>
+<li><p>Builds PyTorch <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code> instances for each split with uniform settings (batch size, workers, pin_memory).</p></li>
+<li><p>Returns a <code class="docutils literal notranslate"><span class="pre">TorchProcessedData</span></code> object.</p></li>
+</ul>
+</li>
+</ul>
+<div class="highlight-{note}: notranslate"><div class="highlight"><pre><span></span>This wrapper is optional; ML modules can consume `TorchRawData` directly, as they define their own `DataLoader` settings.
+</pre></div>
+</div>
+<ul class="simple">
 <li><p><strong>Schemas</strong></p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">TorchRawData</span></code>: Holds split-name → Dataset mapping and metadata (e.g. dataset_type).</p></li>
@@ -435,7 +447,10 @@ Dataset for FITS images:</p>
 
 <span class="n">loader</span> <span class="o">=</span> <span class="n">TorchLoader</span><span class="p">()</span>
 <span class="n">raw</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+<span class="n">train_dataset</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+<span class="n">test_dataset</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
 
+<span class="c1"># Optional</span>
 <span class="n">wrapper</span> <span class="o">=</span> <span class="n">TorchDataLoaderWrapper</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">processed</span> <span class="o">=</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">create_dataloaders</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
@@ -468,12 +483,127 @@ Dataset for FITS images:</p>
 <section id="common-extension-points">
 <h3>Common Extension Points<a class="headerlink" href="#common-extension-points" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p>Add transforms: wrap <code class="docutils literal notranslate"><span class="pre">TorchImageDataset</span></code> or modify its <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code>.</p></li>
+<li><p>Add transforms to <code class="docutils literal notranslate"><span class="pre">TorchFITSDataset</span></code>: wrap it or modify its <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code>.</p></li>
 <li><p>Support more image types: extend valid extensions set.</p></li>
 <li><p>Multi-channel FITS: change FITS loading logic (e.g., stack planes).</p></li>
 <li><p>Custom sampling strategies: provide <code class="docutils literal notranslate"><span class="pre">sampler</span></code> argument when instantiating <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code>.</p></li>
 </ul>
 <p>Refer to <code class="docutils literal notranslate"><span class="pre">examples/data/3_torch_data.py</span></code> for a full runnable demonstration that prepares CIFAR10-style image directories and a minimal FITS example.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="tensorflow-vision-fits-data-support">
+<h2>TensorFlow vision / FITS data support<a class="headerlink" href="#tensorflow-vision-fits-data-support" title="Link to this heading">¶</a></h2>
+<p>Astrodata also provides a TensorFlow-based loader for image datasets (PNG/JPEG) and FITS files using tf.data and Keras utilities.</p>
+<section id="id2">
+<h3>Core Classes<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">TensorflowLoader</span></code></strong><br />
+High-level loader that:</p>
+<ul>
+<li><p>Expects a directory with train[/val]/test splits.</p></li>
+<li><p>Each split contains one subdirectory per class.</p></li>
+<li><p>Automatically infers dataset type (PNG/JPEG vs FITS) by scanning the train split.</p></li>
+<li><p>Returns a <code class="docutils literal notranslate"><span class="pre">TensorflowData</span></code> object containing split-specific <code class="docutils literal notranslate"><span class="pre">tf.data.Dataset</span></code> instances and metadata.</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">TensorflowImageDataset</span></code></strong><br />
+Builder around <code class="docutils literal notranslate"><span class="pre">tf.keras.utils.image_dataset_from_directory</span></code>:</p>
+<ul>
+<li><p>Supports typical arguments like <code class="docutils literal notranslate"><span class="pre">image_size</span></code>, <code class="docutils literal notranslate"><span class="pre">batch_size</span></code>, <code class="docutils literal notranslate"><span class="pre">color_mode</span></code>, <code class="docutils literal notranslate"><span class="pre">shuffle</span></code>, <code class="docutils literal notranslate"><span class="pre">seed</span></code>, <code class="docutils literal notranslate"><span class="pre">validation_split</span></code>, etc.</p></li>
+<li><p>Propagates <code class="docutils literal notranslate"><span class="pre">class_names</span></code> and <code class="docutils literal notranslate"><span class="pre">class_to_idx</span></code> in metadata.</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">TensorflowFITSDataset</span></code></strong><br />
+FITS dataset builder using <code class="docutils literal notranslate"><span class="pre">tf.data</span></code>:</p>
+<ul>
+<li><p>Gathers file paths and labels from class subdirectories.</p></li>
+<li><p>Reads FITS arrays via <code class="docutils literal notranslate"><span class="pre">tf.numpy_function</span></code> wrapping astrodata’s FITS decoder.</p></li>
+<li><p>Returns <code class="docutils literal notranslate"><span class="pre">(image,</span> <span class="pre">label)</span></code> pairs, prefetched and optionally batched.</p></li>
+</ul>
+</li>
+<li><p><strong>Schema</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">TensorflowData</span></code>: Holds split-name → <code class="docutils literal notranslate"><span class="pre">tf.data.Dataset</span></code> mapping and metadata (dataset_type, class_names, class_to_idx, params).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id3">
+<h3>Expected Directory Structure<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset_root</span><span class="o">/</span>
+    <span class="n">train</span><span class="o">/</span>
+        <span class="n">class_a</span><span class="o">/</span>
+            <span class="n">img1</span><span class="o">.</span><span class="n">png</span> <span class="o">|</span> <span class="n">img1</span><span class="o">.</span><span class="n">fits</span>
+            <span class="o">...</span>
+        <span class="n">class_b</span><span class="o">/</span>
+            <span class="o">...</span>
+    <span class="n">val</span><span class="o">/</span>            <span class="c1"># optional</span>
+        <span class="n">class_a</span><span class="o">/</span>
+        <span class="n">class_b</span><span class="o">/</span>
+    <span class="n">test</span><span class="o">/</span>
+        <span class="n">class_a</span><span class="o">/</span>
+        <span class="n">class_b</span><span class="o">/</span>
+</pre></div>
+</div>
+<div class="highlight-{note}: notranslate"><div class="highlight"><pre><span></span>- `val/` is optional.
+- Mixing FITS and PNG/JPEG in the same dataset root is not allowed (the loader will raise).
+- Class names are inferred from subdirectory names.
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h3>How to Use<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<p>Minimal example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorflowLoader</span>
+
+<span class="n">root</span> <span class="o">=</span> <span class="s2">&quot;path/to/dataset_root&quot;</span>
+
+<span class="n">loader</span> <span class="o">=</span> <span class="n">TensorflowLoader</span><span class="p">()</span>
+<span class="c1"># Forward common Keras directory-loader params for image datasets,</span>
+<span class="c1"># or batch_size for FITS datasets.</span>
+<span class="n">raw</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+    <span class="n">root</span><span class="p">,</span>
+    <span class="n">image_size</span><span class="o">=</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">),</span>     <span class="c1"># for image datasets</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">color_mode</span><span class="o">=</span><span class="s2">&quot;rgb&quot;</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">train_ds</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+<span class="n">test_ds</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">train_ds</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+    <span class="c1"># images: TensorFlow tensor [B, H, W, C] for image datasets</span>
+    <span class="c1">#         TensorFlow tensor [B, H, W] or [H, W] for FITS (depending on batching)</span>
+    <span class="c1"># labels: int tensor</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<div class="highlight-{warning}: notranslate"><div class="highlight"><pre><span></span>image_size parameter is mandatory for image datasets.
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>FITS vs Image Handling<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>PNG/JPEG:</p>
+<ul>
+<li><p>Uses <code class="docutils literal notranslate"><span class="pre">tf.keras.utils.image_dataset_from_directory</span></code>.</p></li>
+<li><p>Channels-last tensors by default; set <code class="docutils literal notranslate"><span class="pre">data_format</span></code> if needed.</p></li>
+<li><p>Augmentations can be added via <code class="docutils literal notranslate"><span class="pre">tf.data</span></code> map stages or Keras preprocessing layers.</p></li>
+</ul>
+</li>
+<li><p>FITS:</p>
+<ul>
+<li><p>Files gathered via class directories; decoded to <code class="docutils literal notranslate"><span class="pre">float32</span></code> tensors using astrodata’s FITS utilities.</p></li>
+<li><p>Built as a <code class="docutils literal notranslate"><span class="pre">tf.data.Dataset</span></code> with <code class="docutils literal notranslate"><span class="pre">map</span></code> and <code class="docutils literal notranslate"><span class="pre">prefetch</span></code>; batching controlled by <code class="docutils literal notranslate"><span class="pre">batch_size</span></code>.</p></li>
+<li><p>Extend <code class="docutils literal notranslate"><span class="pre">TensorflowFITSDataset</span></code> to support multi-extension/multi-channel FITS.</p></li>
+</ul>
+</li>
+</ul>
+<p>Refer to <code class="docutils literal notranslate"><span class="pre">examples/data/4_tensorflow_data.py</span></code> for a full runnable demonstration that prepares CIFAR10-style image directories and a minimal FITS example.</p>
 </section>
 </section>
 </section>
@@ -548,6 +678,13 @@ Dataset for FITS images:</p>
 <li><a class="reference internal" href="#id1">How to Use</a></li>
 <li><a class="reference internal" href="#fits-vs-image-handling">FITS vs Image Handling</a></li>
 <li><a class="reference internal" href="#common-extension-points">Common Extension Points</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tensorflow-vision-fits-data-support">TensorFlow vision / FITS data support</a><ul>
+<li><a class="reference internal" href="#id2">Core Classes</a></li>
+<li><a class="reference internal" href="#id3">Expected Directory Structure</a></li>
+<li><a class="reference internal" href="#id4">How to Use</a></li>
+<li><a class="reference internal" href="#id5">FITS vs Image Handling</a></li>
 </ul>
 </li>
 </ul>

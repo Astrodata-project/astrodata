@@ -255,6 +255,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/1_data_example.html">data/1_data_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/2_preml_example.html">data/2_preml_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/3_torch_data.html">data/3_torch_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/4_tensorflow_data.html">data/4_tensorflow_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/utils.html">data/utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_2_pytorch_hp_example_mlflow.html">ml/10_2_pytorch_hp_example_mlflow.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
@@ -277,6 +280,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/7_mlflow_hp_example.html">ml/7_mlflow_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/8_pytorch_example.html">ml/8_pytorch_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/9_pytorch_gs_example.html">ml/9_pytorch_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/fits_ml.html">real_world/fits_ml.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/pytorch_galaxyMNIST.html">real_world/pytorch_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/tensorflow_galaxyMNIST.html">real_world/tensorflow_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/testdata/data_load.html">real_world/testdata/data_load.py</a></li>
 </ul>
 
 </div>
@@ -345,9 +352,13 @@
 <p><img alt="" src="../_images/mlflow_example.png" /></p>
 </section>
 </section>
-<section id="mlflowtracker">
-<h2><code class="docutils literal notranslate"><span class="pre">MLFlowTracker</span></code><a class="headerlink" href="#mlflowtracker" title="Link to this heading">¶</a></h2>
-<p>As previously stated, an <code class="docutils literal notranslate"><span class="pre">MlFlowTracker</span></code> represent an MlFlow implementation of a <code class="docutils literal notranslate"><span class="pre">ModelTracker</span></code>, the class is a base on top of which framework specific trackers should be build (such as <code class="docutils literal notranslate"><span class="pre">SklearnMLflowTracker</span></code>) as it does not feature a <code class="docutils literal notranslate"><span class="pre">wrap_fit()</span></code> method, but it implements all the required methods to store the relevant informations that are required to connect to and use an MlFlow server</p>
+<section id="mlflowbasetracker">
+<h2><code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code><a class="headerlink" href="#mlflowbasetracker" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code> is the base class for MLflow integration with <code class="docutils literal notranslate"><span class="pre">astrodata</span></code>. It provides common MLflow configuration and tracking functionality that framework-specific trackers (such as <code class="docutils literal notranslate"><span class="pre">SklearnMLflowTracker</span></code>, <code class="docutils literal notranslate"><span class="pre">PytorchMLflowTracker</span></code>, and <code class="docutils literal notranslate"><span class="pre">TensorflowMLflowTracker</span></code>) inherit from. This class does not implement the <code class="docutils literal notranslate"><span class="pre">wrap_fit()</span></code> method directly, but provides all the necessary infrastructure for connecting to and using an MLflow tracking server.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You should use the framework-specific tracker classes (<code class="docutils literal notranslate"><span class="pre">SklearnMLflowTracker</span></code>, <code class="docutils literal notranslate"><span class="pre">PytorchMLflowTracker</span></code>, <code class="docutils literal notranslate"><span class="pre">TensorflowMLflowTracker</span></code>) rather than <code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code> directly.</p>
+</div>
 <section id="parameters">
 <h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h3>
 <ul class="simple">
@@ -386,10 +397,10 @@
 </section>
 <section id="sklearnmlflowtracker">
 <h2><code class="docutils literal notranslate"><span class="pre">SklearnMLflowTracker</span></code><a class="headerlink" href="#sklearnmlflowtracker" title="Link to this heading">¶</a></h2>
-<p>This class extends <code class="docutils literal notranslate"><span class="pre">MlFlowTracker</span></code> to give it a proper <code class="docutils literal notranslate"><span class="pre">wrap_fit()</span></code> method that is suitable to track <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> compatible models.</p>
+<p>This class extends <code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code> to provide MLflow tracking for scikit-learn compatible models. It wraps the model’s <code class="docutils literal notranslate"><span class="pre">fit()</span></code> method to automatically log parameters, metrics, and optionally the trained model to MLflow.</p>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
-<p><code class="docutils literal notranslate"><span class="pre">XgBoostModel</span></code> is a <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> compatible model so it uses the same tracker!</p>
+<p><code class="docutils literal notranslate"><span class="pre">XGBoostModel</span></code> is scikit-learn compatible and uses the same tracker!</p>
 </div>
 <section id="sklearnmlflowtracker-wrap-fit-parameters">
 <h3><code class="docutils literal notranslate"><span class="pre">SklearnMLflowTracker.wrap_fit()</span></code> parameters<a class="headerlink" href="#sklearnmlflowtracker-wrap-fit-parameters" title="Link to this heading">¶</a></h3>
@@ -424,14 +435,24 @@
 <li><p>Metrics to log. If missing, a default loss metric is added.</p></li>
 </ul>
 </li>
-<li><p><strong>log_model</strong> : bool, optional</p>
+<li><p><strong>log_model</strong> : bool, default False</p>
 <ul>
 <li><p>If True, log the fitted model as an MLflow artifact.</p></li>
 </ul>
 </li>
-<li><p><strong>tags</strong>: Dict[str, Any] default {}</p>
+<li><p><strong>tags</strong>: Dict[str, Any], default {}</p>
 <ul>
-<li><p>Any additional tags that should be added to the model.</p></li>
+<li><p>Any additional tags that should be added to the model. By default, the tag “is_final” is set equal to <code class="docutils literal notranslate"><span class="pre">log_model</span></code>.</p></li>
+</ul>
+</li>
+<li><p><strong>manual_metrics</strong> : Tuple[Dict[str, Any], str], optional</p>
+<ul>
+<li><p>Manual metrics to log with a split name.</p></li>
+</ul>
+</li>
+<li><p><strong>run_name</strong> : str, optional</p>
+<ul>
+<li><p>Name for the MLflow run. If None, uses tracker’s run_name.</p></li>
 </ul>
 </li>
 </ul>
@@ -460,13 +481,313 @@
 </div>
 </section>
 </section>
+<section id="pytorchmlflowtracker">
+<h2><code class="docutils literal notranslate"><span class="pre">PytorchMLflowTracker</span></code><a class="headerlink" href="#pytorchmlflowtracker" title="Link to this heading">¶</a></h2>
+<p>This class extends <code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code> to provide MLflow tracking for PyTorch models. It wraps the <code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code> <code class="docutils literal notranslate"><span class="pre">fit()</span></code> method to automatically log parameters, metrics, training history, and optionally the trained model to MLflow.</p>
+<section id="pytorchmlflowtracker-wrap-fit-parameters">
+<h3><code class="docutils literal notranslate"><span class="pre">PytorchMLflowTracker.wrap_fit()</span></code> parameters<a class="headerlink" href="#pytorchmlflowtracker-wrap-fit-parameters" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>model</strong> : PytorchModel</p>
+<ul>
+<li><p>The PyTorch model to wrap.</p></li>
+</ul>
+</li>
+<li><p><strong>X_test</strong> : array-like, optional</p>
+<ul>
+<li><p>Test data for metric logging.</p></li>
+</ul>
+</li>
+<li><p><strong>y_test</strong> : array-like, optional</p>
+<ul>
+<li><p>Test labels for metric logging.</p></li>
+</ul>
+</li>
+<li><p><strong>X_val</strong> : array-like, optional</p>
+<ul>
+<li><p>Validation data for metric logging.</p></li>
+</ul>
+</li>
+<li><p><strong>y_val</strong> : array-like, optional</p>
+<ul>
+<li><p>Validation labels for metric logging.</p></li>
+</ul>
+</li>
+<li><p><strong>dataset_test</strong> : torch.utils.data.Dataset, optional</p>
+<ul>
+<li><p>Test dataset for metric logging.</p></li>
+</ul>
+</li>
+<li><p><strong>dataset_val</strong> : torch.utils.data.Dataset, optional</p>
+<ul>
+<li><p>Validation dataset for metric logging.</p></li>
+</ul>
+</li>
+<li><p><strong>metrics</strong> : list of BaseMetric, optional</p>
+<ul>
+<li><p>Metrics to log during training and evaluation.</p></li>
+</ul>
+</li>
+<li><p><strong>log_model</strong> : bool, default False</p>
+<ul>
+<li><p>If True, log the fitted PyTorch model as an MLflow artifact.</p></li>
+</ul>
+</li>
+<li><p><strong>tags</strong>: Dict[str, Any], default {}</p>
+<ul>
+<li><p>Any additional tags to add to the run. By default, “is_final” is set equal to <code class="docutils literal notranslate"><span class="pre">log_model</span></code>.</p></li>
+</ul>
+</li>
+<li><p><strong>manual_metrics</strong> : Tuple[Dict[str, Any], str], optional</p>
+<ul>
+<li><p>Manual metrics to log with a split name.</p></li>
+</ul>
+</li>
+<li><p><strong>run_name</strong> : str, optional</p>
+<ul>
+<li><p>Name for the MLflow run. If None, uses tracker’s run_name.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="example-usage">
+<h3>Example Usage<a class="headerlink" href="#example-usage" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.optim</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">optim</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">PytorchModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.tracking.MLFlowTracker</span><span class="w"> </span><span class="kn">import</span> <span class="n">PytorchMLflowTracker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span>
+
+<span class="c1"># Define a simple PyTorch model</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimpleNet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># Initialize the model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">PytorchModel</span><span class="p">(</span>
+    <span class="n">model_class</span><span class="o">=</span><span class="n">SimpleNet</span><span class="p">,</span>
+    <span class="n">model_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_dim&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;hidden_dim&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span> <span class="s2">&quot;output_dim&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+    <span class="n">loss_fn</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span>
+    <span class="n">optimizer_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">},</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span>
+<span class="p">)</span>
+
+<span class="c1"># Set up tracking</span>
+<span class="n">tracker</span> <span class="o">=</span> <span class="n">PytorchMLflowTracker</span><span class="p">(</span>
+    <span class="n">run_name</span><span class="o">=</span><span class="s2">&quot;pytorch_experiment&quot;</span><span class="p">,</span>
+    <span class="n">experiment_name</span><span class="o">=</span><span class="s2">&quot;pytorch_tracking_example&quot;</span><span class="p">,</span>
+    <span class="n">extra_tags</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model_type&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleNet&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">SklearnMetric</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">)]</span>
+
+<span class="n">tracked_model</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">wrap_fit</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="n">X_test</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span>
+    <span class="n">y_test</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+    <span class="n">log_model</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="n">tracked_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="tensorflowmlflowtracker">
+<h2><code class="docutils literal notranslate"><span class="pre">TensorflowMLflowTracker</span></code><a class="headerlink" href="#tensorflowmlflowtracker" title="Link to this heading">¶</a></h2>
+<p>This class extends <code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code> to provide MLflow tracking for TensorFlow/Keras models. It wraps the <code class="docutils literal notranslate"><span class="pre">TensorflowModel</span></code> <code class="docutils literal notranslate"><span class="pre">fit()</span></code> method to automatically log parameters, metrics, training history, and optionally the trained model to MLflow.</p>
+<section id="tensorflowmlflowtracker-wrap-fit-parameters">
+<h3><code class="docutils literal notranslate"><span class="pre">TensorflowMLflowTracker.wrap_fit()</span></code> parameters<a class="headerlink" href="#tensorflowmlflowtracker-wrap-fit-parameters" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>model</strong> : TensorflowModel</p>
+<ul>
+<li><p>The TensorFlow/Keras model to wrap.</p></li>
+</ul>
+</li>
+<li><p><strong>X_test</strong> : array-like, optional</p>
+<ul>
+<li><p>Test data for metric logging.</p></li>
+</ul>
+</li>
+<li><p><strong>y_test</strong> : array-like, optional</p>
+<ul>
+<li><p>Test labels for metric logging.</p></li>
+</ul>
+</li>
+<li><p><strong>X_val</strong> : array-like, optional</p>
+<ul>
+<li><p>Validation data for metric logging.</p></li>
+</ul>
+</li>
+<li><p><strong>y_val</strong> : array-like, optional</p>
+<ul>
+<li><p>Validation labels for metric logging.</p></li>
+</ul>
+</li>
+<li><p><strong>dataset_test</strong> : tf.data.Dataset, optional</p>
+<ul>
+<li><p>Test dataset for metric logging.</p></li>
+</ul>
+</li>
+<li><p><strong>dataset_val</strong> : tf.data.Dataset, optional</p>
+<ul>
+<li><p>Validation dataset for metric logging.</p></li>
+</ul>
+</li>
+<li><p><strong>metrics</strong> : list of BaseMetric, optional</p>
+<ul>
+<li><p>Metrics to log during training and evaluation.</p></li>
+</ul>
+</li>
+<li><p><strong>log_model</strong> : bool, default False</p>
+<ul>
+<li><p>If True, log the fitted TensorFlow model as an MLflow artifact.</p></li>
+</ul>
+</li>
+<li><p><strong>tags</strong>: Dict[str, Any], default {}</p>
+<ul>
+<li><p>Any additional tags to add to the run. By default, “is_final” is set equal to <code class="docutils literal notranslate"><span class="pre">log_model</span></code>.</p></li>
+</ul>
+</li>
+<li><p><strong>manual_metrics</strong> : Tuple[Dict[str, Any], str], optional</p>
+<ul>
+<li><p>Manual metrics to log with a split name.</p></li>
+</ul>
+</li>
+<li><p><strong>run_name</strong> : str, optional</p>
+<ul>
+<li><p>Name for the MLflow run. If None, uses tracker’s run_name.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id1">
+<h3>Example Usage<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">K</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorflowModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.tracking.MLFlowTracker</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorflowMLflowTracker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span>
+
+<span class="c1"># Define a simple Keras model</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_model</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span>
+        <span class="n">K</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,)),</span>
+        <span class="n">K</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">)</span>
+    <span class="p">])</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+<span class="c1"># Initialize the model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">TensorflowModel</span><span class="p">(</span>
+    <span class="n">model_class</span><span class="o">=</span><span class="n">build_model</span><span class="p">,</span>
+    <span class="n">model_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_dim&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;hidden_dim&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span> <span class="s2">&quot;output_dim&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+    <span class="n">loss_fn</span><span class="o">=</span><span class="n">K</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">SparseCategoricalCrossentropy</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">K</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span>
+    <span class="n">optimizer_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">},</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span>
+<span class="p">)</span>
+
+<span class="c1"># Set up tracking</span>
+<span class="n">tracker</span> <span class="o">=</span> <span class="n">TensorflowMLflowTracker</span><span class="p">(</span>
+    <span class="n">run_name</span><span class="o">=</span><span class="s2">&quot;tensorflow_experiment&quot;</span><span class="p">,</span>
+    <span class="n">experiment_name</span><span class="o">=</span><span class="s2">&quot;tensorflow_tracking_example&quot;</span><span class="p">,</span>
+    <span class="n">extra_tags</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model_type&quot;</span><span class="p">:</span> <span class="s2">&quot;SequentialNN&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">SklearnMetric</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">)]</span>
+
+<span class="n">tracked_model</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">wrap_fit</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="n">X_test</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span>
+    <span class="n">y_test</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+    <span class="n">log_model</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="n">tracked_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="register-best-model">
+<h2><code class="docutils literal notranslate"><span class="pre">register_best_model()</span></code><a class="headerlink" href="#register-best-model" title="Link to this heading">¶</a></h2>
+<p>All MLflow tracker classes inherit the <code class="docutils literal notranslate"><span class="pre">register_best_model()</span></code> method from <code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code>. This method allows you to register the best model from an experiment to the MLflow Model Registry based on a specific metric.</p>
+<section id="id2">
+<h3>Parameters<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>metric</strong> : BaseMetric</p>
+<ul>
+<li><p>Metric used to select the best run.</p></li>
+</ul>
+</li>
+<li><p><strong>registered_model_name</strong> : str, optional</p>
+<ul>
+<li><p>Name for the registered model. Defaults to experiment name.</p></li>
+</ul>
+</li>
+<li><p><strong>split_name</strong> : str, default “train”</p>
+<ul>
+<li><p>Which split’s metric to use (‘train’, ‘val’, or ‘test’).</p></li>
+</ul>
+</li>
+<li><p><strong>stage</strong> : str, default “Production”</p>
+<ul>
+<li><p>Model stage to assign (e.g., ‘Production’, ‘Staging’).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span>
+
+<span class="c1"># After running multiple experiments</span>
+<span class="n">accuracy_metric</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">)</span>
+<span class="n">tracker</span><span class="o">.</span><span class="n">register_best_model</span><span class="p">(</span>
+    <span class="n">metric</span><span class="o">=</span><span class="n">accuracy_metric</span><span class="p">,</span>
+    <span class="n">registered_model_name</span><span class="o">=</span><span class="s2">&quot;best_classifier&quot;</span><span class="p">,</span>
+    <span class="n">split_name</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+    <span class="n">stage</span><span class="o">=</span><span class="s2">&quot;Production&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<section id="scikit-learn-xgboost">
+<h3>Scikit-learn / XGBoost<a class="headerlink" href="#scikit-learn-xgboost" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="../python_examples/ml/5_mlflow_simple_example.html"><span class="std std-doc">Basic <code class="docutils literal notranslate"><span class="pre">SklearnMLflowTracker</span></code> usage</span></a></p></li>
-<li><p><a class="reference internal" href="../python_examples/ml/6_mlflow_gs_example.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">GridSearchSelector</span></code> with MlFlow tracking</span></a></p></li>
-<li><p><a class="reference internal" href="../python_examples/ml/7_mlflow_hp_example.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">HyperOptSelector</span></code> with MlFlow tracking</span></a></p></li>
+<li><p><a class="reference internal" href="../python_examples/ml/6_mlflow_gs_example.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">GridSearchSelector</span></code> with MLflow tracking</span></a></p></li>
+<li><p><a class="reference internal" href="../python_examples/ml/7_mlflow_hp_example.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">HyperOptSelector</span></code> with MLflow tracking</span></a></p></li>
 </ul>
+</section>
+<section id="pytorch">
+<h3>PyTorch<a class="headerlink" href="#pytorch" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../python_examples/ml/11_pytorch_mlflow_example.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">PytorchMLflowTracker</span></code> usage</span></a></p></li>
+</ul>
+</section>
+<section id="tensorflow-keras">
+<h3>TensorFlow/Keras<a class="headerlink" href="#tensorflow-keras" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../python_examples/ml/18_tensorflow_mlflow_example.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">TensorflowMLflowTracker</span></code> usage</span></a></p></li>
+</ul>
+</section>
 </section>
 </section>
 
@@ -531,7 +852,7 @@
 <li><a class="reference internal" href="#initializing-a-tracker">Initializing a tracker</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#mlflowtracker"><code class="docutils literal notranslate"><span class="pre">MLFlowTracker</span></code></a><ul>
+<li><a class="reference internal" href="#mlflowbasetracker"><code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code></a><ul>
 <li><a class="reference internal" href="#parameters">Parameters</a></li>
 </ul>
 </li>
@@ -540,7 +861,27 @@
 <li><a class="reference internal" href="#example-wrap-fit-usage">Example <code class="docutils literal notranslate"><span class="pre">wrap_fit()</span></code> usage</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#pytorchmlflowtracker"><code class="docutils literal notranslate"><span class="pre">PytorchMLflowTracker</span></code></a><ul>
+<li><a class="reference internal" href="#pytorchmlflowtracker-wrap-fit-parameters"><code class="docutils literal notranslate"><span class="pre">PytorchMLflowTracker.wrap_fit()</span></code> parameters</a></li>
+<li><a class="reference internal" href="#example-usage">Example Usage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tensorflowmlflowtracker"><code class="docutils literal notranslate"><span class="pre">TensorflowMLflowTracker</span></code></a><ul>
+<li><a class="reference internal" href="#tensorflowmlflowtracker-wrap-fit-parameters"><code class="docutils literal notranslate"><span class="pre">TensorflowMLflowTracker.wrap_fit()</span></code> parameters</a></li>
+<li><a class="reference internal" href="#id1">Example Usage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#register-best-model"><code class="docutils literal notranslate"><span class="pre">register_best_model()</span></code></a><ul>
+<li><a class="reference internal" href="#id2">Parameters</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#scikit-learn-xgboost">Scikit-learn / XGBoost</a></li>
+<li><a class="reference internal" href="#pytorch">PyTorch</a></li>
+<li><a class="reference internal" href="#tensorflow-keras">TensorFlow/Keras</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

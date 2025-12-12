@@ -1,0 +1,5 @@
+data/4_tensorflow_data.py
+=========================
+
+.. literalinclude:: ../../../examples/data/4_tensorflow_data.py
+   :language: python

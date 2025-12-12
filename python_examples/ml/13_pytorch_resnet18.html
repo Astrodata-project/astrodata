@@ -255,6 +255,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../data/1_data_example.html">data/1_data_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/2_preml_example.html">data/2_preml_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/3_torch_data.html">data/3_torch_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/4_tensorflow_data.html">data/4_tensorflow_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/utils.html">data/utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_2_pytorch_hp_example_mlflow.html">ml/10_2_pytorch_hp_example_mlflow.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
@@ -277,6 +280,10 @@
 <li class="toctree-l1"><a class="reference internal" href="7_mlflow_hp_example.html">ml/7_mlflow_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="8_pytorch_example.html">ml/8_pytorch_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="9_pytorch_gs_example.html">ml/9_pytorch_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../real_world/fits_ml.html">real_world/fits_ml.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../real_world/pytorch_galaxyMNIST.html">real_world/pytorch_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../real_world/tensorflow_galaxyMNIST.html">real_world/tensorflow_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../real_world/testdata/data_load.html">real_world/testdata/data_load.py</a></li>
 </ul>
 
 </div>
@@ -322,16 +329,20 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torchvision</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span><span class="p">,</span> <span class="n">optim</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">resnet18</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">PytorchModel</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">classes</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;testdata/imagenet_ex/imagenet_class_index.json&quot;</span><span class="p">))</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">ResNet18_Weights</span><span class="o">.</span><span class="n">DEFAULT</span>
     <span class="n">transform</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">transforms</span><span class="p">()</span>
+
+    <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">SklearnMetric</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
 
     <span class="n">model</span> <span class="o">=</span> <span class="n">PytorchModel</span><span class="p">(</span>
         <span class="n">model_class</span><span class="o">=</span><span class="n">resnet18</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">),</span>
@@ -354,9 +365,22 @@
     <span class="k">for</span> <span class="n">image_path</span> <span class="ow">in</span> <span class="n">img_paths</span><span class="p">:</span>
         <span class="n">img_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transform</span><span class="p">(</span><span class="n">torchvision</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_image</span><span class="p">(</span><span class="n">image_path</span><span class="p">)))</span>
 
-    <span class="n">dataset</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">TensorDataset</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">img_list</span><span class="p">))</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="p">[</span><span class="mi">242</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
 
-    <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">img_dataset</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">TensorDataset</span><span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">img_list</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">img_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">dataset_val</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">TensorDataset</span><span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">img_list</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">img_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">img_dataset</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pred</span><span class="p">)):</span>
         <span class="nb">print</span><span class="p">(</span>

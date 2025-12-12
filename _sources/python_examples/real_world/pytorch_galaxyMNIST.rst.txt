@@ -1,0 +1,5 @@
+real_world/pytorch_galaxyMNIST.py
+=================================
+
+.. literalinclude:: ../../../examples/real_world/pytorch_galaxyMNIST.py
+   :language: python

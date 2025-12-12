@@ -255,6 +255,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/1_data_example.html">data/1_data_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/2_preml_example.html">data/2_preml_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/3_torch_data.html">data/3_torch_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/4_tensorflow_data.html">data/4_tensorflow_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/utils.html">data/utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_2_pytorch_hp_example_mlflow.html">ml/10_2_pytorch_hp_example_mlflow.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
@@ -277,6 +280,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/7_mlflow_hp_example.html">ml/7_mlflow_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/8_pytorch_example.html">ml/8_pytorch_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/9_pytorch_gs_example.html">ml/9_pytorch_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/fits_ml.html">real_world/fits_ml.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/pytorch_galaxyMNIST.html">real_world/pytorch_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/tensorflow_galaxyMNIST.html">real_world/tensorflow_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/testdata/data_load.html">real_world/testdata/data_load.py</a></li>
 </ul>
 
 </div>
@@ -328,26 +335,38 @@
 <li class="toctree-l3"><a class="reference internal" href="ml.models.html#computing-metrics">Computing metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ml.models.html#sklearnmodel"><code class="docutils literal notranslate"><span class="pre">SklearnModel</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="ml.models.html#xgboostmodel"><code class="docutils literal notranslate"><span class="pre">XgboostModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ml.models.html#sklearnmodel"><code class="docutils literal notranslate"><span class="pre">SklearnModel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#key-features">Key Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ml.models.html#xgboostmodel"><code class="docutils literal notranslate"><span class="pre">XGBoostModel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id1">Key Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id2">Example</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="ml.models.html#pytorchmodel"><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id3">Key Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ml.models.html#initializing">Initializing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ml.models.html#training">Training</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ml.models.html#validation-metrics-per-epoch">Validation metrics (per-epoch)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#fine-tuning-with-frozen-layers">Fine-tuning with frozen layers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ml.models.html#predicting">Predicting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id1">Computing metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ml.models.html#freezing-layers-fine-tuning">Freezing layers (fine-tuning)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id4">Computing metrics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ml.models.html#saving-and-loading">Saving and loading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#periodic-checkpointing-during-training">Periodic checkpointing during training</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="ml.models.html#tensorflowmodel"><code class="docutils literal notranslate"><span class="pre">TensorflowModel</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id2">Initializing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id3">Training</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id4">Validation metrics (per-epoch)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id5">Predicting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id6">Computing metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id7">Freezing layers (fine-tuning)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id8">Saving and loading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id5">Key Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id6">Initializing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id7">Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id8">Validation metrics (per-epoch)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id9">Fine-tuning with frozen layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id10">Predicting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id11">Computing metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id12">Saving and loading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ml.models.html#id13">Periodic checkpointing during training</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="ml.models.html#examples">Examples</a><ul>

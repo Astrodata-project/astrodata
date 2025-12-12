@@ -255,6 +255,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/1_data_example.html">data/1_data_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/2_preml_example.html">data/2_preml_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/3_torch_data.html">data/3_torch_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/4_tensorflow_data.html">data/4_tensorflow_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/utils.html">data/utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_2_pytorch_hp_example_mlflow.html">ml/10_2_pytorch_hp_example_mlflow.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
@@ -277,6 +280,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/7_mlflow_hp_example.html">ml/7_mlflow_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/8_pytorch_example.html">ml/8_pytorch_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/9_pytorch_gs_example.html">ml/9_pytorch_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/fits_ml.html">real_world/fits_ml.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/pytorch_galaxyMNIST.html">real_world/pytorch_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/tensorflow_galaxyMNIST.html">real_world/tensorflow_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/testdata/data_load.html">real_world/testdata/data_load.py</a></li>
 </ul>
 
 </div>
@@ -322,16 +329,22 @@
 <h2>Abstract Class<a class="headerlink" href="#abstract-class" title="Link to this heading">¶</a></h2>
 <p><strong><code class="docutils literal notranslate"><span class="pre">BaseMlModel</span></code></strong> is the abstract base class of any model and it defines the standard interface for all machine learning models within <code class="docutils literal notranslate"><span class="pre">astrodata</span></code>. Subclasses must implement:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">fit(X,</span> <span class="pre">y,</span> <span class="pre">**kwargs)</span></code>: Trains the model.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">predict(X,</span> <span class="pre">**kwargs)</span></code>: Generates predictions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fit(X,</span> <span class="pre">y,</span> <span class="pre">**kwargs)</span></code>: Trains the model on training data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">predict(X,</span> <span class="pre">**kwargs)</span></code>: Generates predictions for input data.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">score(X,</span> <span class="pre">y,</span> <span class="pre">**kwargs)</span></code>: Computes a default score for the model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_scorer_metric()</span></code>: Returns the default metric used by the score method.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">get_metrics(X,</span> <span class="pre">y,</span> <span class="pre">metrics,</span> <span class="pre">**kwargs)</span></code>: Evaluates a list of specified metrics.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get_loss_history_metrics(X,</span> <span class="pre">y,</span> <span class="pre">metrics,</span> <span class="pre">**kwargs)</span></code>: Retrieves metric history during training, if supported.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">save(filepath,</span> <span class="pre">**kwargs)</span></code>: Saves the trained model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">save(filepath,</span> <span class="pre">**kwargs)</span></code>: Saves the trained model to disk.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">load(filepath,</span> <span class="pre">**kwargs)</span></code>: Loads a model from a file.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get_params()</span></code>: Returns model hyperparameters.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">set_params(**kwargs)</span></code>: Sets model hyperparameters.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">clone()</span></code>: Creates a shallow copy of the model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clone()</span></code>: Creates a deep copy of the model instance.</p></li>
+</ul>
+<p>Subclasses may optionally implement:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_params()</span></code>: Returns model hyperparameters (raises <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> by default).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set_params(**kwargs)</span></code>: Sets model hyperparameters (raises <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> by default).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_loss_history()</span></code>: Retrieves training loss history, if supported by the model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_loss_history_metrics(X,</span> <span class="pre">y,</span> <span class="pre">metrics,</span> <span class="pre">**kwargs)</span></code>: Computes metrics at each training stage, if supported.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">has_loss_history</span></code> (property): Boolean indicating if loss history is available.</p></li>
 </ul>
 </section>
 <section id="how-to-use">
@@ -365,7 +378,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The output of the preidct method is an array containing the predicted lables for the given input.</p>
+<p>The output of the predict method is an array containing the predicted labels for the given input.</p>
 </section>
 <section id="computing-metrics">
 <h3>Computing metrics<a class="headerlink" href="#computing-metrics" title="Link to this heading">¶</a></h3>
@@ -381,15 +394,80 @@
 </section>
 <section id="sklearnmodel">
 <h2><code class="docutils literal notranslate"><span class="pre">SklearnModel</span></code><a class="headerlink" href="#sklearnmodel" title="Link to this heading">¶</a></h2>
-<p>Can be initialized using any of the models offered by the <a class="reference external" href="https://scikit-learn.org/stable/"><strong>scikit-learn</strong></a> library, refer to the library documentation for more information on available models and model-specific hyperparameters.</p>
+<p>A wrapper for <a class="reference external" href="https://scikit-learn.org/stable/"><strong>scikit-learn</strong></a> models that provides a standardized interface consistent with <code class="docutils literal notranslate"><span class="pre">astrodata</span></code>. It can be initialized using any scikit-learn estimator class.</p>
+<section id="key-features">
+<h3>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Unified interface</strong>: Standard <code class="docutils literal notranslate"><span class="pre">fit</span></code>, <code class="docutils literal notranslate"><span class="pre">predict</span></code>, <code class="docutils literal notranslate"><span class="pre">score</span></code>, and <code class="docutils literal notranslate"><span class="pre">get_metrics</span></code> methods</p></li>
+<li><p><strong>Loss history tracking</strong>: Available for models that support staged predictions (e.g., <code class="docutils literal notranslate"><span class="pre">GradientBoostingClassifier</span></code>)</p></li>
+<li><p><strong>Automatic scorer detection</strong>: Automatically selects appropriate default metrics based on model type (classifier, regressor, clusterer, outlier detector)</p></li>
+<li><p><strong>Serialization</strong>: Save and load models using joblib</p></li>
+<li><p><strong>Parameter management</strong>: <code class="docutils literal notranslate"><span class="pre">get_params()</span></code>, <code class="docutils literal notranslate"><span class="pre">set_params()</span></code>, and <code class="docutils literal notranslate"><span class="pre">clone()</span></code> support</p></li>
+</ul>
+</section>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnModel</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">SklearnModel</span><span class="p">(</span>
+    <span class="n">model_class</span><span class="o">=</span><span class="n">RandomForestClassifier</span><span class="p">,</span>
+    <span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">max_depth</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="xgboostmodel">
-<h2><code class="docutils literal notranslate"><span class="pre">XgboostModel</span></code><a class="headerlink" href="#xgboostmodel" title="Link to this heading">¶</a></h2>
-<p>Can be initialized using any of the models offered by the <a class="reference external" href="https://xgboost.readthedocs.io/en/stable/"><strong>xgboost</strong></a> library, refer to the library documentation for more information on available models and model-specific hyperparameters.</p>
+<h2><code class="docutils literal notranslate"><span class="pre">XGBoostModel</span></code><a class="headerlink" href="#xgboostmodel" title="Link to this heading">¶</a></h2>
+<p>A wrapper for <a class="reference external" href="https://xgboost.readthedocs.io/en/stable/"><strong>XGBoost</strong></a> models that provides a standardized interface consistent with <code class="docutils literal notranslate"><span class="pre">astrodata</span></code>. It supports both XGBoost classifiers and regressors.</p>
+<section id="id1">
+<h3>Key Features<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Unified interface</strong>: Standard <code class="docutils literal notranslate"><span class="pre">fit</span></code>, <code class="docutils literal notranslate"><span class="pre">predict</span></code>, <code class="docutils literal notranslate"><span class="pre">score</span></code>, and <code class="docutils literal notranslate"><span class="pre">get_metrics</span></code> methods</p></li>
+<li><p><strong>Loss history tracking</strong>: Access training loss history via <code class="docutils literal notranslate"><span class="pre">get_loss_history()</span></code> and staged metrics via <code class="docutils literal notranslate"><span class="pre">get_loss_history_metrics()</span></code></p></li>
+<li><p><strong>Automatic eval_metric</strong>: Sets default evaluation metric based on model type if not specified</p></li>
+<li><p><strong>Serialization</strong>: Save and load models using joblib</p></li>
+<li><p><strong>Parameter management</strong>: <code class="docutils literal notranslate"><span class="pre">get_params()</span></code>, <code class="docutils literal notranslate"><span class="pre">set_params()</span></code>, and <code class="docutils literal notranslate"><span class="pre">clone()</span></code> support</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>Example<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xgboost</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xgb</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">XGBoostModel</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">XGBoostModel</span><span class="p">(</span>
+    <span class="n">model_class</span><span class="o">=</span><span class="n">xgb</span><span class="o">.</span><span class="n">XGBClassifier</span><span class="p">,</span>
+    <span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">max_depth</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="pytorchmodel">
 <h2><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code><a class="headerlink" href="#pytorchmodel" title="Link to this heading">¶</a></h2>
-<p>A thin wrapper around <a class="reference external" href="https://pytorch.org/">PyTorch</a> modules that provides a unified training and evaluation interface consistent with the rest of <code class="docutils literal notranslate"><span class="pre">astrodata</span></code>. It accepts either an instantiated <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> or a class with <code class="docutils literal notranslate"><span class="pre">model_params</span></code>, and exposes convenience helpers for metric computation, basic history tracking, saving/loading, and optional validation monitoring.</p>
+<p>A lightweight wrapper around <a class="reference external" href="https://pytorch.org/">PyTorch</a> modules that provides a unified training and evaluation interface consistent with the rest of <code class="docutils literal notranslate"><span class="pre">astrodata</span></code>. It accepts either an instantiated <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> or a class with <code class="docutils literal notranslate"><span class="pre">model_params</span></code>, and exposes convenience helpers for metric computation, training history tracking, saving/loading, validation monitoring, and layer freezing for fine-tuning.</p>
+<section id="id3">
+<h3>Key Features<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Flexible initialization</strong>: Accept instantiated models or model classes with parameters</p></li>
+<li><p><strong>Automatic device management</strong>: Supports CPU and CUDA with automatic detection</p></li>
+<li><p><strong>Training history tracking</strong>: Per-step training metrics and per-epoch validation metrics</p></li>
+<li><p><strong>Multiple save formats</strong>: Supports PyTorch native (<code class="docutils literal notranslate"><span class="pre">.pt</span></code>), pickle (<code class="docutils literal notranslate"><span class="pre">.pkl</span></code>), and SafeTensors formats</p></li>
+<li><p><strong>Fine-tuning support</strong>: Freeze and unfreeze specific layers or all layers</p></li>
+<li><p><strong>Dataset flexibility</strong>: Works with NumPy arrays, PyTorch tensors, or custom <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code> instances</p></li>
+<li><p><strong>Parameter management</strong>: <code class="docutils literal notranslate"><span class="pre">get_params()</span></code>, <code class="docutils literal notranslate"><span class="pre">set_params()</span></code>, and <code class="docutils literal notranslate"><span class="pre">clone()</span></code> support</p></li>
+</ul>
+</section>
 <section id="initializing">
 <h3>Initializing<a class="headerlink" href="#initializing" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
@@ -425,26 +503,25 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Alternatively, use a custom <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code> for full control over batching and transforms:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">TensorDataset</span>
+<p>Alternatively, use a custom <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> or <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code> for full control over batching and transforms:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">TensorDataset</span>
 
+<span class="c1"># Option 1: Pass a Dataset</span>
 <span class="n">train_ds</span> <span class="o">=</span> <span class="n">TensorDataset</span><span class="p">(</span><span class="n">X_train_tensor</span><span class="p">,</span> <span class="n">y_train_tensor</span><span class="p">)</span>
-<span class="n">train_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">train_ds</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dataloader</span><span class="o">=</span><span class="n">train_loader</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">train_ds</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+
+<span class="c1"># Option 2: The model will create a DataLoader internally from arrays</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="validation-metrics-per-epoch">
 <h3>Validation metrics (per-epoch)<a class="headerlink" href="#validation-metrics-per-epoch" title="Link to this heading">¶</a></h3>
-<p>Optionally pass validation data and metrics to track validation performance at the end of each epoch. Training-step metrics are also recorded during the epoch.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">log_loss</span>
+<p>Optionally pass validation data and metrics to track validation performance at the end of each epoch. Training metrics are recorded per batch during the epoch.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
 
-<span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-    <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">f1_score</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;micro&quot;</span><span class="p">),</span>
-    <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">log_loss</span><span class="p">),</span>
-<span class="p">]</span>
+<span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">SklearnMetric</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">)]</span>
 
 <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
     <span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span>
@@ -452,11 +529,27 @@
     <span class="n">X_val</span><span class="o">=</span><span class="n">X_val</span><span class="p">,</span>
     <span class="n">y_val</span><span class="o">=</span><span class="n">y_val</span><span class="p">,</span>
     <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># Retrieve histories</span>
-<span class="n">train_history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics_history</span><span class="p">()</span>              <span class="c1"># per-step within epoch</span>
-<span class="n">val_history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics_history</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">)</span>     <span class="c1"># per-epoch</span>
+<span class="n">train_history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics_history</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>  <span class="c1"># per-batch training metrics</span>
+<span class="n">val_history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics_history</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">)</span>      <span class="c1"># per-epoch validation metrics</span>
+</pre></div>
+</div>
+</section>
+<section id="fine-tuning-with-frozen-layers">
+<h3>Fine-tuning with frozen layers<a class="headerlink" href="#fine-tuning-with-frozen-layers" title="Link to this heading">¶</a></h3>
+<p>For transfer learning, you can selectively freeze layers before fine-tuning:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Freeze all layers</span>
+<span class="n">model</span><span class="o">.</span><span class="n">freeze_layers</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+<span class="c1"># Unfreeze specific layers for fine-tuning</span>
+<span class="n">model</span><span class="o">.</span><span class="n">unfreeze_layers</span><span class="p">([</span><span class="s2">&quot;fc2&quot;</span><span class="p">])</span>
+
+<span class="c1"># Fine-tune with existing weights</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span> <span class="n">fine_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -467,32 +560,63 @@
 </pre></div>
 </div>
 </section>
-<section id="id1">
-<h3>Computing metrics<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scores</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="freezing-layers-fine-tuning">
-<h3>Freezing layers (fine-tuning)<a class="headerlink" href="#freezing-layers-fine-tuning" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">freeze_layers</span><span class="p">([</span><span class="s2">&quot;fc2&quot;</span><span class="p">])</span>  <span class="c1"># unfreezes only selected module names</span>
+<section id="id4">
+<h3>Computing metrics<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scores</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="saving-and-loading">
 <h3>Saving and loading<a class="headerlink" href="#saving-and-loading" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;model.ckpt&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;torch&quot;</span><span class="p">)</span>          <span class="c1"># or &quot;pkl&quot; or &quot;safetensors&quot;</span>
-<span class="n">model</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model.ckpt&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;torch&quot;</span><span class="p">)</span>
+<p>Multiple formats are supported for serialization:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># PyTorch native format (recommended)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;model.pt&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;torch&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model.pt&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;torch&quot;</span><span class="p">)</span>
+
+<span class="c1"># Pickle format</span>
+<span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;model.pkl&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pkl&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model.pkl&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pkl&quot;</span><span class="p">)</span>
+
+<span class="c1"># SafeTensors format (for model weights only)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;model.safetensors&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;safetensors&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model.safetensors&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;safetensors&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Refer to the examples below for end-to-end usage patterns including MLflow tracking and search.</p>
+</section>
+<section id="periodic-checkpointing-during-training">
+<h3>Periodic checkpointing during training<a class="headerlink" href="#periodic-checkpointing-during-training" title="Link to this heading">¶</a></h3>
+<p>Save model checkpoints at regular intervals during training:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">save_every_n_epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">save_folder</span><span class="o">=</span><span class="s2">&quot;checkpoints/&quot;</span><span class="p">,</span>
+    <span class="n">save_format</span><span class="o">=</span><span class="s2">&quot;torch&quot;</span>
+<span class="p">)</span>
+<span class="c1"># This will save checkpoint_10.pt, checkpoint_20.pt, etc.</span>
+</pre></div>
+</div>
 </section>
 </section>
 <section id="tensorflowmodel">
 <h2><code class="docutils literal notranslate"><span class="pre">TensorflowModel</span></code><a class="headerlink" href="#tensorflowmodel" title="Link to this heading">¶</a></h2>
-<p>A lightweight wrapper around TensorFlow/Keras models providing a unified training and prediction interface consistent with the rest of <code class="docutils literal notranslate"><span class="pre">astrodata</span></code>. It accepts either an instantiated <code class="docutils literal notranslate"><span class="pre">keras.Model</span></code> or a model class with <code class="docutils literal notranslate"><span class="pre">model_params</span></code>, and exposes convenience helpers for metric computation, training history tracking, saving/loading, and validation monitoring.</p>
-<section id="id2">
-<h3>Initializing<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<p>A lightweight wrapper around TensorFlow/Keras models providing a unified training and prediction interface consistent with the rest of <code class="docutils literal notranslate"><span class="pre">astrodata</span></code>. It accepts either an instantiated <code class="docutils literal notranslate"><span class="pre">keras.Model</span></code> or a model class with <code class="docutils literal notranslate"><span class="pre">model_params</span></code>, and exposes convenience helpers for metric computation, training history tracking, saving/loading, validation monitoring, and layer freezing for fine-tuning.</p>
+<section id="id5">
+<h3>Key Features<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Flexible initialization</strong>: Accept instantiated Keras models or model classes with parameters</p></li>
+<li><p><strong>Automatic device management</strong>: TensorFlow handles device placement automatically</p></li>
+<li><p><strong>Training history tracking</strong>: Built-in Keras history tracking for training and validation metrics</p></li>
+<li><p><strong>Multiple save formats</strong>: Supports Keras native (<code class="docutils literal notranslate"><span class="pre">.keras</span></code>), HDF5 (<code class="docutils literal notranslate"><span class="pre">.h5</span></code>), and SavedModel formats</p></li>
+<li><p><strong>Fine-tuning support</strong>: Freeze and unfreeze specific layers or all layers, with support for nested models</p></li>
+<li><p><strong>Dataset flexibility</strong>: Works with NumPy arrays, TensorFlow tensors, or <code class="docutils literal notranslate"><span class="pre">tf.data.Dataset</span></code> instances</p></li>
+<li><p><strong>Parameter management</strong>: <code class="docutils literal notranslate"><span class="pre">get_params()</span></code>, <code class="docutils literal notranslate"><span class="pre">set_params()</span></code>, and <code class="docutils literal notranslate"><span class="pre">clone()</span></code> support</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>Initializing<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">K</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorflowModel</span>
 
@@ -519,8 +643,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id3">
-<h3>Training<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<section id="id7">
+<h3>Training<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <p>Train from arrays/tensors:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">)</span>
 </pre></div>
@@ -534,17 +658,12 @@
 </pre></div>
 </div>
 </section>
-<section id="id4">
-<h3>Validation metrics (per-epoch)<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
-<p>Optionally pass validation data and metrics to track validation performance at the end of each epoch:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">log_loss</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
+<section id="id8">
+<h3>Validation metrics (per-epoch)<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
+<p>Optionally pass validation data and Keras metrics to track validation performance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">K</span>
 
-<span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-    <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">f1_score</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;micro&quot;</span><span class="p">),</span>
-    <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">log_loss</span><span class="p">),</span>
-<span class="p">]</span>
+<span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">K</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">SparseCategoricalAccuracy</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;accuracy&quot;</span><span class="p">)]</span>
 
 <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
     <span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span>
@@ -552,41 +671,89 @@
     <span class="n">X_val</span><span class="o">=</span><span class="n">X_val</span><span class="p">,</span>
     <span class="n">y_val</span><span class="o">=</span><span class="n">y_val</span><span class="p">,</span>
     <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
 <span class="p">)</span>
+
+<span class="c1"># Retrieve histories (Keras native format)</span>
+<span class="n">train_history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics_history</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+<span class="n">val_history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics_history</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="id5">
-<h3>Predicting<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<section id="id9">
+<h3>Fine-tuning with frozen layers<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<p>For transfer learning, you can selectively freeze layers before fine-tuning:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Freeze all layers</span>
+<span class="n">model</span><span class="o">.</span><span class="n">freeze_layers</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+<span class="c1"># Unfreeze specific layers for fine-tuning</span>
+<span class="n">model</span><span class="o">.</span><span class="n">unfreeze_layers</span><span class="p">([</span><span class="s2">&quot;dense_1&quot;</span><span class="p">])</span>
+
+<span class="c1"># Fine-tune with existing weights</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span> <span class="n">fine_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># For nested models, specify parent layer</span>
+<span class="n">model</span><span class="o">.</span><span class="n">freeze_layers</span><span class="p">([</span><span class="s2">&quot;conv_block&quot;</span><span class="p">],</span> <span class="n">parent_layer</span><span class="o">=</span><span class="s2">&quot;feature_extractor&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h3>Predicting<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 <span class="n">y_proba</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="id6">
-<h3>Computing metrics<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scores</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">)</span>
-<span class="c1"># Or with a dataset</span>
+<section id="id11">
+<h3>Computing metrics<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
+<p>TensorflowModel works with both scikit-learn metrics and custom metrics:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">SklearnMetric</span>
+
+<span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">SklearnMetric</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">)]</span>
+<span class="n">scores</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+
+<span class="c1"># Or with a tf.data.Dataset</span>
 <span class="n">scores</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">test_dataset</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="id7">
-<h3>Freezing layers (fine-tuning)<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">freeze_layers</span><span class="p">([</span><span class="s2">&quot;fc2&quot;</span><span class="p">])</span>  <span class="c1"># unfreezes only selected layer names</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span> <span class="n">fine_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># fine-tune with frozen layers</span>
+<section id="id12">
+<h3>Saving and loading<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<p>Multiple formats are supported for serialization:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Keras native format (recommended, TensorFlow 2.x+)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;model.keras&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;tensorflow&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model.keras&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;tensorflow&quot;</span><span class="p">)</span>
+
+<span class="c1"># HDF5 format (legacy compatibility)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;model.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;h5&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;h5&quot;</span><span class="p">)</span>
+
+<span class="c1"># SavedModel format (for TensorFlow Serving)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;saved_model/&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;savedmodel&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;saved_model/&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;savedmodel&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="id8">
-<h3>Saving and loading<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;model.keras&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;tensorflow&quot;</span><span class="p">)</span>    <span class="c1"># or &quot;h5&quot; or &quot;savedmodel&quot;</span>
-<span class="n">model</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model.keras&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;tensorflow&quot;</span><span class="p">)</span>
+<section id="id13">
+<h3>Periodic checkpointing during training<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h3>
+<p>Save model checkpoints at regular intervals during training:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">X</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">save_every_n_epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">save_folder</span><span class="o">=</span><span class="s2">&quot;checkpoints/&quot;</span><span class="p">,</span>
+    <span class="n">save_format</span><span class="o">=</span><span class="s2">&quot;tensorflow&quot;</span>
+<span class="p">)</span>
+<span class="c1"># This will save model_epoch_10.keras, model_epoch_20.keras, etc.</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>TensorflowModel works seamlessly with both <code class="docutils literal notranslate"><span class="pre">SklearnMetric</span></code> and <code class="docutils literal notranslate"><span class="pre">TensorflowMetric</span></code> objects for evaluation.</p>
+<p>TensorflowModel works seamlessly with both scikit-learn metrics (via <code class="docutils literal notranslate"><span class="pre">SklearnMetric</span></code>) and Keras native metrics for evaluation.</p>
 </div>
 </section>
 </section>
@@ -711,26 +878,38 @@
 <li><a class="reference internal" href="#computing-metrics">Computing metrics</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#sklearnmodel"><code class="docutils literal notranslate"><span class="pre">SklearnModel</span></code></a></li>
-<li><a class="reference internal" href="#xgboostmodel"><code class="docutils literal notranslate"><span class="pre">XgboostModel</span></code></a></li>
+<li><a class="reference internal" href="#sklearnmodel"><code class="docutils literal notranslate"><span class="pre">SklearnModel</span></code></a><ul>
+<li><a class="reference internal" href="#key-features">Key Features</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#xgboostmodel"><code class="docutils literal notranslate"><span class="pre">XGBoostModel</span></code></a><ul>
+<li><a class="reference internal" href="#id1">Key Features</a></li>
+<li><a class="reference internal" href="#id2">Example</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#pytorchmodel"><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code></a><ul>
+<li><a class="reference internal" href="#id3">Key Features</a></li>
 <li><a class="reference internal" href="#initializing">Initializing</a></li>
 <li><a class="reference internal" href="#training">Training</a></li>
 <li><a class="reference internal" href="#validation-metrics-per-epoch">Validation metrics (per-epoch)</a></li>
+<li><a class="reference internal" href="#fine-tuning-with-frozen-layers">Fine-tuning with frozen layers</a></li>
 <li><a class="reference internal" href="#predicting">Predicting</a></li>
-<li><a class="reference internal" href="#id1">Computing metrics</a></li>
-<li><a class="reference internal" href="#freezing-layers-fine-tuning">Freezing layers (fine-tuning)</a></li>
+<li><a class="reference internal" href="#id4">Computing metrics</a></li>
 <li><a class="reference internal" href="#saving-and-loading">Saving and loading</a></li>
+<li><a class="reference internal" href="#periodic-checkpointing-during-training">Periodic checkpointing during training</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#tensorflowmodel"><code class="docutils literal notranslate"><span class="pre">TensorflowModel</span></code></a><ul>
-<li><a class="reference internal" href="#id2">Initializing</a></li>
-<li><a class="reference internal" href="#id3">Training</a></li>
-<li><a class="reference internal" href="#id4">Validation metrics (per-epoch)</a></li>
-<li><a class="reference internal" href="#id5">Predicting</a></li>
-<li><a class="reference internal" href="#id6">Computing metrics</a></li>
-<li><a class="reference internal" href="#id7">Freezing layers (fine-tuning)</a></li>
-<li><a class="reference internal" href="#id8">Saving and loading</a></li>
+<li><a class="reference internal" href="#id5">Key Features</a></li>
+<li><a class="reference internal" href="#id6">Initializing</a></li>
+<li><a class="reference internal" href="#id7">Training</a></li>
+<li><a class="reference internal" href="#id8">Validation metrics (per-epoch)</a></li>
+<li><a class="reference internal" href="#id9">Fine-tuning with frozen layers</a></li>
+<li><a class="reference internal" href="#id10">Predicting</a></li>
+<li><a class="reference internal" href="#id11">Computing metrics</a></li>
+<li><a class="reference internal" href="#id12">Saving and loading</a></li>
+<li><a class="reference internal" href="#id13">Periodic checkpointing during training</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#examples">Examples</a><ul>

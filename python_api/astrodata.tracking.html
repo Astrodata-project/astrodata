@@ -255,6 +255,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/1_data_example.html">data/1_data_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/2_preml_example.html">data/2_preml_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/3_torch_data.html">data/3_torch_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/4_tensorflow_data.html">data/4_tensorflow_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/utils.html">data/utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_2_pytorch_hp_example_mlflow.html">ml/10_2_pytorch_hp_example_mlflow.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
@@ -277,6 +280,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/7_mlflow_hp_example.html">ml/7_mlflow_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/8_pytorch_example.html">ml/8_pytorch_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/9_pytorch_gs_example.html">ml/9_pytorch_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/fits_ml.html">real_world/fits_ml.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/pytorch_galaxyMNIST.html">real_world/pytorch_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/tensorflow_galaxyMNIST.html">real_world/tensorflow_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/testdata/data_load.html">real_world/testdata/data_load.py</a></li>
 </ul>
 
 </div>
@@ -543,8 +550,157 @@ add files to DVC tracking, and synchronize data with a remote storage.</p>
 </dd></dl>
 
 </section>
-<section id="astrodata-tracking-mlflowtracker-module">
-<h2>astrodata.tracking.MLFlowTracker module<a class="headerlink" href="#astrodata-tracking-mlflowtracker-module" title="Link to this heading">¶</a></h2>
+<section id="module-astrodata.tracking.MLFlowTracker">
+<span id="astrodata-tracking-mlflowtracker-module"></span><h2>astrodata.tracking.MLFlowTracker module<a class="headerlink" href="#module-astrodata.tracking.MLFlowTracker" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.tracking.MLFlowTracker.MlflowBaseTracker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.MLFlowTracker.</span></span><span class="sig-name descname"><span class="pre">MlflowBaseTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#astrodata.tracking.ModelTracker.ModelTracker" title="astrodata.tracking.ModelTracker.ModelTracker"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelTracker</span></code></a></p>
+<p>Base tracker class for MLflow experiment tracking.</p>
+<p>Handles MLflow configuration and provides base methods for registering tracked models.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.MLFlowTracker.MlflowBaseTracker.register_best_model">
+<span class="sig-name descname"><span class="pre">register_best_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">registered_model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Production'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker.register_best_model" title="Link to this definition">¶</a></dt>
+<dd><p>Register the best model in MLflow Model Registry based on a metric.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metric</strong> (<a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a>) – Metric used to select the best run.</p></li>
+<li><p><strong>model_artifact_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the model artifact in MLflow run.</p></li>
+<li><p><strong>registered_model_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name for the registered model. Defaults to experiment name.</p></li>
+<li><p><strong>split_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Which split’s metric to use (‘train’, ‘val’, or ‘test’).</p></li>
+<li><p><strong>stage</strong> (<em>str</em><em>, </em><em>optional</em>) – Model stage to assign (e.g., ‘Production’, ‘Staging’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of the registration.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>mlflow.entities.model_registry.RegisteredModelVersion</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the experiment or suitable run is not found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.MLFlowTracker.MlflowBaseTracker.wrap_fit">
+<span class="sig-name descname"><span class="pre">wrap_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker.wrap_fit" title="Link to this definition">¶</a></dt>
+<dd><p>Placeholder for tracker-specific model wrapping.</p>
+<p>To be implemented in subclass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlModel</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.tracking.MLFlowTracker.PytorchMLflowTracker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.MLFlowTracker.</span></span><span class="sig-name descname"><span class="pre">PytorchMLflowTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MLFlowTracker.PytorchMLflowTracker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker" title="astrodata.tracking.MLFlowTracker.MlflowBaseTracker"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code></a></p>
+<p>MLflow tracker for PyTorch models. Wraps the fit() method of PytorchModel
+to automatically log parameters, metrics, training history, and optionally
+the trained model to MLflow tracking server.</p>
+<p>This tracker handles PyTorch-specific features like:
+- Training and validation loss tracking per epoch
+- Custom metrics evaluation on train/val/test splits
+- PyTorch model serialization (torch, pkl, safetensors formats)
+- Dataset support for both array-like and torch.utils.data.Dataset</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">PytorchModel</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.tracking.MLFlowTracker</span><span class="w"> </span><span class="kn">import</span> <span class="n">PytorchMLflowTracker</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">PytorchModel</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">model_class</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">model_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]},</span>
+<span class="gp">... </span>    <span class="n">loss_fn</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">optimizer</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">optimizer_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tracker</span> <span class="o">=</span> <span class="n">PytorchMLflowTracker</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="s2">&quot;pytorch_exp&quot;</span><span class="p">,</span> <span class="n">experiment_name</span><span class="o">=</span><span class="s2">&quot;experiments&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tracked_model</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">wrap_fit</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_test</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span> <span class="n">log_model</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tracked_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.tracking.MLFlowTracker.SklearnMLflowTracker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.MLFlowTracker.</span></span><span class="sig-name descname"><span class="pre">SklearnMLflowTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MLFlowTracker.SklearnMLflowTracker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker" title="astrodata.tracking.MLFlowTracker.MlflowBaseTracker"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code></a></p>
+<p>Tracker for scikit-learn models with MLflow integration.</p>
+<p>Provides run lifecycle, parameter logging, metric logging, and optional model logging.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.MLFlowTracker.SklearnMLflowTracker.wrap_fit">
+<span class="sig-name descname"><span class="pre">wrap_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manual_metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MLFlowTracker.SklearnMLflowTracker.wrap_fit" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap a BaseMlModel’s fit method to perform MLflow logging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><em>BaseMlModel</em></a>) – The model to wrap.</p></li>
+<li><p><strong>X_test</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Test data for metric logging.</p></li>
+<li><p><strong>y_test</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Test labels for metric logging.</p></li>
+<li><p><strong>X_val</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Validation data for metric logging.</p></li>
+<li><p><strong>y_val</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Validation labels for metric logging.</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em> of </em><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a><em>, </em><em>optional</em>) – Metrics to log. If missing, a default loss metric is added.</p></li>
+<li><p><strong>log_model</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, log the fitted model as an MLflow artifact.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>default {}</em>) – Any additional tags that should be added to the model. By default the tag “is_final” is set as equal to log_model so that
+any logged model is considered as a candidate for production (for register_best_model) unless specified otherwise
+(e.g. in the model selectors for intermediate steps)</p></li>
+<li><p><strong>run_name</strong> (<em>Optional</em><em>[</em><em>str</em><em>] </em><em>= None</em><em>,</em>) – Name for the MLflow run. If None, uses tracker’s run_name.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new instance of the model with an MLflow-logging fit method.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel">BaseMlModel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.tracking.MLFlowTracker.TensorflowMLflowTracker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.MLFlowTracker.</span></span><span class="sig-name descname"><span class="pre">TensorflowMLflowTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MLFlowTracker.TensorflowMLflowTracker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker" title="astrodata.tracking.MLFlowTracker.MlflowBaseTracker"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code></a></p>
+<p>MLflow tracker for TensorFlow/Keras models. Wraps the fit() method of TensorflowModel
+to automatically log parameters, metrics, training history, and optionally
+the trained model to MLflow tracking server.</p>
+<p>This tracker handles TensorFlow-specific features like:
+- Training and validation loss tracking per epoch
+- Custom metrics evaluation on train/val/test splits
+- TensorFlow model serialization (keras, h5, savedmodel formats)
+- Dataset support for both array-like and tf.data.Dataset</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">K</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorflowModel</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.tracking.MLFlowTracker</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorflowMLflowTracker</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">TensorflowModel</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">model_class</span><span class="o">=</span><span class="n">K</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">model_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">K</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">),</span> <span class="n">K</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">2</span><span class="p">)]},</span>
+<span class="gp">... </span>    <span class="n">loss_fn</span><span class="o">=</span><span class="n">K</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">SparseCategoricalCrossentropy</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">optimizer</span><span class="o">=</span><span class="n">K</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">optimizer_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tracker</span> <span class="o">=</span> <span class="n">TensorflowMLflowTracker</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="s2">&quot;tf_exp&quot;</span><span class="p">,</span> <span class="n">experiment_name</span><span class="o">=</span><span class="s2">&quot;experiments&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tracked_model</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">wrap_fit</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_test</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span> <span class="n">log_model</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tracked_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 <section id="module-astrodata.tracking.ModelTracker">
 <span id="astrodata-tracking-modeltracker-module"></span><h2>astrodata.tracking.ModelTracker module<a class="headerlink" href="#module-astrodata.tracking.ModelTracker" title="Link to this heading">¶</a></h2>
@@ -605,6 +761,408 @@ pushes data to the DVC remote, and commits and pushes code changes to the Git re
 </section>
 <section id="module-astrodata.tracking">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-astrodata.tracking" title="Link to this heading">¶</a></h2>
+<p>Tracking module for astrodata.</p>
+<p>Provides experiment tracking, model versioning, and reproducibility via Git, DVC, and MLflow.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.tracking.CodeTracker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.</span></span><span class="sig-name descname"><span class="pre">CodeTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repo_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssh_key_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'main'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.CodeTracker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to manage and track code changes in a Git repository.</p>
+<p>This class provides methods for common Git operations such as branch management,
+remote handling, committing, pushing, and synchronizing with remotes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>repo_path</strong> (<em>str</em>) – Path to the local Git repository.</p></li>
+<li><p><strong>ssh_key_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the SSH private key for authentication.</p></li>
+<li><p><strong>token</strong> (<em>str</em><em>, </em><em>optional</em>) – Personal access token for HTTPS authentication.</p></li>
+<li><p><strong>branch</strong> (<em>str</em><em>, </em><em>optional</em>) – Default branch to use. Defaults to “main”.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.CodeTracker.add_remote">
+<span class="sig-name descname"><span class="pre">add_remote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.CodeTracker.add_remote" title="Link to this definition">¶</a></dt>
+<dd><p>Add a remote if it doesn’t already exist, and fetch/pull if the repo is empty.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the remote.</p></li>
+<li><p><strong>url</strong> (<em>str</em>) – The URL of the remote repository.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the remote was added or already exists.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.CodeTracker.add_to_index">
+<span class="sig-name descname"><span class="pre">add_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.CodeTracker.add_to_index" title="Link to this definition">¶</a></dt>
+<dd><p>Add paths to the Git index (staging area).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>paths</strong> (<em>list</em>) – List of file or directory paths to add.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if files were added to the index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.CodeTracker.align_with_remote">
+<span class="sig-name descname"><span class="pre">align_with_remote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'origin'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.CodeTracker.align_with_remote" title="Link to this definition">¶</a></dt>
+<dd><p>Prune deleted remote branches and delete local branches whose remote is gone.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>remote_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the remote to align with. Defaults to “origin”.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.CodeTracker.checkout">
+<span class="sig-name descname"><span class="pre">checkout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.CodeTracker.checkout" title="Link to this definition">¶</a></dt>
+<dd><p>Checkout to the specified branch.</p>
+<p>If the branch does not exist, create it from HEAD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>branch_name</strong> (<em>str</em>) – The name of the branch to checkout.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if checked out to an existing branch, False if a new branch was created.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.CodeTracker.create_commit">
+<span class="sig-name descname"><span class="pre">create_commit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.CodeTracker.create_commit" title="Link to this definition">¶</a></dt>
+<dd><p>Create a commit with the given message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>str</em>) – The commit message.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created commit object, or False if no changes to commit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Commit</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.CodeTracker.pull">
+<span class="sig-name descname"><span class="pre">pull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.CodeTracker.pull" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch and pull from remote for empty repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>remote_name</strong> (<em>str</em>) – The name of the remote.</p></li>
+<li><p><strong>branch</strong> (<em>str</em>) – The branch to pull.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if pull was successful, None otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.CodeTracker.push">
+<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.CodeTracker.push" title="Link to this definition">¶</a></dt>
+<dd><p>Push the current branch to the specified remote.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>remote_name</strong> (<em>str</em>) – The name of the remote.</p></li>
+<li><p><strong>branch</strong> (<em>str</em>) – The branch to push.</p></li>
+<li><p><strong>remote_url</strong> (<em>str</em><em>, </em><em>optional</em>) – The URL of the remote, if it needs to be created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if push was successful, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.CodeTracker.remove_deleted_from_index">
+<span class="sig-name descname"><span class="pre">remove_deleted_from_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.CodeTracker.remove_deleted_from_index" title="Link to this definition">¶</a></dt>
+<dd><p>Remove deleted files from the Git index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if deleted files were removed from the index.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.tracking.DataTracker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.</span></span><span class="sig-name descname"><span class="pre">DataTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repo_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.DataTracker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to manage and track data files using DVC (Data Version Control).</p>
+<p>This class provides methods to initialize or open a DVC repository, configure remotes,
+add files to DVC tracking, and synchronize data with a remote storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>repo_path</strong> (<em>str</em>) – Path to the local DVC repository.</p></li>
+<li><p><strong>remote</strong> (<em>str</em>) – URL of the DVC remote storage.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.DataTracker.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.DataTracker.add" title="Link to this definition">¶</a></dt>
+<dd><p>Add a file or directory to DVC tracking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Relative path to the file or directory to add.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.DataTracker.pull">
+<span class="sig-name descname"><span class="pre">pull</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.DataTracker.pull" title="Link to this definition">¶</a></dt>
+<dd><p>Pull tracked data from the configured DVC remote storage.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.DataTracker.push">
+<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.DataTracker.push" title="Link to this definition">¶</a></dt>
+<dd><p>Push tracked data to the configured DVC remote storage.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.tracking.MlflowBaseTracker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.</span></span><span class="sig-name descname"><span class="pre">MlflowBaseTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking_password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MlflowBaseTracker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#astrodata.tracking.ModelTracker.ModelTracker" title="astrodata.tracking.ModelTracker.ModelTracker"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelTracker</span></code></a></p>
+<p>Base tracker class for MLflow experiment tracking.</p>
+<p>Handles MLflow configuration and provides base methods for registering tracked models.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.MlflowBaseTracker.register_best_model">
+<span class="sig-name descname"><span class="pre">register_best_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">registered_model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Production'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MlflowBaseTracker.register_best_model" title="Link to this definition">¶</a></dt>
+<dd><p>Register the best model in MLflow Model Registry based on a metric.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metric</strong> (<a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a>) – Metric used to select the best run.</p></li>
+<li><p><strong>model_artifact_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the model artifact in MLflow run.</p></li>
+<li><p><strong>registered_model_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name for the registered model. Defaults to experiment name.</p></li>
+<li><p><strong>split_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Which split’s metric to use (‘train’, ‘val’, or ‘test’).</p></li>
+<li><p><strong>stage</strong> (<em>str</em><em>, </em><em>optional</em>) – Model stage to assign (e.g., ‘Production’, ‘Staging’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of the registration.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>mlflow.entities.model_registry.RegisteredModelVersion</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the experiment or suitable run is not found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.MlflowBaseTracker.wrap_fit">
+<span class="sig-name descname"><span class="pre">wrap_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.MlflowBaseTracker.wrap_fit" title="Link to this definition">¶</a></dt>
+<dd><p>Placeholder for tracker-specific model wrapping.</p>
+<p>To be implemented in subclass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlModel</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.tracking.ModelTracker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.</span></span><span class="sig-name descname"><span class="pre">ModelTracker</span></span><a class="headerlink" href="#astrodata.tracking.ModelTracker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Abstract base class for tracking model fitting processes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.ModelTracker.wrap_fit">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.ModelTracker.wrap_fit" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap the fit method of an object to add tracking or logging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>Any</em>) – The object whose fit method will be wrapped.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The wrapped object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel">BaseMlModel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.tracking.PytorchMLflowTracker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.</span></span><span class="sig-name descname"><span class="pre">PytorchMLflowTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.PytorchMLflowTracker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker" title="astrodata.tracking.MLFlowTracker.MlflowBaseTracker"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code></a></p>
+<p>MLflow tracker for PyTorch models. Wraps the fit() method of PytorchModel
+to automatically log parameters, metrics, training history, and optionally
+the trained model to MLflow tracking server.</p>
+<p>This tracker handles PyTorch-specific features like:
+- Training and validation loss tracking per epoch
+- Custom metrics evaluation on train/val/test splits
+- PyTorch model serialization (torch, pkl, safetensors formats)
+- Dataset support for both array-like and torch.utils.data.Dataset</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">PytorchModel</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.tracking.MLFlowTracker</span><span class="w"> </span><span class="kn">import</span> <span class="n">PytorchMLflowTracker</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">PytorchModel</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">model_class</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">model_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]},</span>
+<span class="gp">... </span>    <span class="n">loss_fn</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">optimizer</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">optimizer_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tracker</span> <span class="o">=</span> <span class="n">PytorchMLflowTracker</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="s2">&quot;pytorch_exp&quot;</span><span class="p">,</span> <span class="n">experiment_name</span><span class="o">=</span><span class="s2">&quot;experiments&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tracked_model</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">wrap_fit</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_test</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span> <span class="n">log_model</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tracked_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.tracking.SklearnMLflowTracker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.</span></span><span class="sig-name descname"><span class="pre">SklearnMLflowTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.SklearnMLflowTracker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker" title="astrodata.tracking.MLFlowTracker.MlflowBaseTracker"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code></a></p>
+<p>Tracker for scikit-learn models with MLflow integration.</p>
+<p>Provides run lifecycle, parameter logging, metric logging, and optional model logging.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.SklearnMLflowTracker.wrap_fit">
+<span class="sig-name descname"><span class="pre">wrap_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manual_metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.SklearnMLflowTracker.wrap_fit" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap a BaseMlModel’s fit method to perform MLflow logging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><em>BaseMlModel</em></a>) – The model to wrap.</p></li>
+<li><p><strong>X_test</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Test data for metric logging.</p></li>
+<li><p><strong>y_test</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Test labels for metric logging.</p></li>
+<li><p><strong>X_val</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Validation data for metric logging.</p></li>
+<li><p><strong>y_val</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Validation labels for metric logging.</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em> of </em><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a><em>, </em><em>optional</em>) – Metrics to log. If missing, a default loss metric is added.</p></li>
+<li><p><strong>log_model</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, log the fitted model as an MLflow artifact.</p></li>
+<li><p><strong>tags</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>default {}</em>) – Any additional tags that should be added to the model. By default the tag “is_final” is set as equal to log_model so that
+any logged model is considered as a candidate for production (for register_best_model) unless specified otherwise
+(e.g. in the model selectors for intermediate steps)</p></li>
+<li><p><strong>run_name</strong> (<em>Optional</em><em>[</em><em>str</em><em>] </em><em>= None</em><em>,</em>) – Name for the MLflow run. If None, uses tracker’s run_name.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new instance of the model with an MLflow-logging fit method.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel">BaseMlModel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.tracking.TensorflowMLflowTracker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.</span></span><span class="sig-name descname"><span class="pre">TensorflowMLflowTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.TensorflowMLflowTracker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker" title="astrodata.tracking.MLFlowTracker.MlflowBaseTracker"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code></a></p>
+<p>MLflow tracker for TensorFlow/Keras models. Wraps the fit() method of TensorflowModel
+to automatically log parameters, metrics, training history, and optionally
+the trained model to MLflow tracking server.</p>
+<p>This tracker handles TensorFlow-specific features like:
+- Training and validation loss tracking per epoch
+- Custom metrics evaluation on train/val/test splits
+- TensorFlow model serialization (keras, h5, savedmodel formats)
+- Dataset support for both array-like and tf.data.Dataset</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">K</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.ml.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorflowModel</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astrodata.tracking.MLFlowTracker</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorflowMLflowTracker</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">TensorflowModel</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">model_class</span><span class="o">=</span><span class="n">K</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">model_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">K</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">),</span> <span class="n">K</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">2</span><span class="p">)]},</span>
+<span class="gp">... </span>    <span class="n">loss_fn</span><span class="o">=</span><span class="n">K</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">SparseCategoricalCrossentropy</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">optimizer</span><span class="o">=</span><span class="n">K</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">optimizer_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tracker</span> <span class="o">=</span> <span class="n">TensorflowMLflowTracker</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="s2">&quot;tf_exp&quot;</span><span class="p">,</span> <span class="n">experiment_name</span><span class="o">=</span><span class="s2">&quot;experiments&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tracked_model</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">wrap_fit</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_test</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span> <span class="n">log_model</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tracked_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="astrodata.tracking.Tracker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.tracking.</span></span><span class="sig-name descname"><span class="pre">Tracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.Tracker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Orchestrates code and data tracking for a project using Git and DVC.</p>
+<p>This class manages both code and data versioning, providing methods to track,
+commit, and push changes to remote repositories for reproducible research.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_path</strong> (<em>str</em>) – Path to the configuration file.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.tracking.Tracker.track">
+<span class="sig-name descname"><span class="pre">track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commit_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.tracking.Tracker.track" title="Link to this definition">¶</a></dt>
+<dd><p>Orchestrate the tracking of data and code, pushing data and committing code.</p>
+<p>This method aligns the code repository with the remote, tracks data and code changes,
+pushes data to the DVC remote, and commits and pushes code changes to the Git remote.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>commit_message</strong> (<em>str</em><em>, </em><em>optional</em>) – Commit message for the code changes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
@@ -689,7 +1247,20 @@ pushes data to the DVC remote, and commits and pushes code changes to the Git re
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#astrodata-tracking-mlflowtracker-module">astrodata.tracking.MLFlowTracker module</a></li>
+<li><a class="reference internal" href="#module-astrodata.tracking.MLFlowTracker">astrodata.tracking.MLFlowTracker module</a><ul>
+<li><a class="reference internal" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker"><code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker.register_best_model"><code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker.register_best_model()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.MLFlowTracker.MlflowBaseTracker.wrap_fit"><code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker.wrap_fit()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#astrodata.tracking.MLFlowTracker.PytorchMLflowTracker"><code class="docutils literal notranslate"><span class="pre">PytorchMLflowTracker</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.MLFlowTracker.SklearnMLflowTracker"><code class="docutils literal notranslate"><span class="pre">SklearnMLflowTracker</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.tracking.MLFlowTracker.SklearnMLflowTracker.wrap_fit"><code class="docutils literal notranslate"><span class="pre">SklearnMLflowTracker.wrap_fit()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#astrodata.tracking.MLFlowTracker.TensorflowMLflowTracker"><code class="docutils literal notranslate"><span class="pre">TensorflowMLflowTracker</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-astrodata.tracking.ModelTracker">astrodata.tracking.ModelTracker module</a><ul>
 <li><a class="reference internal" href="#astrodata.tracking.ModelTracker.ModelTracker"><code class="docutils literal notranslate"><span class="pre">ModelTracker</span></code></a><ul>
 <li><a class="reference internal" href="#astrodata.tracking.ModelTracker.ModelTracker.wrap_fit"><code class="docutils literal notranslate"><span class="pre">ModelTracker.wrap_fit()</span></code></a></li>
@@ -704,7 +1275,45 @@ pushes data to the DVC remote, and commits and pushes code changes to the Git re
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-astrodata.tracking">Module contents</a></li>
+<li><a class="reference internal" href="#module-astrodata.tracking">Module contents</a><ul>
+<li><a class="reference internal" href="#astrodata.tracking.CodeTracker"><code class="docutils literal notranslate"><span class="pre">CodeTracker</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.tracking.CodeTracker.add_remote"><code class="docutils literal notranslate"><span class="pre">CodeTracker.add_remote()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.CodeTracker.add_to_index"><code class="docutils literal notranslate"><span class="pre">CodeTracker.add_to_index()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.CodeTracker.align_with_remote"><code class="docutils literal notranslate"><span class="pre">CodeTracker.align_with_remote()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.CodeTracker.checkout"><code class="docutils literal notranslate"><span class="pre">CodeTracker.checkout()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.CodeTracker.create_commit"><code class="docutils literal notranslate"><span class="pre">CodeTracker.create_commit()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.CodeTracker.pull"><code class="docutils literal notranslate"><span class="pre">CodeTracker.pull()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.CodeTracker.push"><code class="docutils literal notranslate"><span class="pre">CodeTracker.push()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.CodeTracker.remove_deleted_from_index"><code class="docutils literal notranslate"><span class="pre">CodeTracker.remove_deleted_from_index()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#astrodata.tracking.DataTracker"><code class="docutils literal notranslate"><span class="pre">DataTracker</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.tracking.DataTracker.add"><code class="docutils literal notranslate"><span class="pre">DataTracker.add()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.DataTracker.pull"><code class="docutils literal notranslate"><span class="pre">DataTracker.pull()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.DataTracker.push"><code class="docutils literal notranslate"><span class="pre">DataTracker.push()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#astrodata.tracking.MlflowBaseTracker"><code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.tracking.MlflowBaseTracker.register_best_model"><code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker.register_best_model()</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.MlflowBaseTracker.wrap_fit"><code class="docutils literal notranslate"><span class="pre">MlflowBaseTracker.wrap_fit()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#astrodata.tracking.ModelTracker"><code class="docutils literal notranslate"><span class="pre">ModelTracker</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.tracking.ModelTracker.wrap_fit"><code class="docutils literal notranslate"><span class="pre">ModelTracker.wrap_fit()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#astrodata.tracking.PytorchMLflowTracker"><code class="docutils literal notranslate"><span class="pre">PytorchMLflowTracker</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.SklearnMLflowTracker"><code class="docutils literal notranslate"><span class="pre">SklearnMLflowTracker</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.tracking.SklearnMLflowTracker.wrap_fit"><code class="docutils literal notranslate"><span class="pre">SklearnMLflowTracker.wrap_fit()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#astrodata.tracking.TensorflowMLflowTracker"><code class="docutils literal notranslate"><span class="pre">TensorflowMLflowTracker</span></code></a></li>
+<li><a class="reference internal" href="#astrodata.tracking.Tracker"><code class="docutils literal notranslate"><span class="pre">Tracker</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.tracking.Tracker.track"><code class="docutils literal notranslate"><span class="pre">Tracker.track()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

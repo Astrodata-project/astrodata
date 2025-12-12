@@ -255,6 +255,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/1_data_example.html">data/1_data_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/2_preml_example.html">data/2_preml_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/3_torch_data.html">data/3_torch_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/4_tensorflow_data.html">data/4_tensorflow_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/utils.html">data/utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_2_pytorch_hp_example_mlflow.html">ml/10_2_pytorch_hp_example_mlflow.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
@@ -277,6 +280,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/7_mlflow_hp_example.html">ml/7_mlflow_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/8_pytorch_example.html">ml/8_pytorch_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/9_pytorch_gs_example.html">ml/9_pytorch_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/fits_ml.html">real_world/fits_ml.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/pytorch_galaxyMNIST.html">real_world/pytorch_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/tensorflow_galaxyMNIST.html">real_world/tensorflow_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/testdata/data_load.html">real_world/testdata/data_load.py</a></li>
 </ul>
 
 </div>
@@ -386,18 +393,27 @@
 <section id="example-2-extending-astrodata-ml-models-basemlmodel">
 <h2>Example 2, Extending <code class="docutils literal notranslate"><span class="pre">astrodata.ml.models.BaseMlModel</span></code><a class="headerlink" href="#example-2-extending-astrodata-ml-models-basemlmodel" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">BaseMlModel</span></code> abstract class defines the fundamental operations for any machine learning model in <code class="docutils literal notranslate"><span class="pre">astrodata</span></code>. This allows the <code class="docutils literal notranslate"><span class="pre">astrodata.ml.model_selection</span></code> module to work seamlessly with various model types, whether they are scikit-learn models, XGBoost models, or your own custom implementations.</p>
-<p><strong><code class="docutils literal notranslate"><span class="pre">BaseMlModel.py</span></code> Abstract Methods:</strong></p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">BaseMlModel.py</span></code> Abstract Methods (must be implemented):</strong></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">fit(self,</span> <span class="pre">X:</span> <span class="pre">Any,</span> <span class="pre">y:</span> <span class="pre">Any,</span> <span class="pre">**kwargs)</span> <span class="pre">-&gt;</span> <span class="pre">&quot;BaseMlModel&quot;</span></code>: Trains the model.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">predict(self,</span> <span class="pre">X:</span> <span class="pre">Any,</span> <span class="pre">**kwargs)</span> <span class="pre">-&gt;</span> <span class="pre">Any</span></code>: Generates predictions.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">score(self,</span> <span class="pre">X:</span> <span class="pre">Any,</span> <span class="pre">y:</span> <span class="pre">Any,</span> <span class="pre">**kwargs)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code>: Computes a default score.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get_metrics(self,</span> <span class="pre">X_test:</span> <span class="pre">Any,</span> <span class="pre">y_test:</span> <span class="pre">Any,</span> <span class="pre">metrics:</span> <span class="pre">List[BaseMetric],</span> <span class="pre">**kwargs)</span> <span class="pre">-&gt;</span> <span class="pre">Dict[str,</span> <span class="pre">Any]</span></code>: Evaluates multiple metrics.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get_loss_history_metrics(self,</span> <span class="pre">X_test:</span> <span class="pre">Any,</span> <span class="pre">y_test:</span> <span class="pre">Any,</span> <span class="pre">metrics:</span> <span class="pre">List[BaseMetric],</span> <span class="pre">**kwargs)</span> <span class="pre">-&gt;</span> <span class="pre">Dict[str,</span> <span class="pre">Any]</span></code>: Retrieves metric history during training (optional, but part of the interface).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_scorer_metric(self)</span> <span class="pre">-&gt;</span> <span class="pre">BaseMetric</span></code>: Returns the default metric used by the score method.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_metrics(self,</span> <span class="pre">X:</span> <span class="pre">Any,</span> <span class="pre">y:</span> <span class="pre">Any,</span> <span class="pre">metrics:</span> <span class="pre">List[BaseMetric],</span> <span class="pre">**kwargs)</span> <span class="pre">-&gt;</span> <span class="pre">Dict[str,</span> <span class="pre">Any]</span></code>: Evaluates multiple metrics.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">save(self,</span> <span class="pre">filepath:</span> <span class="pre">str,</span> <span class="pre">**kwargs)</span></code>: Saves the model.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">load(self,</span> <span class="pre">filepath:</span> <span class="pre">str,</span> <span class="pre">**kwargs)</span> <span class="pre">-&gt;</span> <span class="pre">&quot;BaseMlModel&quot;</span></code>: Loads a model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clone(self)</span> <span class="pre">-&gt;</span> <span class="pre">&quot;BaseMlModel&quot;</span></code>: Creates a deep copy of the model instance.</p></li>
+</ul>
+<p><strong>Optional Methods (raise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> by default):</strong></p>
+<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">get_params(self,</span> <span class="pre">**kwargs)</span> <span class="pre">-&gt;</span> <span class="pre">Dict[str,</span> <span class="pre">Any]</span></code>: Returns model hyperparameters.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">set_params(self,</span> <span class="pre">**kwargs)</span> <span class="pre">-&gt;</span> <span class="pre">None</span></code>: Sets model hyperparameters.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">clone(self)</span> <span class="pre">-&gt;</span> <span class="pre">&quot;BaseMlModel&quot;</span></code>: Creates a shallow copy.</p></li>
+</ul>
+<p><strong>Optional Methods for Models with Training History:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_loss_history(self)</span> <span class="pre">-&gt;</span> <span class="pre">Any</span></code>: Retrieves training loss history (optional, only for models that track it).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_loss_history_metrics(self,</span> <span class="pre">X:</span> <span class="pre">Any,</span> <span class="pre">y:</span> <span class="pre">Any,</span> <span class="pre">metrics:</span> <span class="pre">List[BaseMetric],</span> <span class="pre">**kwargs)</span> <span class="pre">-&gt;</span> <span class="pre">Dict[str,</span> <span class="pre">Any]</span></code>: Computes metrics at each training stage (optional, only for models with staged predictions).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">has_loss_history</span></code> (property): Boolean indicating if loss history is available.</p></li>
 </ul>
 <p><strong>Example: Creating a Simple Custom Majority Class Classifier Model</strong></p>
 <p>This example is simplified for illustration purposes. A real custom model would involve more complex machine learning logic.</p>
@@ -425,22 +441,24 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">majority_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Model has not been fitted yet.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Model is not fitted.&quot;</span><span class="p">)</span>
         <span class="c1"># Predict the majority class for all inputs</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">majority_class</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">scorer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseMetric</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">majority_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Model has not been fitted yet.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Model is not fitted.&quot;</span><span class="p">)</span>
         <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">scorer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># Default scorer</span>
-            <span class="n">scorer</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">accuracy_score</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">scorer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scorer_metric</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">scorer</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">predictions</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_scorer_metric</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseMetric</span><span class="p">:</span>
+        <span class="c1"># Return the default scorer for this model</span>
+        <span class="k">return</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">accuracy_score</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseMetric</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">majority_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Model has not been fitted yet.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Model is not fitted.&quot;</span><span class="p">)</span>
         <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
@@ -448,8 +466,8 @@
         <span class="k">return</span> <span class="n">results</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_loss_history_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseMetric</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="c1"># This simple model does not have a loss history, so we&#39;ll raise an error or return empty</span>
-        <span class="c1"># In a real model, this would track performance over epochs/iterations</span>
+        <span class="c1"># This simple model does not have a loss history, so we&#39;ll raise an error</span>
+        <span class="c1"># In a real model with staged predictions, this would track performance over epochs/iterations</span>
         <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;MajorityClassClassifier does not support loss history.&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -487,9 +505,13 @@
 <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predictions: </span><span class="si">{</span><span class="n">predictions</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Expected: [0, 0]</span>
 
-<span class="n">accuracy</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">accuracy_score</span><span class="p">)</span>
-<span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">scorer</span><span class="o">=</span><span class="n">accuracy</span><span class="p">)</span>
+<span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accuracy: </span><span class="si">{</span><span class="n">score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Expected: 0.5 (one correct, one incorrect)</span>
+
+<span class="c1"># Can also use get_metrics for multiple metrics</span>
+<span class="n">accuracy</span> <span class="o">=</span> <span class="n">SklearnMetric</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">accuracy_score</span><span class="p">)</span>
+<span class="n">metrics_results</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">accuracy</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Metrics: </span><span class="si">{</span><span class="n">metrics_results</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;majority_classifier.joblib&quot;</span><span class="p">)</span>
 <span class="n">loaded_model</span> <span class="o">=</span> <span class="n">MajorityClassClassifier</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;majority_classifier.joblib&quot;</span><span class="p">)</span>

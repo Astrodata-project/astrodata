@@ -1,0 +1,5 @@
+real_world/fits_ml.py
+=====================
+
+.. literalinclude:: ../../../examples/real_world/fits_ml.py
+   :language: python

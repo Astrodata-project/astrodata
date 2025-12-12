@@ -255,6 +255,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/1_data_example.html">data/1_data_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/2_preml_example.html">data/2_preml_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/3_torch_data.html">data/3_torch_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/4_tensorflow_data.html">data/4_tensorflow_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/utils.html">data/utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_2_pytorch_hp_example_mlflow.html">ml/10_2_pytorch_hp_example_mlflow.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
@@ -277,6 +280,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/7_mlflow_hp_example.html">ml/7_mlflow_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/8_pytorch_example.html">ml/8_pytorch_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/9_pytorch_gs_example.html">ml/9_pytorch_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/fits_ml.html">real_world/fits_ml.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/pytorch_galaxyMNIST.html">real_world/pytorch_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/tensorflow_galaxyMNIST.html">real_world/tensorflow_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/testdata/data_load.html">real_world/testdata/data_load.py</a></li>
 </ul>
 
 </div>
@@ -330,11 +337,11 @@
 Defines the standard interface expected from all models.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="astrodata.ml.models.BaseMlModel.BaseMlModel.clone">
-<span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.BaseMlModel.BaseMlModel.clone" title="Link to this definition">¶</a></dt>
-<dd><p>Create a (shallow) clone of this model instance.</p>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.BaseMlModel.BaseMlModel.clone" title="Link to this definition">¶</a></dt>
+<dd><p>Create a deep copy of the model instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Cloned model instance.</p>
+<dd class="field-odd"><p>A deep copy of the model.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel">BaseMlModel</a></p>
@@ -370,8 +377,8 @@ Defines the standard interface expected from all models.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X_test</strong> (<em>Any</em>) – Test data features.</p></li>
-<li><p><strong>y_test</strong> (<em>Any</em>) – Test data targets.</p></li>
+<li><p><strong>X</strong> (<em>Any</em>) – Test data features.</p></li>
+<li><p><strong>y</strong> (<em>Any</em>) – Test data targets.</p></li>
 <li><p><strong>**kwargs</strong> – Additional metrics options.</p></li>
 </ul>
 </dd>
@@ -407,7 +414,7 @@ Defines the standard interface expected from all models.</p>
 <dd><p>Returns the score function default metric.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMetric</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMetric</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -510,297 +517,30 @@ Defines the standard interface expected from all models.</p>
 </dd></dl>
 
 </section>
-<section id="module-astrodata.ml.models.PytorchModel">
-<span id="astrodata-ml-models-pytorchmodel-module"></span><h2>astrodata.ml.models.PytorchModel module<a class="headerlink" href="#module-astrodata.ml.models.PytorchModel" title="Link to this heading">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.PytorchModel.</span></span><span class="sig-name descname"><span class="pre">PytorchModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1900714291</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_weight_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlModel</span></code></a></p>
-<p>A lightweight wrapper around PyTorch models providing a unified
-training/prediction interface and metric tracking.</p>
-<p class="rubric">Notes</p>
-<p>This class expects a callable <code class="docutils literal notranslate"><span class="pre">loss_fn</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">nn.CrossEntropyLoss</span></code>)
-and an <code class="docutils literal notranslate"><span class="pre">optimizer</span></code> class (e.g., <code class="docutils literal notranslate"><span class="pre">optim.AdamW</span></code>). <code class="docutils literal notranslate"><span class="pre">model_class</span></code> can be
-either an instantiated <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> or a class to be constructed from
-<code class="docutils literal notranslate"><span class="pre">model_params</span></code>.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.clone">
-<span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.clone" title="Link to this definition">¶</a></dt>
-<dd><p>Create a shallow clone with the same initialization parameters.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>New instance with copied parameters.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel" title="astrodata.ml.models.PytorchModel.PytorchModel">PytorchModel</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fine_tune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_every_n_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'torch'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.fit" title="Link to this definition">¶</a></dt>
-<dd><p>Fit the model using the provided data or dataset.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Training features. Ignored if <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is provided.</p></li>
-<li><p><strong>y</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Training labels. Ignored if <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is provided.</p></li>
-<li><p><strong>dataset</strong> (<em>torch.utils.data.Dataset</em><em>, </em><em>optional</em>) – Pre-built training dataset yielding <code class="docutils literal notranslate"><span class="pre">(inputs,</span> <span class="pre">labels)</span></code>.</p></li>
-<li><p><strong>epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of training epochs. Defaults to the instance value.</p></li>
-<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Batch size for training/prediction. Defaults to the instance value.</p></li>
-<li><p><strong>device</strong> (<em>str</em><em>, </em><em>optional</em>) – Device to use (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;cuda&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;cpu&quot;</span></code>). Defaults to instance.</p></li>
-<li><p><strong>metrics</strong> (<em>list</em><em> of </em><em>BaseMetric</em><em>, </em><em>optional</em>) – Metrics to compute during training (per step) and validation (per epoch).</p></li>
-<li><p><strong>fine_tune</strong> (<em>bool</em><em>, </em><em>default False</em>) – If True, reuse existing model weights/optimizer state when available.</p></li>
-<li><p><strong>X_val</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Validation features for epoch-wise metric tracking.</p></li>
-<li><p><strong>y_val</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Validation labels for epoch-wise metric tracking.</p></li>
-<li><p><strong>save_every_n_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Save model every n epochs if provided.</p></li>
-<li><p><strong>save_folder</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory path where checkpoints will be saved.</p></li>
-<li><p><strong>save_format</strong> (<em>{&quot;torch&quot;</em><em>,</em><em>&quot;pkl&quot;</em><em>,</em><em>&quot;safetensors&quot;}</em><em>, </em><em>default &quot;torch&quot;</em>) – Serialization format for checkpoints.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The fitted model instance.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel" title="astrodata.ml.models.PytorchModel.PytorchModel">PytorchModel</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.freeze_layers">
-<span class="sig-name descname"><span class="pre">freeze_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.freeze_layers" title="Link to this definition">¶</a></dt>
-<dd><p>Freeze all layers except those included in <code class="docutils literal notranslate"><span class="pre">layer_names</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>layer_names</strong> (<em>list</em><em> of </em><em>str</em>) – Names of modules to unfreeze.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.get_metrics">
-<span class="sig-name descname"><span class="pre">get_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_metrics" title="Link to this definition">¶</a></dt>
-<dd><p>Compute metrics for given data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Features. Ignored if <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is provided.</p></li>
-<li><p><strong>y</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Labels. Ignored if <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is provided.</p></li>
-<li><p><strong>dataset</strong> (<em>torch.utils.data.Dataset</em><em>, </em><em>optional</em>) – Pre-built dataset yielding <code class="docutils literal notranslate"><span class="pre">(inputs,</span> <span class="pre">labels)</span></code>.</p></li>
-<li><p><strong>metrics</strong> (<em>list</em><em> of </em><em>BaseMetric</em>) – Metrics to compute.</p></li>
-<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>default 32</em>) – Batch size when <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are provided.</p></li>
-<li><p><strong>device</strong> (<em>str</em><em>, </em><em>optional</em>) – Device to use for inference.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Mapping from metric names to values.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If neither dataset nor (X, y) are provided.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.get_metrics_history">
-<span class="sig-name descname"><span class="pre">get_metrics_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'train'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_metrics_history" title="Link to this definition">¶</a></dt>
-<dd><p>Get the recorded metric history.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>split</strong> (<em>{&quot;train&quot;</em><em>, </em><em>&quot;val&quot;}</em><em>, </em><em>default &quot;train&quot;</em>) – Which split to return history for. Validation history is
-recorded at epoch granularity.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Mapping from metric name to list of values in time order.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.get_params">
-<span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_params" title="Link to this definition">¶</a></dt>
-<dd><p>Get initialization parameters for this model.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Parameters used to construct the model.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.get_scorer_metric">
-<span class="sig-name descname"><span class="pre">get_scorer_metric</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_scorer_metric" title="Link to this definition">¶</a></dt>
-<dd><p>Returns the score function default metric.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.has_loss_history">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_loss_history</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.has_loss_history" title="Link to this definition">¶</a></dt>
-<dd><p>Check if the underlying model supports loss history.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if loss history is available, False otherwise.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.load">
-<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'torch'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.load" title="Link to this definition">¶</a></dt>
-<dd><p>Load model parameters and optimizer state from disk.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filepath</strong> (<em>str</em>) – Source path.</p></li>
-<li><p><strong>format</strong> (<em>{&quot;torch&quot;</em><em>, </em><em>&quot;pkl&quot;</em><em>, </em><em>&quot;safetensors&quot;}</em>) – Serialization format.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The model instance with loaded weights.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel" title="astrodata.ml.models.PytorchModel.PytorchModel">PytorchModel</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.predict">
-<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.predict" title="Link to this definition">¶</a></dt>
-<dd><p>Predict outputs for input <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>array-like</em><em>, </em><em>torch.Tensor</em><em>, or </em><em>Dataset</em>) – Features to predict. If a Dataset is provided, it should yield
-feature tensors only.</p></li>
-<li><p><strong>batch_size</strong> (<em>int</em>) – Batch size.</p></li>
-<li><p><strong>device</strong> (<em>str</em><em>, </em><em>optional</em>) – Device to use for inference. Defaults to instance device.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Predicted labels for classification, or raw outputs for regression.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>numpy.ndarray</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – If the model is not fitted yet.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.predict_proba">
-<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.predict_proba" title="Link to this definition">¶</a></dt>
-<dd><p>Predict class probabilities for input <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>array-like</em><em>, </em><em>torch.Tensor</em><em>, or </em><em>Dataset</em>) – Features to predict. If a Dataset is provided, it should yield
-feature tensors only.</p></li>
-<li><p><strong>batch_size</strong> (<em>int</em>) – Batch size used when <code class="docutils literal notranslate"><span class="pre">X</span></code> is not a Dataset.</p></li>
-<li><p><strong>device</strong> (<em>str</em><em>, </em><em>optional</em>) – Device to use for inference. Defaults to instance device.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Predicted probabilities with shape <code class="docutils literal notranslate"><span class="pre">[N,</span> <span class="pre">n_classes]</span></code>.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>numpy.ndarray</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – If the model is not fitted yet.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'torch'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.save" title="Link to this definition">¶</a></dt>
-<dd><p>Save the model parameters and optimizer state.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filepath</strong> (<em>str</em>) – Destination path.</p></li>
-<li><p><strong>format</strong> (<em>{&quot;torch&quot;</em><em>, </em><em>&quot;pkl&quot;</em><em>, </em><em>&quot;safetensors&quot;}</em>) – Serialization format.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.score">
-<span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.score" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the average loss on the given data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> (<em>torch.utils.data.Dataset</em><em>, </em><em>optional</em>) – Pre-built dataset yielding <code class="docutils literal notranslate"><span class="pre">(inputs,</span> <span class="pre">labels)</span></code>.</p></li>
-<li><p><strong>X</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Features. Ignored if <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is provided.</p></li>
-<li><p><strong>y</strong> (<em>array-like</em><em> or </em><em>torch.Tensor</em><em>, </em><em>optional</em>) – Labels. Ignored if <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is provided.</p></li>
-<li><p><strong>device</strong> (<em>str</em><em>, </em><em>optional</em>) – Device to use for inference. Defaults to instance device.</p></li>
-<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Batch size when <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are provided.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Average loss over the dataset.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>RuntimeError</strong> – If the model is not fitted yet.</p></li>
-<li><p><strong>ValueError</strong> – If neither dataset nor (X, y) are provided.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="astrodata.ml.models.PytorchModel.PytorchModel.set_params">
-<span class="sig-name descname"><span class="pre">set_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.PytorchModel.PytorchModel.set_params" title="Link to this definition">¶</a></dt>
-<dd><p>Set initialization parameters for this model.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Parameters to set on the instance.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="astrodata-ml-models-pytorchmodel-module">
+<h2>astrodata.ml.models.PytorchModel module<a class="headerlink" href="#astrodata-ml-models-pytorchmodel-module" title="Link to this heading">¶</a></h2>
 </section>
 <section id="module-astrodata.ml.models.SklearnModel">
 <span id="astrodata-ml-models-sklearnmodel-module"></span><h2>astrodata.ml.models.SklearnModel module<a class="headerlink" href="#module-astrodata.ml.models.SklearnModel" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="astrodata.ml.models.SklearnModel.SklearnModel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.SklearnModel.</span></span><span class="sig-name descname"><span class="pre">SklearnModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4117362404</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">model_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.SklearnModel.SklearnModel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.SklearnModel.</span></span><span class="sig-name descname"><span class="pre">SklearnModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3319290397</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">model_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.SklearnModel.SklearnModel" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlModel</span></code></a></p>
 <p>A wrapper class for scikit-learn models to standardize the interface and add extended functionality.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.SklearnModel.SklearnModel.clone">
+<span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.SklearnModel.SklearnModel.clone" title="Link to this definition">¶</a></dt>
+<dd><p>Create a (shallow) clone of this model instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cloned model instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel">BaseMlModel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="astrodata.ml.models.SklearnModel.SklearnModel.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fit_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.SklearnModel.SklearnModel.fit" title="Link to this definition">¶</a></dt>
@@ -810,6 +550,10 @@ feature tensors only.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em>) – Training data features.</p></li>
 <li><p><strong>y</strong> (<em>array-like</em>) – Training data targets.</p></li>
+<li><p><strong>X_val</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Validation data features. Accepted for compatibility with model selectors
+but not used by scikit-learn models during training.</p></li>
+<li><p><strong>y_val</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Validation data targets. Accepted for compatibility with model selectors
+but not used by scikit-learn models during training.</p></li>
 <li><p><strong>**fit_params</strong> – Additional fit parameters for the underlying model.</p></li>
 </ul>
 </dd>
@@ -851,7 +595,7 @@ feature tensors only.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Data features to use for staged predictions.</p></li>
 <li><p><strong>y</strong> (<em>array-like</em><em>, </em><em>optional</em>) – True labels for X.</p></li>
-<li><p><strong>metrics</strong> (<em>List</em><em>[</em><em>BaseMetric</em><em>]</em><em>, </em><em>optional</em>) – Metrics to compute for each stage.</p></li>
+<li><p><strong>metrics</strong> (<em>List</em><em>[</em><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a><em>]</em><em>, </em><em>optional</em>) – Metrics to compute for each stage.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -879,7 +623,7 @@ feature tensors only.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em>) – Data features.</p></li>
 <li><p><strong>y</strong> (<em>array-like</em>) – Data targets.</p></li>
-<li><p><strong>metrics</strong> (<em>list</em><em> of </em><em>BaseMetric</em>) – List of metrics to compute.</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em> of </em><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a>) – List of metrics to compute.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1060,16 +804,30 @@ feature tensors only.</p></li>
 </dd></dl>
 
 </section>
-<section id="module-astrodata.ml.models.TensorflowModel">
-<span id="astrodata-ml-models-tensorflowmodel-module"></span><h2>astrodata.ml.models.TensorflowModel module<a class="headerlink" href="#module-astrodata.ml.models.TensorflowModel" title="Link to this heading">¶</a></h2>
+<section id="astrodata-ml-models-tensorflowmodel-module">
+<h2>astrodata.ml.models.TensorflowModel module<a class="headerlink" href="#astrodata-ml-models-tensorflowmodel-module" title="Link to this heading">¶</a></h2>
 </section>
 <section id="module-astrodata.ml.models.XGBoostModel">
 <span id="astrodata-ml-models-xgboostmodel-module"></span><h2>astrodata.ml.models.XGBoostModel module<a class="headerlink" href="#module-astrodata.ml.models.XGBoostModel" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="astrodata.ml.models.XGBoostModel.XGBoostModel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.XGBoostModel.</span></span><span class="sig-name descname"><span class="pre">XGBoostModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2835307173</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">model_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.XGBoostModel.XGBoostModel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astrodata.ml.models.XGBoostModel.</span></span><span class="sig-name descname"><span class="pre">XGBoostModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3314521314</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">model_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.XGBoostModel.XGBoostModel" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlModel</span></code></a></p>
 <p>Wrapper for XGBoost models, providing a standardized interface and additional utilities.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="astrodata.ml.models.XGBoostModel.XGBoostModel.clone">
+<span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.XGBoostModel.XGBoostModel.clone" title="Link to this definition">¶</a></dt>
+<dd><p>Create a (shallow) clone of this model instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cloned model instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#astrodata.ml.models.BaseMlModel.BaseMlModel" title="astrodata.ml.models.BaseMlModel.BaseMlModel">BaseMlModel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="astrodata.ml.models.XGBoostModel.XGBoostModel.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fit_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#astrodata.ml.models.XGBoostModel.XGBoostModel.fit" title="Link to this definition">¶</a></dt>
@@ -1079,6 +837,10 @@ feature tensors only.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em>) – Training features.</p></li>
 <li><p><strong>y</strong> (<em>array-like</em>) – Training targets.</p></li>
+<li><p><strong>X_val</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Validation data features. Accepted for compatibility with model selectors
+but not used unless explicitly specified in eval_set.</p></li>
+<li><p><strong>y_val</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Validation data targets. Accepted for compatibility with model selectors
+but not used unless explicitly specified in eval_set.</p></li>
 <li><p><strong>**fit_params</strong> – Additional parameters to pass to model.fit(). If “eval_set”
 is not provided, it will default to the training data.</p></li>
 </ul>
@@ -1118,7 +880,7 @@ is not provided, it will default to the training data.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Data features to use for staged predictions.</p></li>
 <li><p><strong>y</strong> (<em>array-like</em><em>, </em><em>optional</em>) – True labels for X.</p></li>
-<li><p><strong>metrics</strong> (<em>List</em><em>[</em><em>BaseMetric</em><em>]</em><em>, </em><em>optional</em>) – Metrics to compute for each boosting stage.</p></li>
+<li><p><strong>metrics</strong> (<em>List</em><em>[</em><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a><em>]</em><em>, </em><em>optional</em>) – Metrics to compute for each boosting stage.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1146,7 +908,7 @@ is not provided, it will default to the training data.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em>) – Data features.</p></li>
 <li><p><strong>y</strong> (<em>array-like</em>) – Data targets.</p></li>
-<li><p><strong>metrics</strong> (<em>list</em><em> of </em><em>BaseMetric</em>) – List of metrics to compute.</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em> of </em><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric" title="astrodata.ml.metrics.BaseMetric.BaseMetric"><em>BaseMetric</em></a>) – List of metrics to compute.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1379,28 +1141,10 @@ is not provided, it will default to the training data.</p></li>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-astrodata.ml.models.PytorchModel">astrodata.ml.models.PytorchModel module</a><ul>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel"><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code></a><ul>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.clone"><code class="docutils literal notranslate"><span class="pre">PytorchModel.clone()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.fit"><code class="docutils literal notranslate"><span class="pre">PytorchModel.fit()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.freeze_layers"><code class="docutils literal notranslate"><span class="pre">PytorchModel.freeze_layers()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_metrics"><code class="docutils literal notranslate"><span class="pre">PytorchModel.get_metrics()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_metrics_history"><code class="docutils literal notranslate"><span class="pre">PytorchModel.get_metrics_history()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_params"><code class="docutils literal notranslate"><span class="pre">PytorchModel.get_params()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.get_scorer_metric"><code class="docutils literal notranslate"><span class="pre">PytorchModel.get_scorer_metric()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.has_loss_history"><code class="docutils literal notranslate"><span class="pre">PytorchModel.has_loss_history</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.load"><code class="docutils literal notranslate"><span class="pre">PytorchModel.load()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.predict"><code class="docutils literal notranslate"><span class="pre">PytorchModel.predict()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.predict_proba"><code class="docutils literal notranslate"><span class="pre">PytorchModel.predict_proba()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.save"><code class="docutils literal notranslate"><span class="pre">PytorchModel.save()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.score"><code class="docutils literal notranslate"><span class="pre">PytorchModel.score()</span></code></a></li>
-<li><a class="reference internal" href="#astrodata.ml.models.PytorchModel.PytorchModel.set_params"><code class="docutils literal notranslate"><span class="pre">PytorchModel.set_params()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#astrodata-ml-models-pytorchmodel-module">astrodata.ml.models.PytorchModel module</a></li>
 <li><a class="reference internal" href="#module-astrodata.ml.models.SklearnModel">astrodata.ml.models.SklearnModel module</a><ul>
 <li><a class="reference internal" href="#astrodata.ml.models.SklearnModel.SklearnModel"><code class="docutils literal notranslate"><span class="pre">SklearnModel</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.ml.models.SklearnModel.SklearnModel.clone"><code class="docutils literal notranslate"><span class="pre">SklearnModel.clone()</span></code></a></li>
 <li><a class="reference internal" href="#astrodata.ml.models.SklearnModel.SklearnModel.fit"><code class="docutils literal notranslate"><span class="pre">SklearnModel.fit()</span></code></a></li>
 <li><a class="reference internal" href="#astrodata.ml.models.SklearnModel.SklearnModel.get_loss_history"><code class="docutils literal notranslate"><span class="pre">SklearnModel.get_loss_history()</span></code></a></li>
 <li><a class="reference internal" href="#astrodata.ml.models.SklearnModel.SklearnModel.get_loss_history_metrics"><code class="docutils literal notranslate"><span class="pre">SklearnModel.get_loss_history_metrics()</span></code></a></li>
@@ -1418,9 +1162,10 @@ is not provided, it will default to the training data.</p></li>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-astrodata.ml.models.TensorflowModel">astrodata.ml.models.TensorflowModel module</a></li>
+<li><a class="reference internal" href="#astrodata-ml-models-tensorflowmodel-module">astrodata.ml.models.TensorflowModel module</a></li>
 <li><a class="reference internal" href="#module-astrodata.ml.models.XGBoostModel">astrodata.ml.models.XGBoostModel module</a><ul>
 <li><a class="reference internal" href="#astrodata.ml.models.XGBoostModel.XGBoostModel"><code class="docutils literal notranslate"><span class="pre">XGBoostModel</span></code></a><ul>
+<li><a class="reference internal" href="#astrodata.ml.models.XGBoostModel.XGBoostModel.clone"><code class="docutils literal notranslate"><span class="pre">XGBoostModel.clone()</span></code></a></li>
 <li><a class="reference internal" href="#astrodata.ml.models.XGBoostModel.XGBoostModel.fit"><code class="docutils literal notranslate"><span class="pre">XGBoostModel.fit()</span></code></a></li>
 <li><a class="reference internal" href="#astrodata.ml.models.XGBoostModel.XGBoostModel.get_loss_history"><code class="docutils literal notranslate"><span class="pre">XGBoostModel.get_loss_history()</span></code></a></li>
 <li><a class="reference internal" href="#astrodata.ml.models.XGBoostModel.XGBoostModel.get_loss_history_metrics"><code class="docutils literal notranslate"><span class="pre">XGBoostModel.get_loss_history_metrics()</span></code></a></li>

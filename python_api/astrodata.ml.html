@@ -255,6 +255,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/1_data_example.html">data/1_data_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/2_preml_example.html">data/2_preml_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/data/3_torch_data.html">data/3_torch_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/4_tensorflow_data.html">data/4_tensorflow_data.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/data/utils.html">data/utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_2_pytorch_hp_example_mlflow.html">ml/10_2_pytorch_hp_example_mlflow.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/10_pytorch_hp_example.html">ml/10_pytorch_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/11_pytorch_mlflow_example.html">ml/11_pytorch_mlflow_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/12_pytorch_freeze_train.html">ml/12_pytorch_freeze_train.py</a></li>
@@ -277,6 +280,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/7_mlflow_hp_example.html">ml/7_mlflow_hp_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/8_pytorch_example.html">ml/8_pytorch_example.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_examples/ml/9_pytorch_gs_example.html">ml/9_pytorch_gs_example.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/fits_ml.html">real_world/fits_ml.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/pytorch_galaxyMNIST.html">real_world/pytorch_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/tensorflow_galaxyMNIST.html">real_world/tensorflow_galaxyMNIST.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_examples/real_world/testdata/data_load.html">real_world/testdata/data_load.py</a></li>
 </ul>
 
 </div>
@@ -323,7 +330,14 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="astrodata.ml.metrics.html">astrodata.ml.metrics package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.ml.metrics.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="astrodata.ml.metrics.html#astrodata-ml-metrics-basemetric-module">astrodata.ml.metrics.BaseMetric module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="astrodata.ml.metrics.html#module-astrodata.ml.metrics.BaseMetric">astrodata.ml.metrics.BaseMetric module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric"><code class="docutils literal notranslate"><span class="pre">BaseMetric</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric.get_name"><code class="docutils literal notranslate"><span class="pre">BaseMetric.get_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.BaseMetric.BaseMetric.greater_is_better"><code class="docutils literal notranslate"><span class="pre">BaseMetric.greater_is_better</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.ml.metrics.html#module-astrodata.ml.metrics.SklearnMetric">astrodata.ml.metrics.SklearnMetric module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.SklearnMetric.SklearnMetric"><code class="docutils literal notranslate"><span class="pre">SklearnMetric</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="astrodata.ml.metrics.html#astrodata.ml.metrics.SklearnMetric.SklearnMetric.get_name"><code class="docutils literal notranslate"><span class="pre">SklearnMetric.get_name()</span></code></a></li>
@@ -332,7 +346,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="astrodata.ml.metrics.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="astrodata.ml.metrics.html#module-astrodata.ml.metrics">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="astrodata.ml.model_selection.html">astrodata.ml.model_selection package</a><ul>
@@ -399,28 +413,10 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="astrodata.ml.models.html#module-astrodata.ml.models.PytorchModel">astrodata.ml.models.PytorchModel module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel"><code class="docutils literal notranslate"><span class="pre">PytorchModel</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.clone"><code class="docutils literal notranslate"><span class="pre">PytorchModel.clone()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.fit"><code class="docutils literal notranslate"><span class="pre">PytorchModel.fit()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.freeze_layers"><code class="docutils literal notranslate"><span class="pre">PytorchModel.freeze_layers()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.get_metrics"><code class="docutils literal notranslate"><span class="pre">PytorchModel.get_metrics()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.get_metrics_history"><code class="docutils literal notranslate"><span class="pre">PytorchModel.get_metrics_history()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.get_params"><code class="docutils literal notranslate"><span class="pre">PytorchModel.get_params()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.get_scorer_metric"><code class="docutils literal notranslate"><span class="pre">PytorchModel.get_scorer_metric()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.has_loss_history"><code class="docutils literal notranslate"><span class="pre">PytorchModel.has_loss_history</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.load"><code class="docutils literal notranslate"><span class="pre">PytorchModel.load()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.predict"><code class="docutils literal notranslate"><span class="pre">PytorchModel.predict()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.predict_proba"><code class="docutils literal notranslate"><span class="pre">PytorchModel.predict_proba()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.save"><code class="docutils literal notranslate"><span class="pre">PytorchModel.save()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.score"><code class="docutils literal notranslate"><span class="pre">PytorchModel.score()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.PytorchModel.PytorchModel.set_params"><code class="docutils literal notranslate"><span class="pre">PytorchModel.set_params()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="astrodata.ml.models.html#astrodata-ml-models-pytorchmodel-module">astrodata.ml.models.PytorchModel module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.ml.models.html#module-astrodata.ml.models.SklearnModel">astrodata.ml.models.SklearnModel module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.SklearnModel.SklearnModel"><code class="docutils literal notranslate"><span class="pre">SklearnModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.SklearnModel.SklearnModel.clone"><code class="docutils literal notranslate"><span class="pre">SklearnModel.clone()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.SklearnModel.SklearnModel.fit"><code class="docutils literal notranslate"><span class="pre">SklearnModel.fit()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.SklearnModel.SklearnModel.get_loss_history"><code class="docutils literal notranslate"><span class="pre">SklearnModel.get_loss_history()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.SklearnModel.SklearnModel.get_loss_history_metrics"><code class="docutils literal notranslate"><span class="pre">SklearnModel.get_loss_history_metrics()</span></code></a></li>
@@ -438,9 +434,10 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="astrodata.ml.models.html#module-astrodata.ml.models.TensorflowModel">astrodata.ml.models.TensorflowModel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="astrodata.ml.models.html#astrodata-ml-models-tensorflowmodel-module">astrodata.ml.models.TensorflowModel module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="astrodata.ml.models.html#module-astrodata.ml.models.XGBoostModel">astrodata.ml.models.XGBoostModel module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.XGBoostModel.XGBoostModel"><code class="docutils literal notranslate"><span class="pre">XGBoostModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.XGBoostModel.XGBoostModel.clone"><code class="docutils literal notranslate"><span class="pre">XGBoostModel.clone()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.XGBoostModel.XGBoostModel.fit"><code class="docutils literal notranslate"><span class="pre">XGBoostModel.fit()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.XGBoostModel.XGBoostModel.get_loss_history"><code class="docutils literal notranslate"><span class="pre">XGBoostModel.get_loss_history()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="astrodata.ml.models.html#astrodata.ml.models.XGBoostModel.XGBoostModel.get_loss_history_metrics"><code class="docutils literal notranslate"><span class="pre">XGBoostModel.get_loss_history_metrics()</span></code></a></li>

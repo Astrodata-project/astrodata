@@ -1,0 +1,5 @@
+real_world/tensorflow_galaxyMNIST.py
+====================================
+
+.. literalinclude:: ../../../examples/real_world/tensorflow_galaxyMNIST.py
+   :language: python

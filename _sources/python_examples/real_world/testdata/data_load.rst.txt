@@ -1,0 +1,5 @@
+real_world/testdata/data_load.py
+================================
+
+.. literalinclude:: ../../../examples/real_world/testdata/data_load.py
+   :language: python
